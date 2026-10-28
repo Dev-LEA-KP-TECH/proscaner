@@ -53,6 +53,8 @@ app.*.map.json
 *.keystore
 *.p12
 *.pem
+# กุญแจสาธารณะ (ไม่ลับ) ที่ CI ใช้เข้ารหัส APK ส่งให้เซ็นบนคลาวด์
+!tool/cloud_signing/transfer_pub.pem
 key.properties
 android/local.properties
 # แอปที่ build แล้ว และไฟล์ทำงานบนคอม
