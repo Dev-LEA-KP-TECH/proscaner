@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/app_info.dart';
 import '../state/providers.dart';
 import 'backup_screen.dart';
 import 'comm_log_screen.dart';
@@ -8,7 +9,6 @@ import 'connect_screen.dart';
 import 'dtc_lookup_screen.dart';
 import 'home_screen.dart';
 import 'settings_screens.dart';
-import 'splash_screen.dart' show kAppVersion;
 import 'terminal_screen.dart';
 import 'theme.dart';
 
@@ -216,24 +216,34 @@ class SettingsTab extends ConsumerWidget {
           onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const CommLogScreen())),
         ),
 
-        const SectionLabel('เกี่ยวกับ'),
+        const SectionLabel('เกี่ยวกับแอปพลิเคชัน'),
         PremiumCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
-              const BrandMark(size: 44),
+              const BrandMark(size: 48),
               const SizedBox(width: 14),
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Text('ProScaner', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
-                Text('เวอร์ชัน $kAppVersion', style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12.5)),
-              ]),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  const FitText('ProScaner', style: TextStyle(fontSize: 19, fontWeight: FontWeight.w900)),
+                  Text('เวอร์ชัน $kAppVersion', style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12.5)),
+                ]),
+              ),
             ]),
             const SizedBox(height: 14),
-            Text(
-              'อ่านระบบเครื่องยนต์ผ่าน OBD-II มาตรฐาน และอ่าน/ลบรหัสกล่องอื่น (ABS ถุงลม เกียร์ ฯลฯ) ผ่าน UDS '
-              'สำหรับรถที่ใช้ CAN งานเขียนข้อมูลลงกล่อง (เข้ารหัสหัวฉีด จูน) ต้องใช้เครื่องมือเฉพาะยี่ห้อ '
-              'ผลวินิจฉัยเป็นแนวทางเบื้องต้น ควรให้ช่างยืนยัน',
-              style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.5),
-            ),
+            for (final (i, p) in kAboutParagraphs.indexed) ...[
+              if (i > 0) const SizedBox(height: 10),
+              Text(thaiKeep(p), style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant, height: 1.55)),
+            ],
+            const SizedBox(height: 14),
+            Divider(color: cs.outline, height: 1),
+            const SizedBox(height: 14),
+            Text('ผู้พัฒนาและเจ้าของลิขสิทธิ์',
+                style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, fontWeight: FontWeight.w700, letterSpacing: 0.2)),
+            const SizedBox(height: 4),
+            const Text(kDeveloperName, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w800, height: 1.35)),
+            const SizedBox(height: 10),
+            Text(kCopyrightLine,
+                style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant, letterSpacing: 0.6, fontWeight: FontWeight.w600)),
           ]),
         ),
       ],

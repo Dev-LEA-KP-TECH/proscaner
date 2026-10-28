@@ -111,7 +111,7 @@ class _ExtPidEditScreenState extends State<ExtPidEditScreen> {
         ),
         const SizedBox(height: 10),
         TextField(controller: _rx, decoration: dec('Header ตอบกลับ', 'เช่น 708 หรือ 6A0', 'เว้นว่าง = ปกติ')),
-        const SizedBox(height: 10),
+        const SizedBox(height: 16),
         TextField(controller: _formula, decoration: dec('สูตร', 'เช่น A-40 หรือ S16(A,B)/100')),
         const SizedBox(height: 6),
         Text(

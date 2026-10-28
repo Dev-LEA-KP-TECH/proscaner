@@ -28,7 +28,7 @@ void main() {
     });
 
     test('ไม่แยกพยัญชนะออกจากสระ/วรรณยุกต์ และไม่แยกสระหน้าออกจากพยัญชนะ', () {
-      for (final s in samples) {
+      for (final s in [...samples, for (final w in kThaiKeepWords) w.replaceAll('|', '')]) {
         final out = thaiKeep(s);
         for (var i = 0; i < out.length; i++) {
           if (out.codeUnitAt(i) != 0x2060) continue;
@@ -40,6 +40,22 @@ void main() {
           // หลังตัวเชื่อม: พยัญชนะหรือสระหน้าเท่านั้น (ไม่ใช่สระบน/ล่าง วรรณยุกต์ หรือสระอำ)
           final startsSyllable = (next >= 0x0E01 && next <= 0x0E2E) || (next >= 0x0E40 && next <= 0x0E44);
           expect(startsSyllable, isTrue, reason: '$s @$i');
+        }
+      }
+    });
+
+    test('ทุกคำในรายการเชื่อมได้จริง และรอยต่อไม่แยกสระประสม (เ-ือ เ-ีย -ัว เ-อ)', () {
+      for (final w in kThaiKeepWords) {
+        final plain = w.replaceAll('|', '');
+        expect(thaiKeep(plain), w.replaceAll('|', '\u2060'), reason: w);
+        final parts = w.split('|');
+        for (var i = 1; i < parts.length; i++) {
+          // ส่วนถัดไปต้องขึ้นพยางค์ใหม่: ไม่ขึ้นต้นด้วย อ ย ว (อาจเป็นส่วนของสระประสม) สระหลัง หรือวรรณยุกต์
+          final c = parts[i].codeUnitAt(0);
+          final badStart = 'อยวะาำๅั'.contains(parts[i][0]) || (c >= 0x0E34 && c <= 0x0E3A) || (c >= 0x0E47 && c <= 0x0E4E);
+          expect(badStart, isFalse, reason: w);
+          // ส่วนก่อนหน้าต้องไม่จบด้วยสระหน้า เ แ โ ใ ไ
+          expect('เแโใไ'.contains(parts[i - 1][parts[i - 1].length - 1]), isFalse, reason: w);
         }
       }
     });

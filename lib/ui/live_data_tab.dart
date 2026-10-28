@@ -217,7 +217,7 @@ class _LiveDataTabState extends ConsumerState<LiveDataTab> {
                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
                       ),
                       TextSpan(
-                        text: dv == null || dv.unit.isEmpty ? '' : ' ${dv.unit}',
+                        text: dv == null || dv.unit.isEmpty ? '' : ' ${thaiKeep(dv.unit)}',
                         style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant),
                       ),
                     ]),

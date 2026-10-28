@@ -796,6 +796,18 @@ void main() {
     // settings
     await tab('ตั้งค่า');
     await shot('27_settings');
+    // ท้ายหน้าตั้งค่า: การ์ด "เกี่ยวกับแอปพลิเคชัน" (ผู้พัฒนาและเจ้าของลิขสิทธิ์)
+    final settingsScroll = _mainScroll();
+    if (settingsScroll != null) {
+      // ListView สร้างเนื้อหาท้ายรายการทีหลัง กระโดดซ้ำจนถึงท้ายจริง
+      for (var i = 0; i < 3; i++) {
+        settingsScroll.position.jumpTo(settingsScroll.position.maxScrollExtent);
+        await settle(100);
+      }
+      await shot('27b_settings_about');
+      settingsScroll.position.jumpTo(0);
+      await settle(100);
+    }
     await open(const ShopProfileScreen());
     await shot('28_shop_profile');
     pop();
