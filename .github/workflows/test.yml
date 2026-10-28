@@ -1,0 +1,101 @@
+# ตรวจโค้ด + เทสต์ทั้งหมด (test/) + ภาพหน้าจอทุกหน้า (test_screens/) บนเครื่อง Linux ของ GitHub
+# เครื่อง Linux กินโควตาน้อยกว่าเครื่อง Mac มาก จึงรันทุกครั้งที่ push เข้า main
+# ผลเก็บใน branch test-results: RESULT.txt, analyze.log, unit_tests.log, screens.log และ shots/ (ภาพหน้าจอขนาดมือถือ 360 dp)
+name: Unit tests + screenshots
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    name: Analyze, unit tests, screenshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.7
+          cache: true
+
+      - name: Get packages
+        run: flutter pub get
+
+      - name: Analyze
+        id: analyze
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter analyze --no-fatal-infos 2>&1 | tee analyze.log
+
+      - name: Unit tests
+        id: tests
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter test --reporter expanded 2>&1 | tee unit_tests.log
+
+      - name: Screenshots of every screen
+        id: screens
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          mkdir -p test_screens/out
+          flutter test test_screens/app_screens_test.dart --update-goldens --reporter expanded 2>&1 | tee screens.log
+
+      - name: Save results to branch test-results
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ANALYZE: ${{ steps.analyze.outcome }}
+          TESTS: ${{ steps.tests.outcome }}
+          SCREENS: ${{ steps.screens.outcome }}
+        run: |
+          rm -rf /tmp/res && mkdir -p /tmp/res/shots
+          cp ./*.log /tmp/res/ 2>/dev/null || true
+          for f in test_screens/out/*.png; do
+            [ -f "$f" ] || continue
+            n=$(basename "$f" .png)
+            if command -v convert >/dev/null 2>&1; then
+              convert "$f" -resize 540x -quality 82 "/tmp/res/shots/$n.jpg"
+            else
+              cp "$f" /tmp/res/shots/
+            fi
+          done
+          {
+            echo "run: ${GITHUB_RUN_ID}"
+            echo "commit: ${GITHUB_SHA}"
+            echo "analyze: ${ANALYZE}"
+            echo "unit tests: ${TESTS}"
+            echo "screenshots: ${SCREENS} ($(ls /tmp/res/shots | wc -l) files)"
+            echo "--- unit tests (last lines)"
+            tail -3 unit_tests.log 2>/dev/null
+          } > /tmp/res/RESULT.txt
+          cd /tmp/res
+          git init -q -b test-results
+          git config user.name "github-actions"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Unit tests ${GITHUB_RUN_ID} for ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" test-results
+
+      - name: Result
+        if: always()
+        run: |
+          echo "analyze: ${{ steps.analyze.outcome }}"
+          echo "unit tests: ${{ steps.tests.outcome }}"
+          echo "screenshots: ${{ steps.screens.outcome }}"
+          [ "${{ steps.analyze.outcome }}" = "success" ] && [ "${{ steps.tests.outcome }}" = "success" ] && [ "${{ steps.screens.outcome }}" = "success" ]
