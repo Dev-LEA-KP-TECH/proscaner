@@ -1,0 +1,53 @@
+name: obd_doctor
+description: แอปวินิจฉัยรถยนต์ผ่าน OBD-II (ตัวสแกน ELM327) สำหรับ Android และ iOS
+publish_to: 'none'
+version: 0.6.4+13
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1
+  flutter_blue_plus: ^1.35.0
+  path_provider: ^2.1.4
+  shared_preferences: ^2.3.2
+  share_plus: ^13.3.1
+  wakelock_plus: ^1.8.0
+  mobile_scanner: ^7.4.2
+  image_picker: ^1.2.4
+  pdf: ^3.13.1
+  flutter_tts: ^4.2.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/dtc_th.json
+    - assets/brand/
+    - assets/brand_logos/
+    - assets/ext_packs/
+  fonts:
+    - family: Prompt
+      fonts:
+        - asset: assets/fonts/Prompt-Regular.ttf
+        - asset: assets/fonts/Prompt-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Prompt-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Prompt-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Prompt-ExtraBold.ttf
+          weight: 800
+    - family: IBMPlexMono
+      fonts:
+        - asset: assets/fonts/IBMPlexMono-Regular.ttf
+        - asset: assets/fonts/IBMPlexMono-Bold.ttf
+          weight: 700

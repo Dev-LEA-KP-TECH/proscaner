@@ -1,0 +1,118 @@
+# ตรวจแอป iOS บนเครื่อง Mac ของ GitHub (ไม่เซ็น ยังลงเครื่องจริงไม่ได้)
+# 1) build แอปสำหรับ iPhone แบบ release (no codesign) เพื่อดูว่าคอมไพล์ผ่าน
+# 2) เปิด iPhone จำลอง แล้วรัน integration_test/device_tour_test.dart (เปิดทุกหน้าด้วยรถจำลอง)
+#    พร้อมถ่ายภาพหน้าจอทุก 6 วินาที
+# ผลอยู่ใน Artifacts ชื่อ ios-check (ภาพ + log) เก็บ 7 วัน
+#
+# เครื่อง Mac ของ GitHub กินโควตานาทีของบัญชีมากกว่าเครื่อง Linux จึงรันเมื่อสั่งเองหรือเมื่อ push เข้า main เท่านั้น
+name: iOS build check
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    name: iOS build + simulator tour
+    runs-on: macos-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.7
+          cache: true
+
+      - name: Tool versions
+        run: |
+          flutter --version
+          xcodebuild -version
+          sw_vers
+
+      - name: Get packages
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos
+
+      - name: Build for iPhone (release, not signed)
+        id: device
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          flutter build ios --release --no-codesign 2>&1 | tee build_ios_release.log
+
+      - name: Start an iPhone simulator
+        run: |
+          SIM=$(xcrun simctl list devices available -j | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          pick = None
+          for runtime in sorted(devices):
+              if "iOS" not in runtime:
+                  continue
+              for d in devices[runtime]:
+                  if d.get("isAvailable", True) and d["name"].startswith("iPhone"):
+                      pick = d["udid"]
+          print(pick or "")
+          ')
+          if [ -z "$SIM" ]; then
+            echo "no iPhone simulator found"
+            xcrun simctl list devices available
+            exit 1
+          fi
+          echo "SIM=$SIM" >> "$GITHUB_ENV"
+          xcrun simctl boot "$SIM" || true
+          xcrun simctl bootstatus "$SIM" -b
+          xcrun simctl list devices booted
+
+      - name: Device tour on the simulator (screenshot every 6 s)
+        id: tour
+        continue-on-error: true
+        timeout-minutes: 40
+        run: |
+          set -o pipefail
+          mkdir -p shots
+          (
+            i=0
+            while true; do
+              i=$((i+1))
+              f=$(printf "shots/tour_%03d" "$i")
+              if xcrun simctl io "$SIM" screenshot "$f.png" >/dev/null 2>&1; then
+                sips -s format jpeg -s formatOptions 60 --resampleWidth 590 "$f.png" --out "$f.jpg" >/dev/null 2>&1 && rm -f "$f.png"
+              fi
+              sleep 6
+            done
+          ) &
+          LOOP=$!
+          STATUS=0
+          flutter test integration_test/device_tour_test.dart -d "$SIM" 2>&1 | tee device_tour.log || STATUS=$?
+          kill "$LOOP" 2>/dev/null || true
+          xcrun simctl io "$SIM" screenshot shots/zz_last.png >/dev/null 2>&1 || true
+          exit $STATUS
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-check
+          retention-days: 7
+          path: |
+            shots/
+            *.log
+
+      - name: Result
+        if: always()
+        run: |
+          echo "iPhone build (release, not signed): ${{ steps.device.outcome }}"
+          echo "Simulator tour: ${{ steps.tour.outcome }}"
+          if [ "${{ steps.device.outcome }}" != "success" ] || [ "${{ steps.tour.outcome }}" != "success" ]; then
+            exit 1
+          fi
