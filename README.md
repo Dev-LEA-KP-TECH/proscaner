@@ -99,6 +99,9 @@
   - v0.6.2 เซ็นด้วย `tool\cloud_signing\v2sign.py` บนคลาวด์ (APK Signature Scheme v2 ด้วยไลบรารี `cryptography` ไม่ต้องดาวน์โหลด apksigner)
     สคริปต์นี้ไม่มีกุญแจหรือรหัสผ่านอยู่ข้างใน: `info` ตรวจลายนิ้วมือกุญแจ, `sign` เซ็น, `verify` ตรวจลายเซ็นและ digest
     (ทดสอบกับลายเซ็นที่ apksig ของ Google สร้างแล้วตรงกัน และแท็บเล็ตรับอัปเดตทับ 0.6.1 ได้ 27 ต.ค. 17:23)
+  - ตั้งแต่ v0.6.5 ใช้ APK ที่ GitHub Actions build จากเครื่องสะอาด (`test.yml` งาน Android) แทนไฟล์จากคอมเครื่องนี้:
+    repo เป็น public จึงไม่เก็บ APK เป็น Artifact แต่เข้ารหัส (AES-256 + `tool/cloud_signing/transfer_pub.pem`) ไว้ใน branch `android-apk`
+    พร้อม `INFO.txt` (commit, ขนาด, SHA-256) ถอดได้เฉพาะ Claude บนคลาวด์ แล้วเซ็นด้วย `v2sign.py` เหมือนเดิม
 - **เซ็นบนคอมที่สะอาดหรือระบบสร้างแอปบนคลาวด์ (เช่น GitHub Actions)**: ตั้งตัวแปร `PROSCANER_RELEASE=1` และให้ Gradle รู้ที่อยู่กุญแจ
   ผ่าน `android/key.properties` (`storeFile`, `storePassword`, `keyAlias`, `keyPassword`) หรือตัวแปร `PROSCANER_KEYSTORE`,
   `PROSCANER_KEYSTORE_PASSWORD`, `PROSCANER_KEY_ALIAS`, `PROSCANER_KEY_PASSWORD` แล้วสั่ง `flutter build apk --release`

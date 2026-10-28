@@ -135,14 +135,35 @@ jobs:
           path: res/
           retention-days: 3
       # APK ที่ build จากเครื่องสะอาดของ GitHub (เซ็นด้วยกุญแจชั่วคราว) ไว้ให้ Claude เซ็นด้วยกุญแจ ProScaner บนคลาวด์
-      # ลงเครื่องไม่ได้จนกว่าจะเซ็น ไม่เก็บลง branch
-      - uses: actions/upload-artifact@v4
-        if: success()
-        with:
-          name: android-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
-          retention-days: 7
-          compression-level: 0
+      # repo เป็น public จึงไม่อัปโหลดเป็น Artifact (ใครก็ดาวน์โหลดได้) แต่เข้ารหัสก่อนแล้วเก็บใน branch android-apk:
+      # AES-256 ด้วยรหัสสุ่มต่อครั้ง และรหัสนั้นเข้ารหัสด้วย tool/cloud_signing/transfer_pub.pem (กุญแจลับอยู่กับ Claude บนคลาวด์เท่านั้น)
+      - name: Encrypted APK to branch android-apk
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          apk="$GITHUB_WORKSPACE/build/app/outputs/flutter-apk/app-release.apk"
+          pub="$GITHUB_WORKSPACE/tool/cloud_signing/transfer_pub.pem"
+          umask 077
+          rm -rf /tmp/apk && mkdir -p /tmp/apk && cd /tmp/apk
+          openssl rand -hex 32 > /tmp/k.txt
+          openssl pkeyutl -encrypt -pubin -inkey "$pub" -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 \
+            -pkeyopt rsa_mgf1_md:sha256 -in /tmp/k.txt -out key.enc
+          openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt -pass file:/tmp/k.txt -in "$apk" | split -b 40m -d -a 1 - apk.enc.part
+          shred -u /tmp/k.txt
+          {
+            echo "run: ${GITHUB_RUN_ID}"
+            echo "commit: ${GITHUB_SHA}"
+            echo "bytes: $(stat -c %s "$apk")"
+            echo "sha256: $(sha256sum "$apk" | cut -d' ' -f1)"
+          } > INFO.txt
+          cat INFO.txt
+          git init -q -b android-apk
+          git config user.name "github-actions"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Encrypted APK ${GITHUB_RUN_ID} for ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" android-apk
 
   # ภาพหน้าจออย่างเดียว (เสร็จเร็วกว่า build Android) ไว้ดูผลระหว่างแก้: branch test-results-screens
   publish_screens:
