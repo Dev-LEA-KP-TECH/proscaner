@@ -73,7 +73,21 @@ class _ExtPidEditScreenState extends State<ExtPidEditScreen> {
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    InputDecoration dec(String label, [String? hint]) => InputDecoration(labelText: label, hintText: hint);
+    InputDecoration dec(String label, [String? hint, String? helper]) =>
+        InputDecoration(labelText: label, hintText: hint, helperText: helper, helperMaxLines: 3);
+    // ช่องกรอกคู่: ที่พอ (ช่องละ 170 dp ขึ้นไปเมื่อคิดรวมขนาดตัวอักษร) วางข้างกัน ไม่พอวางซ้อนกันเต็มความกว้าง
+    // ชื่อช่องและตัวอย่างในช่องจึงแสดงครบ ไม่ถูกตัดท้าย
+    Widget pair(Widget a, Widget b) => LayoutBuilder(builder: (context, box) {
+          final scale = MediaQuery.textScalerOf(context).scale(100) / 100;
+          if ((box.maxWidth - 10) / 2 / scale >= 170) {
+            return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Expanded(child: a),
+              const SizedBox(width: 10),
+              Expanded(child: b),
+            ]);
+          }
+          return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [a, const SizedBox(height: 10), b]);
+        });
     String? preview;
     final raw = widget.sampleRaw;
     if (raw != null && raw.isNotEmpty) {
@@ -91,13 +105,12 @@ class _ExtPidEditScreenState extends State<ExtPidEditScreen> {
       body: ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 40), children: [
         TextField(controller: _name, decoration: dec('ชื่อ', 'เช่น ชดเชยหัวฉีดสูบ\u00A01')),
         const SizedBox(height: 10),
-        Row(children: [
-          Expanded(child: TextField(controller: _header, decoration: dec('Header กล่อง', '7E0 / 700 / 18DA10F1'))),
-          const SizedBox(width: 10),
-          Expanded(child: TextField(controller: _req, decoration: dec('คำสั่ง (hex)', '221101 หรือ 2101'))),
-        ]),
+        pair(
+          TextField(controller: _header, decoration: dec('Header กล่อง', '7E0 / 700 / 18DA10F1')),
+          TextField(controller: _req, decoration: dec('คำสั่ง (hex)', '221101 หรือ 2101')),
+        ),
         const SizedBox(height: 10),
-        TextField(controller: _rx, decoration: dec('Header ตอบกลับ (เว้นว่าง = ปกติ)', 'เช่น 708 หรือ 6A0')),
+        TextField(controller: _rx, decoration: dec('Header ตอบกลับ', 'เช่น 708 หรือ 6A0', 'เว้นว่าง = ปกติ')),
         const SizedBox(height: 10),
         TextField(controller: _formula, decoration: dec('สูตร', 'เช่น A-40 หรือ S16(A,B)/100')),
         const SizedBox(height: 6),
@@ -110,34 +123,31 @@ class _ExtPidEditScreenState extends State<ExtPidEditScreen> {
           Text('ค่าจากข้อมูลล่าสุด: $preview ${_unit.text}', style: TextStyle(fontWeight: FontWeight.w700, color: cs.primary)),
         ],
         const SizedBox(height: 10),
-        Row(children: [
-          Expanded(child: TextField(controller: _unit, decoration: dec('หน่วย', '°C, g, mm³'))),
-          const SizedBox(width: 10),
-          Expanded(child: TextField(controller: _group, decoration: dec('กลุ่ม', 'หัวฉีด, DPF, เกียร์'))),
-        ]),
+        pair(
+          TextField(controller: _unit, decoration: dec('หน่วย', '°C, g, mm³')),
+          TextField(controller: _group, decoration: dec('กลุ่ม', 'หัวฉีด, DPF, เกียร์')),
+        ),
         const SizedBox(height: 10),
-        Row(children: [
-          Expanded(
-            child: TextField(
-              controller: _min,
-              keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
-              decoration: dec('ค่าต่ำสุดที่เป็นไปได้'),
-            ),
+        pair(
+          TextField(
+            controller: _min,
+            keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+            decoration: dec('ค่าต่ำสุดที่เป็นไปได้'),
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: TextField(
-              controller: _max,
-              keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
-              decoration: dec('ค่าสูงสุดที่เป็นไปได้'),
-            ),
+          TextField(
+            controller: _max,
+            keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+            decoration: dec('ค่าสูงสุดที่เป็นไปได้'),
           ),
-        ]),
+        ),
         const SizedBox(height: 14),
+        // ปุ่มเลือกทศนิยมกว้างตามที่เหลือ (จอแคบไม่ล้นขอบ)
         Row(children: [
           const Text('ทศนิยม'),
-          const Spacer(),
-          SegmentedButton<int>(
+          const SizedBox(width: 12),
+          Expanded(
+            child: SegmentedButton<int>(
+            showSelectedIcon: false,
             segments: const [
               ButtonSegment(value: 0, label: Text('0')),
               ButtonSegment(value: 1, label: Text('1')),
@@ -146,6 +156,7 @@ class _ExtPidEditScreenState extends State<ExtPidEditScreen> {
             ],
             selected: {_dec.clamp(0, 3)},
             onSelectionChanged: (s) => setState(() => _dec = s.first),
+            ),
           ),
         ]),
         if (_p.verified) ...[

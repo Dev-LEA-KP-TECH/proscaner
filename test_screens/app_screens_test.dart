@@ -628,7 +628,7 @@ void main() {
 
     await open(const DidScannerScreen(autoPreset: false), frames: 30);
     await tapOn(find.text('เริ่มค้นหา'));
-    await untilSeen(find.textContaining(RegExp(r'กล่องตอบ [1-9]')), max: 3000);
+    await untilSeen(find.textContaining(RegExp('กล่องตอบ[ \u00A0][1-9]')), max: 3000);
     await settle(200);
     await shot('18d_did_scanner');
     pop();

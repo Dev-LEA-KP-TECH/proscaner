@@ -375,7 +375,10 @@ class _HeroCard extends StatelessWidget {
             Flexible(child: Text(report.overall.labelTh, style: TextStyle(color: color, fontWeight: FontWeight.w800))),
           ]);
           final headline = Text(thaiKeep(report.headlineTh),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, height: 1.25));
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w900, height: 1.25, fontSize: narrow ? 19 : null));
           // คำแนะนำแสดงครบทุกบรรทัด ไม่ตัดท้าย (เป็นข้อความสำคัญต่อความปลอดภัย)
           final advice = Text(thaiKeep(report.overall.ownerAdvice),
               style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.4));
@@ -556,17 +559,16 @@ class _FreezeFrameCard extends ConsumerWidget {
             final def = pidTable[entries[i].key]!;
             final dv = displayPid(def, entries[i].value, settings);
             final now = snapshot.pids[def.pid];
+            // ชื่อค่าได้ที่มากสุด ค่าตอนเกิดปัญหาและค่าตอนนี้ซ้อนกันชิดขวา (จอแคบชื่อไม่ถูกบีบจนหักกลางคำ)
             return Row(children: [
-              Expanded(child: Text(def.nameTh)),
-              Text(dv.withUnit, style: const TextStyle(fontWeight: FontWeight.w800)),
-              if (now != null) ...[
-                const SizedBox(width: 10),
-                SizedBox(
-                  width: 70,
-                  child: Text('ตอนนี้ ${displayPid(def, now, settings).text}',
-                      textAlign: TextAlign.right, style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant)),
-                ),
-              ],
+              Expanded(child: Text(thaiKeep(def.nameTh), style: const TextStyle(height: 1.3))),
+              const SizedBox(width: 10),
+              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                Text(dv.withUnit.replaceAll(' ', '\u00A0'), style: const TextStyle(fontWeight: FontWeight.w800)),
+                if (now != null)
+                  Text('ตอนนี้\u00A0${displayPid(def, now, settings).text}',
+                      style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant)),
+              ]),
             ]);
           }),
         ],

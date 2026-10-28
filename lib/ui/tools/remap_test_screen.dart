@@ -880,8 +880,8 @@ class _RemapLiveScreenState extends ConsumerState<RemapLiveScreen> {
         Row(children: [
           Expanded(
             child: Text(
-              '${rate.toStringAsFixed(1)}\u00A0คำสั่ง/วินาที\u00A0· ${run.rows.length}\u00A0แถว'
-              '${_sampler?.multiPid ?? false ? '\u00A0· หลาย PID ต่อคำสั่ง' : ''}',
+              thaiKeep('${rate.toStringAsFixed(1)}\u00A0คำสั่ง/วินาที\u00A0· ${run.rows.length}\u00A0แถว'
+                  '${_sampler?.multiPid ?? false ? '\u00A0· หลาย PID ต่อคำสั่ง' : ''}'),
               style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
             ),
           ),

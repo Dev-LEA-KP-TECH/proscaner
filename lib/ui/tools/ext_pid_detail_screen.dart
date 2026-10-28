@@ -390,7 +390,7 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
           PremiumCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               // ชื่อค่าเต็มความกว้าง ป้ายความน่าเชื่อถืออยู่แถวป้ายด้านล่าง (จอแคบชื่อไม่ถูกบีบ)
-              Text(_p.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+              Text(thaiKeep(_p.name), style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
               if (_p.en != null) ...[
                 const SizedBox(height: 2),
                 Text(_p.en!, style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12.5)),

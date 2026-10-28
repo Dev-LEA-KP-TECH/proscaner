@@ -2,7 +2,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:obd_doctor/ui/theme.dart';
 
-String _visible(String s) => s.replaceAll('⁠', '').replaceAll(' ', ' ');
+String _visible(String s) => s.replaceAll('\u2060', '').replaceAll('\u00A0', ' ');
 
 void main() {
   group('thaiKeep', () {
@@ -46,15 +46,22 @@ void main() {
 
     test('คำที่เทสต์หน้าจอค้นหาไม่ถูกแก้', () {
       expect(thaiKeep('รอบเครื่องยนต์'), 'รอบเครื่องยนต์');
-      expect(thaiKeep('ค่าชดเชยหัวฉีด (Feedback) สูบ 1'), 'ค่าชดเชยหัวฉีด (Feedback) สูบ 1');
       expect(thaiKeep('เริ่มทดสอบ ก่อนรีแมพ'), 'เริ่มทดสอบ ก่อนรีแมพ');
+      expect(thaiKeep('ทดสอบออกตัว'), 'ทดสอบออกตัว');
+    });
+
+    test('คำไทยติดกับเลขหรือตัวอักษรกำกับ', () {
+      expect(thaiKeep('ชดเชยหัวฉีดสูบ 1'), 'ชดเชยหัวฉีดสูบ\u00A01');
+      expect(thaiKeep('กล่องตอบ 3 รายการ'), 'กล่องตอบ\u00A03\u00A0รายการ');
+      expect(thaiKeep('(แคม A แบงก์ 1)'), '(แคม\u00A0A แบงก์\u00A01)');
+      expect(thaiKeep('ABS ถุงลม'), contains('ABS '));
     });
 
     test('ตัวเลขติดหน่วย และคำที่ตัดผิดบ่อยไม่มีจุดตัดกลางคำ', () {
-      expect(thaiKeep('500 kbps'), '500 kbps');
-      expect(thaiKeep('10,000 กม.'), '10,000 กม.');
-      expect(thaiKeep('น้ำหล่อเย็น').contains('⁠'), isTrue);
-      expect(thaiKeep('กม./ชม.'), 'กม./⁠ชม.');
+      expect(thaiKeep('500 kbps'), '500\u00A0kbps');
+      expect(thaiKeep('10,000 กม.'), '10,000\u00A0กม.');
+      expect(thaiKeep('น้ำหล่อเย็น').contains('\u2060'), isTrue);
+      expect(thaiKeep('กม./ชม.'), 'กม./\u2060ชม.');
     });
   });
 }
