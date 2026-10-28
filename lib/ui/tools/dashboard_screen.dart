@@ -233,21 +233,30 @@ class _TripBar extends ConsumerWidget {
     final cs = Theme.of(context).colorScheme;
     String f(double? v, int d) => v == null ? '—' : v.toStringAsFixed(d);
     final mins = (t.seconds / 60).floor();
-    Widget cell(String label, String value) => Expanded(
+    // ช่องละ 1 ใน 5: ตัวเลขและชื่อ (2 บรรทัดสั้น) ย่อให้พอดีช่องเสมอ ไม่ชนช่องข้างเคียง
+    Widget cell(String label, String unit, String value) {
+      final small = TextStyle(fontSize: 10.5, color: cs.onSurfaceVariant, height: 1.25);
+      return Expanded(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 3),
           child: Column(children: [
             FitText(value, alignment: Alignment.center, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-            Text(label, textAlign: TextAlign.center, style: TextStyle(fontSize: 10.5, color: cs.onSurfaceVariant)),
+            FitText(label, alignment: Alignment.center, style: small),
+            if (unit.isNotEmpty) FitText(unit, alignment: Alignment.center, style: small),
           ]),
-        );
+        ),
+      );
+    }
+
     return PremiumCard(
       padding: const EdgeInsets.fromLTRB(8, 10, 4, 10),
       radius: 18,
-      child: Row(children: [
-        cell('ระยะทริป กม.', f(t.km, 1)),
-        cell('เฉลี่ย กม./ลิตร', f(t.avgKmPerL, 1)),
-        cell('ขณะนี้ กม./ลิตร', f(t.instKmPerL, 1)),
-        cell('ลิตร/ชม.', f(t.litersPerHour, 1)),
-        cell('เวลา', '$mins น.'),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        cell('ระยะทริป', 'กม.', f(t.km, 1)),
+        cell('เฉลี่ย', 'กม./ลิตร', f(t.avgKmPerL, 1)),
+        cell('ขณะนี้', 'กม./ลิตร', f(t.instKmPerL, 1)),
+        cell('สิ้นเปลือง', 'ลิตร/ชม.', f(t.litersPerHour, 1)),
+        cell('เวลา', 'นาที', '$mins'),
         IconButton(tooltip: 'เริ่มทริปใหม่', icon: const Icon(Icons.restart_alt_rounded), onPressed: onReset),
       ]),
     );

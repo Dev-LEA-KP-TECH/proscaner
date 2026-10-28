@@ -50,9 +50,15 @@ void main() {
         expect(thaiKeep(plain), w.replaceAll('|', '\u2060'), reason: w);
         final parts = w.split('|');
         for (var i = 1; i < parts.length; i++) {
-          // ส่วนถัดไปต้องขึ้นพยางค์ใหม่: ไม่ขึ้นต้นด้วย อ ย ว (อาจเป็นส่วนของสระประสม) สระหลัง หรือวรรณยุกต์
+          // ส่วนถัดไปต้องขึ้นพยางค์ใหม่: ไม่ขึ้นต้นด้วยสระหลัง วรรณยุกต์ หรือ อ (มักเป็นส่วนของสระ เ-อ เ-ือ -ือ)
+          // ย ต่อจาก -ี (สระ เ-ีย) และ ว ต่อจาก -ั (สระ -ัว) ก็ห้าม
           final c = parts[i].codeUnitAt(0);
-          final badStart = 'อยวะาำๅั'.contains(parts[i][0]) || (c >= 0x0E34 && c <= 0x0E3A) || (c >= 0x0E47 && c <= 0x0E4E);
+          final prev = parts[i - 1].replaceAll(RegExp('[\u0E48-\u0E4B]'), '');
+          final badStart = 'อะาำๅั'.contains(parts[i][0]) ||
+              (c >= 0x0E34 && c <= 0x0E3A) ||
+              (c >= 0x0E47 && c <= 0x0E4E) ||
+              (parts[i][0] == 'ย' && prev.endsWith('ี')) ||
+              (parts[i][0] == 'ว' && prev.endsWith('ั'));
           expect(badStart, isFalse, reason: w);
           // ส่วนก่อนหน้าต้องไม่จบด้วยสระหน้า เ แ โ ใ ไ
           expect('เแโใไ'.contains(parts[i - 1][parts[i - 1].length - 1]), isFalse, reason: w);

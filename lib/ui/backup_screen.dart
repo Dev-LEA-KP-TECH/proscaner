@@ -194,7 +194,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
         const SizedBox(height: 10),
         OutlinedButton.icon(
           icon: const Icon(Icons.share_rounded),
-          label: const Text('ส่งไฟล์สำรอง (LINE, Drive, อีเมล)'),
+          label: const FitText('ส่งไฟล์สำรอง (LINE, Drive, อีเมล)'),
           onPressed: _busy ? null : _share,
         ),
         const SectionLabel('กู้คืน'),
