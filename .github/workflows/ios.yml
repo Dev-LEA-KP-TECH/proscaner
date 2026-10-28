@@ -111,15 +111,20 @@ jobs:
           ) &
           LOOP=$!
           # เฝ้าดู: บางครั้งเครื่อง Mac ของ GitHub ช้า/ติดขัด แอปทดสอบเปิดแล้วค้างที่จอดำ (เครื่องมือต่อ VM service ไม่ได้)
-          # ถ้าผ่านไป 10 นาทีแล้วยังไม่มีขั้นแรกของทัวร์ (DEVICE_TEST:) ให้หยุด รีสตาร์ทเครื่องจำลอง แล้วลองใหม่ 1 ครั้ง
+          # ใช้ --reporter expanded ให้ข้อความ DEVICE_TEST: ออกทันทีทีละขั้น (ค่าเริ่มต้นบน GitHub คือ reporter แบบ github
+          # ที่เก็บข้อความไว้พิมพ์ตอนเทสต์จบ ตัวเฝ้าจึงเคยหยุดทัวร์ที่กำลังรันปกติเมื่อ build ช้า)
+          # ถ้าผ่านไป 10 นาทีหลัง build เสร็จแล้วยังไม่มีขั้นแรกของทัวร์ ให้หยุด รีสตาร์ทเครื่องจำลอง แล้วลองใหม่ 1 ครั้ง
+          # และลองใหม่ 1 ครั้งเช่นกันถ้าทัวร์ล้มก่อนเริ่มขั้นแรก (เช่น "Error waiting for a debug connection")
+          # ถ้าทัวร์เริ่มแล้วล้ม = ผิดจริง ไม่ลองใหม่
           run_tour() {
             : > device_tour.log
-            flutter test integration_test/device_tour_test.dart -d "$SIM" > device_tour.log 2>&1 &
-            local pid=$! t0=$(date +%s)
+            flutter test integration_test/device_tour_test.dart -d "$SIM" --reporter expanded > device_tour.log 2>&1 &
+            local pid=$! tb=""
             while kill -0 "$pid" 2>/dev/null; do
               sleep 10
-              if ! grep -q "DEVICE_TEST:" device_tour.log && [ $(( $(date +%s) - t0 )) -gt 600 ]; then
-                echo "WATCHDOG: ทัวร์ไม่เริ่มใน 10 นาที (แอปค้างตอนเปิด)" >> device_tour.log
+              if [ -z "$tb" ] && grep -q "Xcode build done" device_tour.log; then tb=$(date +%s); fi
+              if [ -n "$tb" ] && ! grep -q "DEVICE_TEST:" device_tour.log && [ $(( $(date +%s) - tb )) -gt 600 ]; then
+                echo "WATCHDOG $(date -u +%H:%M:%S): ทัวร์ไม่เริ่มใน 10 นาทีหลัง build เสร็จ (แอปค้างตอนเปิด)" | tee -a watchdog.log
                 pkill -P "$pid" 2>/dev/null || true
                 kill "$pid" 2>/dev/null || true
                 wait "$pid" 2>/dev/null || true
@@ -130,7 +135,8 @@ jobs:
           }
           STATUS=0
           run_tour || STATUS=$?
-          if [ "$STATUS" = "99" ]; then
+          if [ "$STATUS" != "0" ] && ! grep -q "DEVICE_TEST:" device_tour.log; then
+            echo "RETRY $(date -u +%H:%M:%S): รอบแรกจบด้วย $STATUS ก่อนทัวร์เริ่ม รีสตาร์ทเครื่องจำลองแล้วลองใหม่" | tee -a watchdog.log
             mv device_tour.log device_tour_try1.log
             xcrun simctl shutdown "$SIM" || true
             xcrun simctl boot "$SIM" || true
