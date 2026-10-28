@@ -1,0 +1,88 @@
+Resolving dependencies...
+Downloading packages...
+  bluez 0.8.3 (0.9.0 available)
+  code_assets 1.2.1 (2.1.0 available)
+  cross_file 0.3.5+5 (0.4.0 available)
+  crypto 3.0.7 (3.0.8 available)
+  dbus 0.7.15 (0.8.0 available)
+  flutter_blue_plus 1.36.8 (2.3.14 available)
+  flutter_blue_plus_android 7.0.4 (9.0.5 available)
+  flutter_blue_plus_darwin 7.0.3 (9.0.5 available)
+  flutter_blue_plus_linux 7.0.3 (9.0.4 available)
+  flutter_blue_plus_platform_interface 7.0.0 (9.0.4 available)
+  flutter_blue_plus_web 7.0.2 (9.0.4 available)
+  flutter_lints 5.0.0 (6.0.0 available)
+  flutter_riverpod 2.6.1 (3.4.3 available)
+  hooks 2.0.2 (2.2.0 available)
+  image_picker_ios 0.8.13+12 (0.8.13+13 available)
+  jni 1.1.0 (1.1.1 available)
+  lints 5.1.1 (6.1.0 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.3 (1.19.0 available)
+  objective_c 9.5.0 (9.6.2 available)
+  petitparser 7.0.2 (7.1.0 available)
+  posix 6.5.2 (6.5.4 available)
+  qr 3.0.2 (4.0.0 available)
+  record_use 0.6.0 (1.1.1 available)
+  riverpod 2.6.1 (3.4.3 available)
+  shared_preferences_android 2.5.1 (2.5.4 available)
+  shared_preferences_foundation 2.5.7 (2.6.1 available)
+  test_api 0.7.12 (0.7.15 available)
+  vector_math 2.4.0 (2.4.4 available)
+  wakelock_plus 1.8.0 (1.8.2 available)
+  web 1.1.1 (1.1.2 available)
+  xml 7.0.1 (7.1.0 available)
+Got dependencies!
+32 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /Users/runner/work/proscaner/proscaner/integration_test/device_tour_test.dart
+The following plugins do not support Swift Package Manager for ios:
+  - flutter_tts
+This will become an error in a future version of Flutter. Please contact the plugin maintainers to request Swift Package Manager adoption.
+Running Xcode build...                                          
+Xcode build done.                                           256.2s
+00:00 +0: ProScaner: ทุกหน้าใช้งานได้บนเครื่องจริง (รถจำลอง)
+DEVICE_TEST: โฟลเดอร์ทดสอบ /Users/runner/Library/Developer/CoreSimulator/Devices/F94FB7BA-C33C-4B3B-B505-F0FB478DB847/data/Containers/Data/Application/01CF4092-1E03-4C7B-9D55-442EEBDF0C12/Library/Caches/proscaner_device_test
+DEVICE_TEST: 1 เปิดแอป · เชื่อมต่อ=false · หัวหน้า=-
+DEVICE_TEST: ไฟล์ในแอป: โลโก้ 45 ไฟล์, toyota.png 25925 ไบต์
+DEVICE_TEST: 2 เชื่อมต่อรถจำลอง · เชื่อมต่อ=false · หัวหน้า=หน้าหลัก / PROSCANER / ไม่ได้เชื่อมต่อ
+DEVICE_TEST: 3 สแกนทั้งคัน · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 4 หน้าหลักโหมดช่าง · เชื่อมต่อ=true · หัวหน้า=วินิจฉัย / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 5 ค่าสด · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 6 เช็คเลขไมล์ · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 7 ตรวจรถมือสอง · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 8 สร้างรายงาน PDF · เชื่อมต่อ=true · หัวหน้า=ตรวจรถมือสอง
+DEVICE_TEST: PDF 626031 ไบต์
+DEVICE_TEST: 9 ข้อมูลกล่อง ECU · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 10 Mode 06 · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 11 กล่องอื่น (ABS) · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 12 เช็คแบตเตอรี่ · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 13 จับเวลาอัตราเร่ง · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 14 แดชบอร์ดขับรถ · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 15 บันทึกการขับ · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 15b ทดสอบก่อน/หลังรีแมพ (ขับจำลอง แล้วบันทึกผล) · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: ผลรีแมพ 445 แถว
+DEVICE_TEST: 16 โรงรถ · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 17 ตั้งค่า · เชื่อมต่อ=true · หัวหน้า=โรงรถ / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 18 ค้นหารหัสปัญหา · เชื่อมต่อ=true · หัวหน้า=ตั้งค่า / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 19 ธีมสว่าง/สีทอง และมืด/สีฟ้า · เชื่อมต่อ=true · หัวหน้า=ตั้งค่า / PROSCANER / เชื่อมต่อ
+DEVICE_TEST: 20 เชื่อมต่อผ่านหน้าจอเชื่อมต่อ (เรียก Bluetooth จริงของเครื่อง แล้วเลือกโหมดทดลอง) · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / เชื่อมต่อ
+[FBP] stopScan: already stopped
+[FBP] stopScan: already stopped
+[FBP] stopScan: already stopped
+DEVICE_TEST: 21 ค่าเฉพาะยี่ห้อ: โหลดคลังชุดข้อมูลจากไฟล์ในแอป · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / โหมดทดลอง
+DEVICE_TEST: คลัง 37 ชุด, Hilux 486 ค่า
+DEVICE_TEST: 22 หาชุดที่ตรงกับรถคันนี้ (ทดสอบทุกชุดของยี่ห้อ) · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / โหมดทดลอง
+DEVICE_TEST: 23 ใช้ชุด Hilux แล้วอ่านค่า · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / โหมดทดลอง
+DEVICE_TEST: 24 รายละเอียดค่า: ดูไบต์สด · เชื่อมต่อ=true · หัวหน้า=ค่าเฉพาะยี่ห้อ
+DEVICE_TEST: 25 ค้นหาค่าที่กล่องตอบ (ช่วงตามชุดของรถคันนี้) · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / โหมดทดลอง
+DEVICE_TEST: 26 เชื่อมต่อแบบ Wi-Fi (ซ็อกเก็ตจริงของเครื่อง ต่อกับตัวสแกนจำลองที่เปิดพอร์ตในเครื่องเดียวกัน) · เชื่อมต่อ=true · หัวหน้า=หน้าหลัก / PROSCANER / โหมดทดลอง
+DEVICE_TEST: Wi-Fi 127.0.0.1:53375 · VIN MR0FZ22G801234567
+DEVICE_TEST: 26b บันทึกการสื่อสารและไฟล์สำรอง (เขียน/อ่านไฟล์ในเครื่อง) · เชื่อมต่อ=false · หัวหน้า=หน้าหลัก / PROSCANER / ไม่ได้เชื่อมต่อ
+DEVICE_TEST: ไฟล์สำรอง 188120 ไบต์ · รถ 1 · ประวัติ 3 · บันทึกขับ 1 · รีแมพ 1
+DEVICE_TEST: 27 เสียงพูดภาษาไทยของเครื่อง (ไม่พูดออกเสียง แค่ตรวจว่ามี) · เชื่อมต่อ=false · หัวหน้า=หน้าหลัก / PROSCANER / ไม่ได้เชื่อมต่อ
+DEVICE_TEST: มีเสียงภาษาไทยในเครื่อง: true
+DEVICE_TEST: 28 ปิดการเชื่อมต่อ · เชื่อมต่อ=false · หัวหน้า=หน้าหลัก / PROSCANER / ไม่ได้เชื่อมต่อ
+DEVICE_TEST: ผ่านทุกขั้นตอน
+04:46 +1: (tearDownAll)
+04:51 +1: All tests passed!

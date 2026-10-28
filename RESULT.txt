@@ -1,0 +1,5 @@
+run: 40757738056
+commit: 2ac5baa7c06af934832941fcd236d14e1320ab6f
+iPhone build (release, not signed): success
+simulator: iPhone
+simulator tour: success
