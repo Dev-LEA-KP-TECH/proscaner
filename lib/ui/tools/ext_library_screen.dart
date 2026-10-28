@@ -153,7 +153,7 @@ class _EntryCard extends StatelessWidget {
           if (suggested) const Pill(text: 'แนะนำสำหรับรถคันนี้', color: StatusColors.good, icon: Icons.thumb_up_alt_rounded),
         ]),
         const SizedBox(height: 4),
-        Text('${e.brand}\u00A0· ${e.models.join(', ')}${e.yearsText.isEmpty ? '' : '\u00A0· ${e.yearsText}'}',
+        Text(thaiKeep('${e.brand}\u00A0· ${e.models.join(', ')}${e.yearsText.isEmpty ? '' : '\u00A0· ${e.yearsText}'}'),
             style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12.5)),
         const SizedBox(height: 8),
         Wrap(spacing: 8, runSpacing: 6, children: [
@@ -255,10 +255,10 @@ class _ExtLibraryPackScreenState extends ConsumerState<ExtLibraryPackScreen> {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(e.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
                   const SizedBox(height: 4),
-                  Text('${e.brand}\u00A0· ${e.models.join(', ')}${e.yearsText.isEmpty ? '' : '\u00A0· ${e.yearsText}'}',
+                  Text(thaiKeep('${e.brand}\u00A0· ${e.models.join(', ')}${e.yearsText.isEmpty ? '' : '\u00A0· ${e.yearsText}'}'),
                       style: TextStyle(color: cs.onSurfaceVariant)),
                   const SizedBox(height: 10),
-                  Text(pack.note, style: const TextStyle(height: 1.5, fontSize: 13)),
+                  Text(thaiKeep(pack.note), style: const TextStyle(height: 1.5, fontSize: 13)),
                   const SizedBox(height: 14),
                   Builder(builder: (context) {
                     final use = FilledButton.icon(
@@ -337,7 +337,7 @@ class SourcesCard extends StatelessWidget {
               if (s.license.isNotEmpty)
                 Text('สัญญาอนุญาต ${s.license}${s.license.startsWith('CC BY-SA') ? ' (https://creativecommons.org/licenses/by-sa/4.0/)' : ''}',
                     style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
-              if (s.changes.isNotEmpty) Text('สิ่งที่ปรับ: ${s.changes}', style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+              if (s.changes.isNotEmpty) Text(thaiKeep('สิ่งที่ปรับ: ${s.changes}'), style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
             ]),
           ),
       ]),

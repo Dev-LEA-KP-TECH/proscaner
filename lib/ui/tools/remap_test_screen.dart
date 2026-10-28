@@ -324,8 +324,8 @@ class _RemapTestScreenState extends ConsumerState<RemapTestScreen> {
             ]),
             const SizedBox(height: 8),
             Text(
-              'บันทึกค่าระหว่างขับ เทียบบูสต์และความดันรางจริงกับค่าที่กล่องต้องการ แจ้งเตือนทันทีเมื่อบูสต์เกิน '
-              'หรือมีอาการเข้าโหมดป้องกันตัวเอง จับเวลาอัตราเร่ง แล้วออกรายงาน PDF เทียบก่อนกับหลัง',
+              thaiKeep('บันทึกค่าระหว่างขับ เทียบบูสต์และความดันรางจริงกับค่าที่กล่องต้องการ แจ้งเตือนทันทีเมื่อบูสต์เกิน '
+                  'หรือมีอาการเข้าโหมดป้องกันตัวเอง จับเวลาอัตราเร่ง แล้วออกรายงาน PDF เทียบก่อนกับหลัง'),
               style: TextStyle(fontSize: 13, height: 1.5, color: cs.onSurfaceVariant),
             ),
             const SizedBox(height: 6),
@@ -337,7 +337,7 @@ class _RemapTestScreenState extends ConsumerState<RemapTestScreen> {
             ])
               Padding(
                 padding: const EdgeInsets.only(top: 4),
-                child: Text(s, style: const TextStyle(fontSize: 13, height: 1.4, fontWeight: FontWeight.w600)),
+                child: Text(thaiKeep(s), style: const TextStyle(fontSize: 13, height: 1.4, fontWeight: FontWeight.w600)),
               ),
           ]),
         ),
@@ -397,8 +397,8 @@ class _RemapTestScreenState extends ConsumerState<RemapTestScreen> {
                         on.remove(c.key);
                       }
                     }),
-                    title: Text(c.pid.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                    subtitle: Text('ใช้เป็น: ${c.signal.labelTh}\u00A0· ${trustStyle(c.pid).$1}'),
+                    title: Text(thaiKeep(c.pid.name), style: const TextStyle(fontWeight: FontWeight.w600)),
+                    subtitle: Text(thaiKeep('ใช้เป็น: ${c.signal.labelTh}\u00A0· ${trustStyle(c.pid).$1}')),
                     secondary: TrustPill(pid: c.pid, compact: true),
                   ),
               ]),
@@ -434,7 +434,7 @@ class _RemapTestScreenState extends ConsumerState<RemapTestScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(remapCompareHeadline(rows), style: const TextStyle(fontWeight: FontWeight.w700)),
+                    Text(thaiKeep(remapCompareHeadline(rows)), style: const TextStyle(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 2),
                     Text('${latestBefore.name}  →  ${latestAfter.name}', style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
                   ]),
@@ -1089,9 +1089,9 @@ class _RemapResultScreenState extends ConsumerState<RemapResultScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(title, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17, color: color)),
+                  Text(thaiKeep(title), style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17, color: color)),
                   const SizedBox(height: 2),
-                  Text(advice, style: TextStyle(fontSize: 13, height: 1.45, color: cs.onSurfaceVariant)),
+                  Text(thaiKeep(advice), style: TextStyle(fontSize: 13, height: 1.45, color: cs.onSurfaceVariant)),
                 ]),
               ),
             ]),

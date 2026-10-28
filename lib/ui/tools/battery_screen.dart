@@ -325,7 +325,7 @@ class _BatteryScreenState extends ConsumerState<BatteryScreen> {
             if (_results.length == _Test.values.length) _Summary(results: _results.values.toList()),
             const SizedBox(height: 10),
             Text(
-              'วัดผ่านขา 16 ของช่อง OBD ค่าอาจต่ำกว่าวัดที่ขั้วแบตจริง 0.1–0.3\u00A0V เกณฑ์นี้ใช้กับแบตตะกั่วกรด 12\u00A0V',
+              thaiKeep('วัดผ่านขา 16 ของช่อง OBD ค่าอาจต่ำกว่าวัดที่ขั้วแบตจริง 0.1–0.3\u00A0V เกณฑ์นี้ใช้กับแบตตะกั่วกรด 12\u00A0V'),
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, height: 1.45),
             ),
@@ -357,11 +357,11 @@ class _TestCard extends StatelessWidget {
         Row(children: [
           Icon(test.icon, color: r?.level.color ?? cs.primary),
           const SizedBox(width: 10),
-          Expanded(child: Text(test.title, style: const TextStyle(fontWeight: FontWeight.w700))),
+          Expanded(child: Text(thaiKeep(test.title), style: const TextStyle(fontWeight: FontWeight.w700))),
           if (r != null) Text('${r.value.toStringAsFixed(2)}\u00A0V', style: TextStyle(fontWeight: FontWeight.w800, color: r.level.color)),
         ]),
         const SizedBox(height: 6),
-        Text(test.howTo, style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.4)),
+        Text(thaiKeep(test.howTo), style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.4)),
         if (r != null) CheckRow(level: r.level, title: r.title, detail: r.detail),
         const SizedBox(height: 8),
         Align(

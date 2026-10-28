@@ -66,7 +66,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       builder: (c) => ListView(children: [
         for (final d in defs)
           ListTile(
-            title: Text(d.nameTh),
+            title: Text(thaiKeep(d.nameTh)),
             subtitle: Text('${d.code}\u00A0· ${d.unit}', style: const TextStyle(fontFamily: kMono, fontSize: 12)),
             onTap: () => Navigator.pop(c, d.pid),
           ),

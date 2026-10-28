@@ -454,7 +454,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
         ),
       ]),
       if (pack.brand.isNotEmpty || pack.models.isNotEmpty)
-        Text('${pack.brand}\u00A0· ${pack.models.join(', ')}${pack.yearsText.isEmpty ? '' : '\u00A0· ${pack.yearsText}'}',
+        Text(thaiKeep('${pack.brand}\u00A0· ${pack.models.join(', ')}${pack.yearsText.isEmpty ? '' : '\u00A0· ${pack.yearsText}'}'),
             style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12.5)),
       const SizedBox(height: 8),
       Wrap(spacing: 8, runSpacing: 6, children: [
@@ -464,7 +464,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
       ]),
       if (pack.note.isNotEmpty) ...[
         const SizedBox(height: 8),
-        Text(pack.note, style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.45)),
+        Text(thaiKeep(pack.note), style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.45)),
       ],
       if (pack.sources.isNotEmpty)
         Align(
@@ -671,7 +671,7 @@ class _PidRow extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(pid.name, style: const TextStyle(fontWeight: FontWeight.w600)),
+              Text(thaiKeep(pid.name), style: const TextStyle(fontWeight: FontWeight.w600)),
               if (pid.en != null)
                 Text(pid.en!, style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant)),
               const SizedBox(height: 2),

@@ -40,6 +40,7 @@ import 'package:obd_doctor/ui/garage_tab.dart';
 import 'package:obd_doctor/ui/home_screen.dart';
 import 'package:obd_doctor/ui/pid_chart_screen.dart';
 import 'package:obd_doctor/ui/settings_screens.dart';
+import 'package:obd_doctor/ui/theme.dart';
 import 'package:obd_doctor/ui/tools/battery_screen.dart';
 import 'package:obd_doctor/ui/tools/brand_data_screen.dart';
 import 'package:obd_doctor/ui/tools/dashboard_screen.dart';
@@ -484,7 +485,8 @@ void main() {
 
     await stage('24 รายละเอียดค่า: ดูไบต์สด', () async {
       if (!shows(find.byType(BrandDataScreen))) await open(const BrandDataScreen(), ms: 2500);
-      await press('แถวค่าชดเชยหัวฉีดสูบ 1', find.text('ค่าชดเชยหัวฉีด (Feedback) สูบ 1'), ms: 1500);
+      // ชื่อค่าแสดงผ่าน thaiKeep (เลขสูบติดกับคำ) จึงค้นด้วยข้อความแบบเดียวกับที่แสดง
+      await press('แถวค่าชดเชยหัวฉีดสูบ 1', find.text(thaiKeep('ค่าชดเชยหัวฉีด (Feedback) สูบ 1')), ms: 1500);
       await press('ปุ่มดูไบต์สด', find.text('ดูไบต์สด'));
       await until('ไบต์สด', () => shows(find.text('หยุดดูไบต์สด')), seconds: 20);
       await pause(3000);

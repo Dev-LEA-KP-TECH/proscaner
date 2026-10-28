@@ -382,7 +382,7 @@ class _MatchRow extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
       radius: 16,
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(pid.name, style: const TextStyle(fontWeight: FontWeight.w700)),
+        Text(thaiKeep(pid.name), style: const TextStyle(fontWeight: FontWeight.w700)),
         const SizedBox(height: 2),
         Text(
           '${pid.header.isEmpty ? '7DF' : pid.header}\u00A0· ${pid.request}'

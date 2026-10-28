@@ -157,7 +157,7 @@ class AlertSettingsScreen extends ConsumerWidget {
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: const Text('เปิดการแจ้งเตือน', style: TextStyle(fontWeight: FontWeight.w700)),
-              subtitle: const Text('สั่นและแสดงแถบสีแดงเมื่อค่าเกินเกณฑ์ ขณะเปิดค่าสด แดชบอร์ด หรือกำลังบันทึก'),
+              subtitle: Text(thaiKeep('สั่นและแสดงแถบสีแดงเมื่อค่าเกินเกณฑ์ ขณะเปิดค่าสด แดชบอร์ด หรือกำลังบันทึก')),
               value: a.enabled,
               onChanged: (v) => set(a.copyWith(enabled: v)),
             ),

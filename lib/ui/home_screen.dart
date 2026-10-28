@@ -289,7 +289,7 @@ class _Banner extends StatelessWidget {
       child: Row(children: [
         Icon(icon, color: color, size: 20),
         const SizedBox(width: 10),
-        Expanded(child: Text(text, style: TextStyle(fontWeight: FontWeight.w700, color: color))),
+        Expanded(child: Text(thaiKeep(text), style: TextStyle(fontWeight: FontWeight.w700, color: color))),
         TextButton(onPressed: onAction, child: Text(action, style: TextStyle(color: color, fontWeight: FontWeight.w800))),
       ]),
     );
@@ -320,7 +320,7 @@ class ConnectPrompt extends StatelessWidget {
             child: Icon(Icons.bluetooth_searching_rounded, size: 50, color: cs.primary),
           ),
           const SizedBox(height: 16),
-          Text(message,
+          Text(thaiKeep(message),
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: 22),
@@ -371,7 +371,7 @@ class _Step extends StatelessWidget {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
               const SizedBox(height: 2),
-              Text(text, style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.4)),
+              Text(thaiKeep(text), style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.4)),
             ]),
           ),
         ]),

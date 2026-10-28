@@ -297,7 +297,7 @@ class _ModeCard extends StatelessWidget {
         const SizedBox(height: 12),
         Text(title, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
         const SizedBox(height: 4),
-        Text(text, style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, height: 1.35)),
+        Text(thaiKeep(text), style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, height: 1.35)),
       ]),
     );
   }
@@ -397,9 +397,9 @@ class _ToolTile extends StatelessWidget {
           const SizedBox(width: 14),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(title, style: TextStyle(fontWeight: FontWeight.w700, color: danger ? c : null)),
+              Text(thaiKeep(title), style: TextStyle(fontWeight: FontWeight.w700, color: danger ? c : null)),
               const SizedBox(height: 2),
-              Text(subtitle, style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+              Text(thaiKeep(subtitle), style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
             ]),
           ),
           Icon(Icons.chevron_right_rounded, color: cs.onSurfaceVariant),

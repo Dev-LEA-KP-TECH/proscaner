@@ -117,7 +117,7 @@ class StartupErrorApp extends StatelessWidget {
           child: ListView(padding: const EdgeInsets.all(20), children: [
             const Text('ProScaner เปิดไม่สำเร็จ', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
             const SizedBox(height: 8),
-            const Text('แคปหน้าจอนี้ส่งให้ผู้พัฒนา จะแก้ได้ตรงจุด'),
+            Text(thaiKeep('แคปหน้าจอนี้ส่งให้ผู้พัฒนา จะแก้ได้ตรงจุด')),
             const SizedBox(height: 16),
             SelectableText('$error', style: const TextStyle(color: Color(0xFFFF6B73))),
             const SizedBox(height: 12),

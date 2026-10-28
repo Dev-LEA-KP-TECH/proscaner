@@ -206,9 +206,9 @@ class HomeTab extends ConsumerWidget {
           child: Row(children: [
             Icon(Icons.engineering_rounded, color: Theme.of(context).colorScheme.primary),
             const SizedBox(width: 12),
-            const Expanded(
-              child: Text('เปิดโหมดช่าง: อ่านกล่อง ABS/ถุงลม, Mode 06, เทอร์มินัล, รหัสหัวฉีด',
-                  style: TextStyle(fontSize: 13, height: 1.4)),
+            Expanded(
+              child: Text(thaiKeep('เปิดโหมดช่าง: อ่านกล่อง ABS/ถุงลม, Mode 06, เทอร์มินัล, รหัสหัวฉีด'),
+                  style: const TextStyle(fontSize: 13, height: 1.4)),
             ),
             const Icon(Icons.chevron_right_rounded),
           ]),

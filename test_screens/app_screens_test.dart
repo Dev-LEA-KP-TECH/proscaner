@@ -65,6 +65,8 @@ import 'package:obd_doctor/ui/terminal_screen.dart';
 import 'package:obd_doctor/ui/tools/ext_pid_edit_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../test/support/thai_line_breaks.dart';
+
 /// ขนาดจอ (dp) ขนาดตัวอักษร และโฟลเดอร์ผล
 final _w = double.parse(const String.fromEnvironment('SHOT_W', defaultValue: '360'));
 final _h = double.parse(const String.fromEnvironment('SHOT_H', defaultValue: '780'));
@@ -101,26 +103,8 @@ List<int> _lineStarts(TextPainter tp) {
   return out;
 }
 
-bool _isThai(int c) => c >= 0x0E01 && c <= 0x0E5B;
-
-/// จุดขึ้นบรรทัดใหม่ที่ตัดคำไทยผิดหลัก (ระบบตัดคำของ ICU ไม่รู้จักคำทับศัพท์บางคำ)
-/// เช่น "เท|อร์มินัล" (สระเอ-อ ถูกแยก), "เทอ|ร์" (ตัวการันต์ไปขึ้นบรรทัดใหม่), "เ|ก" (สระหน้าค้างท้ายบรรทัด)
-bool _badThaiBreak(String s, int b) {
-  if (b <= 0 || b >= s.length) return false;
-  final prev = s.codeUnitAt(b - 1), next = s.codeUnitAt(b);
-  if (!_isThai(prev) || !_isThai(next)) return false;
-  const leading = 'เแโใไ';
-  const following = 'ะาำๅๆฯัิีึืุู็่้๊๋์';
-  if (leading.contains(s[b - 1])) return true;
-  if (following.contains(s[b])) return true;
-  // พยัญชนะที่มีการันต์ (์) เป็นส่วนท้ายของพยางค์ก่อนหน้า ห้ามขึ้นบรรทัดใหม่ก่อนมัน
-  if (b + 1 < s.length && s[b + 1] == '์') return true;
-  if (b + 2 < s.length && s[b + 2] == '์' && 'ิุ'.contains(s[b + 1])) return true;
-  // สระเอ-อ / เอ-า: "เท|อ", "เก|า"
-  if ((s[b] == 'อ' || s[b] == 'า') && b >= 2 && s[b - 2] == 'เ') return true;
-  if ((s[b] == 'อ' || s[b] == 'า') && b >= 3 && s[b - 3] == 'เ' && '่้๊๋'.contains(s[b - 1])) return true;
-  return false;
-}
+/// ผลตรวจจุดขึ้นบรรทัดใหม่ทุกจุดของแต่ละข้อความ (ข้อความเดียวกันในหลายหน้าตรวจครั้งเดียว)
+final _thaiBreakCache = <String, List<String>>{};
 
 /// ปัญหาข้อความบนจอ: (ถูกตัด/ซ่อนบางส่วน, ถูกหักกลางคำ)
 /// - ถูกตัด: เกินจำนวนบรรทัดที่กำหนด (มี … หรือจางหาย) หรือข้อความบรรทัดเดียวยาวเกินช่อง
@@ -158,7 +142,7 @@ bool _badThaiBreak(String s, int b) {
       )..layout(minWidth: c.minWidth, maxWidth: wrapWidth ? c.maxWidth : double.infinity);
       if (real.width > ro.size.width + 0.5 || real.height > ro.size.height + 0.5) isCut = true;
       // จุดขึ้นบรรทัดใหม่แต่ละจุด: อยู่กลางคำ (ตามตัวแบ่งคำของ ICU ซึ่งรู้จักคำไทยจากพจนานุกรม) = คำยาวกว่าช่องจนถูกหัก
-      // ส่วนคำไทยที่พจนานุกรมไม่รู้จัก (คำทับศัพท์) ตรวจด้วยกฎการสะกด [_badThaiBreak]
+      // ส่วนคำไทยที่พจนานุกรมไม่รู้จัก (คำทับศัพท์) ตรวจด้วยกฎการสะกด [thaiBadBreak]
       final plain = ro.text.toPlainText();
       for (final at in _lineStarts(real)) {
         if (at >= plain.length) continue;
@@ -166,14 +150,24 @@ bool _badThaiBreak(String s, int b) {
         if (before == 0x0A || before == 0x20 || plain.codeUnitAt(at) == 0x20) continue;
         final word = real.getWordBoundary(TextPosition(offset: at));
         final from = math.max(0, at - 8), to = math.min(plain.length, at + 8);
-        final ctx = '${plain.substring(from, at)}|${plain.substring(at, to)}'.replaceAll('\n', ' ');
+        final ctx = '${plain.substring(from, at)}|${plain.substring(at, to)}'
+            .replaceAll('\n', ' ')
+            .replaceAll(kWordJoiner, '')
+            .replaceAll(kZeroWidthSpace, '');
         if (word.start < at && at < word.end) {
           if (!broken.contains(ctx)) broken.add(ctx);
-        } else if (_badThaiBreak(plain, at)) {
+        } else if (thaiBadBreak(plain, at) != null) {
           if (!thai.contains(ctx)) thai.add(ctx);
         }
       }
       real.dispose();
+      // ทุกจุดที่ข้อความนี้ยอมให้ขึ้นบรรทัดใหม่ (ไม่ใช่แค่ที่ความกว้างจอนี้) ต้องไม่ตัดกลางพยางค์ ไม่ว่าจอกว้างเท่าไร
+      if (wrapWidth && ro.maxLines != 1 && plain.length <= 1500) {
+        final problems = _thaiBreakCache[plain] ??= thaiBreakProblems(ro.text);
+        for (final p in problems) {
+          if (!thai.contains(p)) thai.add(p);
+        }
+      }
     } catch (_) {}
     final t = label(ro);
     if (t.isEmpty) continue;

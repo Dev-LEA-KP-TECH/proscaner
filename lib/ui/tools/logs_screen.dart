@@ -358,7 +358,7 @@ class _LogViewScreenState extends ConsumerState<LogViewScreen> {
                     Row(children: [
                       Container(width: 10, height: 10, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
                       const SizedBox(width: 8),
-                      Expanded(child: Text('${def.nameTh} ($unit)', style: const TextStyle(fontWeight: FontWeight.w700))),
+                      Expanded(child: Text(thaiKeep('${def.nameTh} ($unit)'), style: const TextStyle(fontWeight: FontWeight.w700))),
                     ]),
                     const SizedBox(height: 10),
                     TimeChart(
@@ -434,7 +434,7 @@ class _CompareLogsScreenState extends ConsumerState<CompareLogsScreen> {
                   PremiumCard(
                     padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text('${def.nameTh} ($unit)', style: const TextStyle(fontWeight: FontWeight.w700)),
+                      Text(thaiKeep('${def.nameTh} ($unit)'), style: const TextStyle(fontWeight: FontWeight.w700)),
                       const SizedBox(height: 8),
                       Wrap(spacing: 12, children: [
                         _Legend(color: chartColors[1], text: 'ก: ${a.name}'),

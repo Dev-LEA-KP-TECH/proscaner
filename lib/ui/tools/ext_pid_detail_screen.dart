@@ -418,7 +418,7 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
                 if (_p.source != null)
                   Text('ที่มา: ${_p.source}', style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
                 if (_p.desc != null)
-                  Text(_p.desc!, style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, height: 1.4)),
+                  Text(thaiKeep(_p.desc!), style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, height: 1.4)),
               ],
             ]),
           ),
