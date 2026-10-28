@@ -1,0 +1,275 @@
+Resolving dependencies...
+Downloading packages...
+  bluez 0.8.3 (0.9.0 available)
+  code_assets 1.2.1 (2.1.0 available)
+  cross_file 0.3.5+5 (0.4.0 available)
+  crypto 3.0.7 (3.0.8 available)
+  dbus 0.7.15 (0.8.0 available)
+  flutter_blue_plus 1.36.8 (2.3.14 available)
+  flutter_blue_plus_android 7.0.4 (9.0.5 available)
+  flutter_blue_plus_darwin 7.0.3 (9.0.5 available)
+  flutter_blue_plus_linux 7.0.3 (9.0.4 available)
+  flutter_blue_plus_platform_interface 7.0.0 (9.0.4 available)
+  flutter_blue_plus_web 7.0.2 (9.0.4 available)
+  flutter_lints 5.0.0 (6.0.0 available)
+  flutter_riverpod 2.6.1 (3.4.3 available)
+  hooks 2.0.2 (2.2.0 available)
+  image_picker_ios 0.8.13+12 (0.8.13+13 available)
+  jni 1.1.0 (1.1.1 available)
+  lints 5.1.1 (6.1.0 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.3 (1.19.0 available)
+  objective_c 9.5.0 (9.6.2 available)
+  petitparser 7.0.2 (7.1.0 available)
+  posix 6.5.2 (6.5.4 available)
+  qr 3.0.2 (4.0.0 available)
+  record_use 0.6.0 (1.1.1 available)
+  riverpod 2.6.1 (3.4.3 available)
+  shared_preferences_android 2.5.1 (2.5.4 available)
+  shared_preferences_foundation 2.5.7 (2.6.1 available)
+  test_api 0.7.12 (0.7.15 available)
+  vector_math 2.4.0 (2.4.4 available)
+  wakelock_plus 1.8.0 (1.8.2 available)
+  web 1.1.1 (1.1.2 available)
+  xml 7.0.1 (7.1.0 available)
+Got dependencies!
+32 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /home/runner/work/proscaner/proscaner/test/diagnosis_test.dart
+00:00 +0: /home/runner/work/proscaner/proscaner/test/diagnosis_test.dart: (setUpAll)
+00:00 +0: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: เริ่มต้นตัวสแกนและรู้จักโปรโตคอล
+00:00 +1: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: เริ่มต้นตัวสแกนและรู้จักโปรโตคอล
+00:00 +2: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: เริ่มต้นตัวสแกนและรู้จักโปรโตคอล
+00:00 +3: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: เริ่มต้นตัวสแกนและรู้จักโปรโตคอล
+00:00 +4: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: เริ่มต้นตัวสแกนและรู้จักโปรโตคอล
+00:00 +5: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: เริ่มต้นตัวสแกนและรู้จักโปรโตคอล
+00:00 +6: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: เริ่มต้นตัวสแกนและรู้จักโปรโตคอล
+00:00 +7: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: เริ่มต้นตัวสแกนและรู้จักโปรโตคอล
+00:00 +8: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: เริ่มต้นตัวสแกนและรู้จักโปรโตคอล
+00:00 +9: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: เริ่มต้นตัวสแกนและรู้จักโปรโตคอล
+00:01 +10: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: อ่านค่าจากรถ NO DATA = ไม่มีรหัส แต่ CAN ERROR = อ่านไม่สำเร็จ (ต้องโยน error)
+00:02 +11: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: อ่าน PID ที่รองรับข้ามหลายช่วง (00, 20, 40)
+00:02 +12: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: อ่านค่าจากรถ กล่องเกียร์ตอบก่อน: ไฟเตือนและ readiness ใช้ของกล่องเครื่องยนต์
+00:02 +13: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: อ่านค่าสด
+00:03 +14: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: อ่านค่าจากรถ กล่องเกียร์สั่งไฟเตือนติด แม้กล่องเครื่องยนต์ไม่ติด = ไฟเตือนติด
+00:03 +15: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: อ่านรหัสทั้ง 3 ประเภท และ VIN หลายเฟรม
+00:04 +16: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: อ่านค่าจากรถ คำสั่งถูกขัดจังหวะ (STOPPED) → ส่งซ้ำแล้วได้ค่าจริง
+00:04 +17: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: ลบรหัส: stored/pending หาย แต่ permanent ยังอยู่
+00:05 +18: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: การเชื่อมต่อและการสแกนผ่าน provider รถหยุดตอบ (ดับเครื่อง/รถหลับ): แจ้ง error ไม่สร้างรายงาน "ปกติ"
+00:06 +19: /home/runner/work/proscaner/proscaner/test/demo_end_to_end_test.dart: คำสั่งที่ส่งพร้อมกันถูกต่อคิว ไม่ปนกัน
+00:06 +20: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: การเชื่อมต่อและการสแกนผ่าน provider อ่านรหัสไม่สำเร็จ (CAN ERROR): แจ้ง error ไม่สรุปว่าไม่มีรหัส
+00:07 +21: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: การเชื่อมต่อและการสแกนผ่าน provider ลบรหัสแล้วสายหลุด: แจ้งผลให้ผู้ใช้รู้ ไม่เงียบ
+00:07 +22: /home/runner/work/proscaner/proscaner/test/elm_robustness_test.dart: ตัวสแกนจริง/ตัวก๊อป ค้นหาอัตโนมัติไม่เจอ → ลองทีละโปรโตคอลจนเจอ
+00:08 +23: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: การเชื่อมต่อและการสแกนผ่าน provider ยกเลิกระหว่างเชื่อมต่อ แล้วเชื่อมต่อใหม่: งานเก่าที่จบทีหลังไม่ทับของใหม่
+00:09 +24: /home/runner/work/proscaner/proscaner/test/elm_robustness_test.dart: ตัวสแกนจริง/ตัวก๊อป ไม่มีโปรโตคอลไหนตอบ (บิดกุญแจยังไม่ ON) → แจ้งให้บิดกุญแจ
+00:09 +25: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: การเชื่อมต่อและการสแกนผ่าน provider ยกเลิกแล้วการเชื่อมต่อเก่าล้มทีหลัง: ไม่ขึ้น "ล้มเหลว" ทับของใหม่
+00:10 +26: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: การเชื่อมต่อและการสแกนผ่าน provider ยกเลิกแล้วการเชื่อมต่อเก่าล้มทีหลัง: ไม่ขึ้น "ล้มเหลว" ทับของใหม่
+00:10 +27: /home/runner/work/proscaner/proscaner/test/elm_robustness_test.dart: ตัวสแกนจริง/ตัวก๊อป ตัวสแกนรีเซ็ตเองตอนไม่มีคำสั่ง → ตั้งค่าใหม่ก่อนคำสั่งถัดไป
+00:10 +28: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: การเชื่อมต่อและการสแกนผ่าน provider โหมดทดลอง: แสดงรถจำลองได้ แต่ไม่บันทึกรถและผลสแกนลงเครื่อง
+00:11 +29: /home/runner/work/proscaner/proscaner/test/elm_robustness_test.dart: ตัวสแกนจริง/ตัวก๊อป echo กลับมาเปิดเอง (ตัวสแกนรีเซ็ตโดยไม่แจ้ง) → จับได้และแก้ให้
+00:11 +30: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: การเชื่อมต่อและการสแกนผ่าน provider รถจริง (ไม่ใช่โหมดทดลอง) ยังบันทึกตามปกติ
+00:12 +31: /home/runner/work/proscaner/proscaner/test/elm_robustness_test.dart: ตัวสแกนจริง/ตัวก๊อป ตัวจำลองหลักไม่ถูกมองว่ารีเซ็ต (ไม่มีการตั้งค่าซ้ำโดยไม่จำเป็น)
+00:12 +32: /home/runner/work/proscaner/proscaner/test/elm_robustness_test.dart: ตัวสแกนจริง/ตัวก๊อป ตัวจำลองหลักไม่ถูกมองว่ารีเซ็ต (ไม่มีการตั้งค่าซ้ำโดยไม่จำเป็น)
+00:12 +33: /home/runner/work/proscaner/proscaner/test/elm_robustness_test.dart: ตัวสแกนจริง/ตัวก๊อป ตัวจำลองหลักไม่ถูกมองว่ารีเซ็ต (ไม่มีการตั้งค่าซ้ำโดยไม่จำเป็น)
+00:13 +34: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: ไฟล์โรงรถ/ประวัติ ไม่หายเมื่อไฟล์เสีย บันทึกพร้อมกันหลายครั้ง: ไฟล์ไม่เสีย และได้ค่าล่าสุด
+00:13 +35: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: ไฟล์โรงรถ/ประวัติ ไม่หายเมื่อไฟล์เสีย บันทึกพร้อมกันหลายครั้ง: ไฟล์ไม่เสีย และได้ค่าล่าสุด
+00:13 +36: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: ไฟล์โรงรถ/ประวัติ ไม่หายเมื่อไฟล์เสีย บันทึกพร้อมกันหลายครั้ง: ไฟล์ไม่เสีย และได้ค่าล่าสุด
+00:13 +37: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: ไฟล์โรงรถ/ประวัติ ไม่หายเมื่อไฟล์เสีย ประวัติเสีย: กู้จาก .bak และล้างประวัติแล้วไม่ถูกกู้กลับมา
+00:13 +38: /home/runner/work/proscaner/proscaner/test/review_fixes_test.dart: ไฟล์โรงรถ/ประวัติ ไม่หายเมื่อไฟล์เสีย ล้างรถจำลองจากแอปรุ่นก่อนครั้งเดียว ไม่แตะรถที่ผู้ใช้แก้ไข
+00:13 +39: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: ถอด VIN เป็นยี่ห้อ รถไทย: รู้ยี่ห้อ แต่ปีจาก VIN ไม่น่าเชื่อถือ
+00:13 +40: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: ถอด VIN เป็นยี่ห้อ รถจีน/อเมริกา: ปีจาก VIN เชื่อถือได้
+00:13 +41: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: ถอด VIN เป็นยี่ห้อ WMI ไม่อยู่ในตาราง ใช้ 2 หลักแรกเดายี่ห้อ
+00:13 +42: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: ถอด VIN เป็นยี่ห้อ ชื่อยี่ห้อมาตรฐาน
+00:13 +43: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: Vehicle เก็บยี่ห้อ/รุ่น/ปี และตั้งชื่อจากยี่ห้อ+รุ่น
+00:13 +44: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: ระบุรถอัตโนมัติในโรงรถ สร้างรถจาก VIN และจำรุ่นให้รถรุ่นเดียวกัน
+00:13 +45: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: ระบุรถอัตโนมัติในโรงรถ รถจีนได้ปีจาก VIN
+00:13 +46: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: เชื่อมต่อแล้วรู้จักรถเอง (ตัวจำลอง) เชื่อมต่อ → ระบุรถจาก VIN → สแกนบันทึกเข้ารถคันนั้น
+00:14 +47: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: เชื่อมต่อแล้วรู้จักรถเอง (ตัวจำลอง) เชื่อมต่อ → ระบุรถจาก VIN → สแกนบันทึกเข้ารถคันนั้น
+00:14 +48: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: เชื่อมต่อแล้วรู้จักรถเอง (ตัวจำลอง) เชื่อมต่อ → ระบุรถจาก VIN → สแกนบันทึกเข้ารถคันนั้น
+00:14 +49: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: เชื่อมต่อแล้วรู้จักรถเอง (ตัวจำลอง) เชื่อมต่อ → ระบุรถจาก VIN → สแกนบันทึกเข้ารถคันนั้น
+00:14 +50: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: เชื่อมต่อแล้วรู้จักรถเอง (ตัวจำลอง) เชื่อมต่อ → ระบุรถจาก VIN → สแกนบันทึกเข้ารถคันนั้น
+00:14 +51: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: เชื่อมต่อแล้วรู้จักรถเอง (ตัวจำลอง) เชื่อมต่อ → ระบุรถจาก VIN → สแกนบันทึกเข้ารถคันนั้น
+00:14 +52: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: เชื่อมต่อแล้วรู้จักรถเอง (ตัวจำลอง) เชื่อมต่อ → ระบุรถจาก VIN → สแกนบันทึกเข้ารถคันนั้น
+00:15 +53: /home/runner/work/proscaner/proscaner/test/v08_safety_test.dart: ด่านใน ELM327 (ทุกคำสั่งผ่านจุดเดียว) คำสั่งต้องห้ามไม่ถึงตัวสแกนเลย และแอปยังอ่านค่าต่อได้
+00:15 +54: /home/runner/work/proscaner/proscaner/test/vehicle_identity_test.dart: เชื่อมต่อแล้วรู้จักรถเอง (ตัวจำลอง) รถไม่ส่ง VIN: ผู้ใช้เลือกรถ แล้วผลสแกนเข้ารถคันนั้น
+00:16 +55: /home/runner/work/proscaner/proscaner/test/v08_safety_test.dart: ด่านใน ELM327 (ทุกคำสั่งผ่านจุดเดียว) ข้อผิดพลาดเป็นชนิดเดียวกับข้อผิดพลาดของตัวสแกน (โค้ดเดิมจัดการได้)
+00:16 +56: /home/runner/work/proscaner/proscaner/test/v08_safety_test.dart: ด่านใน ELM327 (ทุกคำสั่งผ่านจุดเดียว) ส่งลบรหัสตรงๆ ไม่ได้ ต้องผ่านปุ่มลบรหัส
+00:16 +57: /home/runner/work/proscaner/proscaner/test/v08_safety_test.dart: ด่านใน ELM327 (ทุกคำสั่งผ่านจุดเดียว) ส่งลบรหัสตรงๆ ไม่ได้ ต้องผ่านปุ่มลบรหัส
+00:17 +58: /home/runner/work/proscaner/proscaner/test/v08_safety_test.dart: ด่านใน ELM327 (ทุกคำสั่งผ่านจุดเดียว) ส่งลบรหัสตรงๆ ไม่ได้ ต้องผ่านปุ่มลบรหัส
+00:17 +59: /home/runner/work/proscaner/proscaner/test/v08_safety_test.dart: ด่านใน ELM327 (ทุกคำสั่งผ่านจุดเดียว) ส่งลบรหัสตรงๆ ไม่ได้ ต้องผ่านปุ่มลบรหัส
+00:17 +60: /home/runner/work/proscaner/proscaner/test/v08_safety_test.dart: ด่านใน ELM327 (ทุกคำสั่งผ่านจุดเดียว) ส่งลบรหัสตรงๆ ไม่ได้ ต้องผ่านปุ่มลบรหัส
+00:17 +61: /home/runner/work/proscaner/proscaner/test/v08_safety_test.dart: ด่านใน ELM327 (ทุกคำสั่งผ่านจุดเดียว) ส่งลบรหัสตรงๆ ไม่ได้ ต้องผ่านปุ่มลบรหัส
+00:17 +62: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: คลังชุดค่า (assets/ext_packs) รถคนละแบบ (11/29 บิต) ไม่ส่งคำสั่ง และคำสั่งซ้ำส่งครั้งเดียว
+00:18 +63: /home/runner/work/proscaner/proscaner/test/v08_safety_test.dart: ด่านใน ELM327 (ทุกคำสั่งผ่านจุดเดียว) อนุญาตลบรหัสแล้ว คำสั่งต้องห้ามอื่นก็ยังส่งไม่ได้
+00:18 +64: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: คลังชุดค่า (assets/ext_packs) ทดสอบชุด Hilux กับรถจำลอง: รถตอบบางคำสั่ง และค่าที่ได้อยู่ในช่วง
+00:20 +65: /home/runner/work/proscaner/proscaner/test/v08_safety_test.dart: ด่านใน ELM327 (ทุกคำสั่งผ่านจุดเดียว) ลบรหัสกล่อง ABS ผ่าน UDS ยังใช้ได้
+00:20 +66: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: คลังชุดค่า (assets/ext_packs) ปิดสวิตช์กุญแจ: ไม่จำว่าข้าม ไม่สรุปว่าชุดไม่ตรง และบอกให้เปิดสวิตช์
+00:21 +67: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: คลังชุดค่า (assets/ext_packs) ปิดสวิตช์กุญแจ: ไม่จำว่าข้าม ไม่สรุปว่าชุดไม่ตรง และบอกให้เปิดสวิตช์
+00:21 +68: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: คลังชุดค่า (assets/ext_packs) ปิดสวิตช์กุญแจ: ไม่จำว่าข้าม ไม่สรุปว่าชุดไม่ตรง และบอกให้เปิดสวิตช์
+00:21 +69: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: คลังชุดค่า (assets/ext_packs) ปิดสวิตช์กุญแจ: ไม่จำว่าข้าม ไม่สรุปว่าชุดไม่ตรง และบอกให้เปิดสวิตช์
+00:21 +70: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: คลังชุดค่า (assets/ext_packs) ปิดสวิตช์กุญแจ: ไม่จำว่าข้าม ไม่สรุปว่าชุดไม่ตรง และบอกให้เปิดสวิตช์
+00:21 +71: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: คลังชุดค่า (assets/ext_packs) ปิดสวิตช์กุญแจ: ไม่จำว่าข้าม ไม่สรุปว่าชุดไม่ตรง และบอกให้เปิดสวิตช์
+00:21 +72: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: คลังชุดค่า (assets/ext_packs) ปิดสวิตช์กุญแจ: ไม่จำว่าข้าม ไม่สรุปว่าชุดไม่ตรง และบอกให้เปิดสวิตช์
+00:21 +73: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: คลังชุดค่า (assets/ext_packs) ตัวสแกนรุ่นเก่าที่ไม่รับ header 29 บิตแบบ 4 ไบต์ ตั้งเป็น ATCP + 3 ไบต์แทน
+00:21 +74: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: คลังชุดค่า (assets/ext_packs) รหัสปฏิเสธเป็นภาษาไทย และรหัสที่ถามซ้ำไม่มีประโยชน์จะถูกข้าม
+00:21 +75: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: หาสูตรจากจุดเทียบ หา A-40 จากอุณหภูมิ
+00:21 +76: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: หาสูตรจากจุดเทียบ หา 16 บิต /100 และแบบมีเครื่องหมาย
+00:21 +77: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: หาสูตรจากจุดเทียบ ค่าจากเครื่องมือศูนย์ปัดเศษ ยังหาสูตรถูก
+00:21 +78: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: หาสูตรจากจุดเทียบ จุดเดียว หรือค่าเท่ากันหมด หาสูตรไม่ได้
+00:21 +79: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: หาสูตรจากจุดเทียบ ตรวจสูตรเดิมกับจุดเทียบ
+00:21 +80: /home/runner/work/proscaner/proscaner/test/v05_brand_library_test.dart: บันทึกผลยืนยัน ผลยืนยันและจุดเทียบติดไปกับชุดเมื่อส่งออก
+00:22 +81: /home/runner/work/proscaner/proscaner/test/obd_decode_test.dart: รหัสปัญหา แปลง 2 ไบต์เป็นรหัส
+00:22 +82: /home/runner/work/proscaner/proscaner/test/obd_decode_test.dart: รหัสปัญหา แปลงไปกลับกับตัวจำลองได้ตรงกัน
+00:22 +83: /home/runner/work/proscaner/proscaner/test/obd_decode_test.dart: รหัสปัญหา CAN มีไบต์จำนวน และข้าม ECU ที่ไม่มีโค้ด
+00:22 +84: /home/runner/work/proscaner/proscaner/test/obd_decode_test.dart: รหัสปัญหา โปรโตคอลเก่า ไม่มีไบต์จำนวน เติม 0000
+00:22 +85: /home/runner/work/proscaner/proscaner/test/obd_decode_test.dart: รหัสปัญหา ไม่ปนกับคำตอบของ mode อื่น
+00:22 +86: /home/runner/work/proscaner/proscaner/test/obd_decode_test.dart: สูตร PID รอบเครื่อง
+00:22 +87: /home/runner/work/proscaner/proscaner/test/obd_decode_test.dart: สูตร PID อุณหภูมิน้ำ
+00:22 +88: /home/runner/work/proscaner/proscaner/test/obd_decode_test.dart: สูตร PID Fuel trim
+00:22 +89: /home/runner/work/proscaner/proscaner/test/obd_decode_test.dart: สูตร PID แรงดันไฟ
+00:22 +90: /home/runner/work/proscaner/proscaner/test/obd_decode_test.dart: สูตร PID MAF
+00:22 +91: /home/runner/work/proscaner/proscaner/test/obd_decode_test.dart: สูตร PID บิตแมสก์ PID ที่รองรับ
+00:22 +92: /home/runner/work/proscaner/proscaner/test/obd_decode_test.dart: สูตร PID สถานะไฟเตือน
+00:22 +93: /home/runner/work/proscaner/proscaner/test/v10_known_names_test.dart: ค่าที่ยังไม่รู้ชื่อ ค่าใหม่จากหน้าค้นหา = ยังไม่รู้ชื่อ แต่ถ้าเริ่มเทียบ ยืนยัน หรือเปลี่ยนชื่อแล้ว ไม่นับ
+00:22 +94: /home/runner/work/proscaner/proscaner/test/v10_known_names_test.dart: ชุดในคลังเป็นของรถรุ่นเดียวกัน ยี่ห้อ รุ่น ปีตรง
+00:22 +95: /home/runner/work/proscaner/proscaner/test/v10_known_names_test.dart: ชุดในคลังเป็นของรถรุ่นเดียวกัน ปีอยู่นอกช่วง (รุ่นใหม่ใช้เลขคนละชุด) ไม่ตรง แม้ห่างแค่ปีเดียว
+00:22 +96: /home/runner/work/proscaner/proscaner/test/v10_known_names_test.dart: ชุดในคลังเป็นของรถรุ่นเดียวกัน ไม่รู้ปี ไม่ตั้งชื่อให้ (อาจเป็นรุ่นอื่น)
+00:22 +97: /home/runner/work/proscaner/proscaner/test/v10_known_names_test.dart: ชุดในคลังเป็นของรถรุ่นเดียวกัน ยี่ห้อต่าง หรือชุดในคลังไม่ระบุยี่ห้อ ไม่ตรง
+00:22 +98: /home/runner/work/proscaner/proscaner/test/v10_known_names_test.dart: ชุดในคลังเป็นของรถรุ่นเดียวกัน รุ่นต่าง ไม่ตรง
+00:22 +99: /home/runner/work/proscaner/proscaner/test/v10_known_names_test.dart: ตั้งชื่อจากคลัง เลขที่รถ D-Max 2007 ตอบ: ได้ชื่อจากชุดในคลัง 23 ค่า (เทียบ Tech2 + PID มาตรฐาน) ที่เหลือยังไม่รู้
+00:22 +100: /home/runner/work/proscaner/proscaner/test/v10_known_names_test.dart: ตั้งชื่อจากคลัง แทนที่ตรงตำแหน่งเดิมด้วยชื่อ สูตร หน่วย กลุ่ม จากคลัง ชุดเดิมไม่ถูกแก้
+00:22 +101: /home/runner/work/proscaner/proscaner/test/v10_known_names_test.dart: ตั้งชื่อจากคลัง คำตอบเดียวมีหลายค่า: ได้ทุกค่า และค่าที่มีในชุดแล้วไม่ซ้ำ
+00:22 +102: /home/runner/work/proscaner/proscaner/test/v10_known_names_test.dart: ตั้งชื่อจากคลัง กล่องต่างกัน (7E2 กับ 7E0) เลขคำสั่งเดียวกัน ไม่จับคู่
+00:22 +103: /home/runner/work/proscaner/proscaner/test/v10_known_names_test.dart: ตั้งชื่อจากคลัง ผ่าน provider: ใช้ยี่ห้อ รุ่น ปีของชุด และกดตั้งชื่อแล้วรายการหายไป
+00:23 +104: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: สูตรแปลงค่า ตัวดำเนินการพื้นฐานและลำดับ
+00:23 +105: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: สูตรแปลงค่า ฟังก์ชัน S, S16, U16, บิต, min/max/abs
+00:23 +106: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: สูตรแปลงค่า สูตรผิดและข้อมูลไม่พอ
+00:23 +107: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: แบบข้อมูลและการนำเข้า ตรวจความถูกต้อง และที่อยู่ตอบกลับ
+00:23 +108: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: แบบข้อมูลและการนำเข้า นำเข้า CSV แบบ Torque
+00:23 +109: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: แบบข้อมูลและการนำเข้า ส่งออกแล้วนำเข้ากลับได้เหมือนเดิม
+00:23 +110: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: แบบข้อมูลและการนำเข้า แยกคำตอบ: ตรงเลข / ปฏิเสธ / เลขไม่ตรง
+00:23 +111: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: แบบข้อมูลและการนำเข้า เก็บชุดค่าในเครื่อง
+00:23 +112: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: อ่านจากรถจำลอง อ่านชุดตัวอย่างครบ และ header กลับเป็นปกติ
+00:23 +113: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: อ่านจากรถจำลอง อ่านชุดตัวอย่างครบ และ header กลับเป็นปกติ
+00:23 +114: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: อ่านจากรถจำลอง อ่านชุดตัวอย่างครบ และ header กลับเป็นปกติ
+00:23 +115: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: อ่านจากรถจำลอง อ่านชุดตัวอย่างครบ และ header กลับเป็นปกติ
+00:23 +116: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: อ่านจากรถจำลอง อ่านชุดตัวอย่างครบ และ header กลับเป็นปกติ
+00:23 +117: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: อ่านจากรถจำลอง อ่านชุดตัวอย่างครบ และ header กลับเป็นปกติ
+00:23 +118: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: อ่านจากรถจำลอง อ่านชุดตัวอย่างครบ และ header กลับเป็นปกติ
+00:23 +119: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: อ่านจากรถจำลอง อ่านชุดตัวอย่างครบ และ header กลับเป็นปกติ
+00:23 +120: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: อ่านจากรถจำลอง อ่านชุดตัวอย่างครบ และ header กลับเป็นปกติ
+00:24 +121: /home/runner/work/proscaner/proscaner/test/v11_text_layout_test.dart: ตรวจจุดขึ้นบรรทัดใหม่ ทุกข้อความในฐานรหัสปัญหา ชุดค่าทุกยี่ห้อ และชื่อค่ามาตรฐาน ไม่มีจุดตัดกลางพยางค์
+00:24 +122: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: อ่านจากรถจำลอง ค่าที่รถไม่มี ได้ข้อความชัดเจน ไม่ล้ม
+00:25 +123: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: ค่าเฉพาะยี่ห้อ: อ่านจากรถจำลอง ค้นหาเลขที่กล่องตอบ (21 และ 22)
+00:26 +124: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน พูดภาษาไทยเมื่อค่าเกินเกณฑ์
+00:28 +125: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน ปิดเสียงแล้ว ยังเตือนบนจอแต่ไม่พูด
+00:29 +126: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +127: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +128: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +129: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +130: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +131: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +132: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +133: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +134: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +135: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +136: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +137: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +138: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +139: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +140: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +141: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +142: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +143: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +144: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +145: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +146: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +147: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +148: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +149: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +150: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:29 +151: /home/runner/work/proscaner/proscaner/test/v04_features_test.dart: เสียงพูดเตือน บันทึกการตั้งค่าเสียง
+00:30 +152: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: บันทึกและส่งออก รายงาน PDF รอบเดียว และเทียบก่อน/หลัง
+00:31 +153: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: เดาค่าจากชุดค่าเฉพาะยี่ห้อ ชุด D-Max 2007: บูสต์ที่ต้องการ (1130) และบูสต์ (1240) ไม่เอาค่าแรงดันไฟเซนเซอร์
+00:31 +154: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: เดาค่าจากชุดค่าเฉพาะยี่ห้อ ชุด Toyota Hilux: ไม่เสนอค่ารายสูบ/มีเลขลำดับ และเสนอชนิดละไม่เกิน 2 ตัว ตัวที่พบในรถจริงก่อน
+00:31 +155: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: เดาค่าจากชุดค่าเฉพาะยี่ห้อ แปลงหน่วยและแยกชนิดถูก
+00:31 +156: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ถาม 6 PID ในคำสั่งเดียว ได้ครบ และค่าตรงกับถามทีละตัว
+00:31 +157: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ถาม 6 PID ในคำสั่งเดียว ได้ครบ และค่าตรงกับถามทีละตัว
+00:31 +158: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ถาม 6 PID ในคำสั่งเดียว ได้ครบ และค่าตรงกับถามทีละตัว
+00:31 +159: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ถาม 6 PID ในคำสั่งเดียว ได้ครบ และค่าตรงกับถามทีละตัว
+00:31 +160: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ถาม 6 PID ในคำสั่งเดียว ได้ครบ และค่าตรงกับถามทีละตัว
+00:31 +161: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ถาม 6 PID ในคำสั่งเดียว ได้ครบ และค่าตรงกับถามทีละตัว
+00:31 +162: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ถาม 6 PID ในคำสั่งเดียว ได้ครบ และค่าตรงกับถามทีละตัว
+00:31 +163: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ถาม 6 PID ในคำสั่งเดียว ได้ครบ และค่าตรงกับถามทีละตัว
+00:31 +164: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ถาม 6 PID ในคำสั่งเดียว ได้ครบ และค่าตรงกับถามทีละตัว
+00:31 +165: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ถาม 6 PID ในคำสั่งเดียว ได้ครบ และค่าตรงกับถามทีละตัว
+00:31 +166: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ถาม 6 PID ในคำสั่งเดียว ได้ครบ และค่าตรงกับถามทีละตัว
+00:31 +167: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ถาม 6 PID ในคำสั่งเดียว ได้ครบ และค่าตรงกับถามทีละตัว
+00:32 +168: /home/runner/work/proscaner/proscaner/test/v09_backup_log_test.dart: สำรอง/กู้คืนข้อมูล ย้ายข้อมูลทั้งหมดไปอีกแอป: รถ ประวัติ ชุดค่า ข้อมูลอู่ โลโก้ บันทึกการขับ ผลรีแมพ
+00:32 +169: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:32 +170: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:32 +171: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:32 +172: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:32 +173: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:32 +174: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:32 +175: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:32 +176: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:32 +177: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:32 +178: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:32 +179: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:32 +180: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:33 +181: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:33 +182: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:33 +183: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง กล่องที่ตอบได้ทีละ PID: ใช้แบบทีละตัว ยังได้ความเร็วทุกรอบ
+00:33 +184: /home/runner/work/proscaner/proscaner/test/v09_backup_log_test.dart: บันทึกการสื่อสารกับการเชื่อมต่อ เชื่อมต่อแล้วตัด: ได้บันทึก 1 ครั้ง มีคำสั่ง คำตอบ และรุ่นแอป
+00:33 +185: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ดีเซลเทอร์โบ: อ่านบูสต์/รางทั้งค่าที่ต้องการและค่าจริงจากคำตอบเดียวกัน
+00:33 +186: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ดีเซลเทอร์โบ: อ่านบูสต์/รางทั้งค่าที่ต้องการและค่าจริงจากคำตอบเดียวกัน
+00:35 +187: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง ดีเซลเทอร์โบ: อ่านบูสต์/รางทั้งค่าที่ต้องการและค่าจริงจากคำตอบเดียวกัน
+00:35 +188: /home/runner/work/proscaner/proscaner/test/v09_backup_log_test.dart: บันทึกการสื่อสารกับการเชื่อมต่อ ผู้ใช้ปิดการบันทึก: ไม่สร้างไฟล์ และจำค่าไว้
+00:36 +189: /home/runner/work/proscaner/proscaner/test/v07_remap_test.dart: อ่านค่าจากรถจำลอง อ่านค่าเฉพาะยี่ห้อร่วมด้วย (แปลงหน่วยแล้ว)
+00:36 +190: /home/runner/work/proscaner/proscaner/test/v06_real_car_test.dart: กล่องเลขมาตรฐาน และชุดที่ทำไว้สำหรับรถคันนี้ เลขกล่องที่ OBD-II สงวนไว้ให้เครื่องมือวินิจฉัย
+00:36 +191: /home/runner/work/proscaner/proscaner/test/v06_real_car_test.dart: กล่องเลขมาตรฐาน และชุดที่ทำไว้สำหรับรถคันนี้ ชุดในคลังกับรถจริง (Isuzu D-Max 2007 ที่ทดสอบ)
+00:36 +192: /home/runner/work/proscaner/proscaner/test/v06_real_car_test.dart: กล่องเลขมาตรฐาน และชุดที่ทำไว้สำหรับรถคันนี้ ระยะห่างของปีรถจากช่วงปีของชุด
+00:36 +193: /home/runner/work/proscaner/proscaner/test/v06_real_car_test.dart: ชุดที่ไม่ใช่ของรถคันนี้: ถามเฉพาะกล่องเลขมาตรฐาน readAll / probe แบบ standardOnly ไม่ส่งคำสั่งไปกล่องเลขเฉพาะยี่ห้อ
+00:37 +194: /home/runner/work/proscaner/proscaner/test/v06_real_car_test.dart: ค้นหาเลขคำสั่ง: สรุปแต่ละช่วง เจอ / ปฏิเสธพร้อมรหัส / เงียบ และคำแนะนำ
+00:39 +195: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน ตรวจชนิดตัวสแกนจาก ATI
+00:39 +196: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน ตรวจชนิดตัวสแกนจาก ATI
+00:39 +197: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน ตรวจชนิดตัวสแกนจาก ATI
+00:39 +198: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน ตรวจชนิดตัวสแกนจาก ATI
+00:39 +199: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน ตรวจชนิดตัวสแกนจาก ATI
+00:39 +200: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน ตรวจชนิดตัวสแกนจาก ATI
+00:39 +201: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน ตรวจชนิดตัวสแกนจาก ATI
+00:39 +202: /home/runner/work/proscaner/proscaner/test/v06_real_car_test.dart: จับคู่กับค่า OBD มาตรฐาน รถจำลอง: เลข 22 1210 / 1203 / 1240 จับคู่กับ PID 05 / 0C / 0F
+00:40 +203: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน อ่านแรงดันแบต ATRV
+00:40 +204: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน Mode 06: อ่านครบ และหา misfire สูบ 1 ได้
+00:40 +205: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน Mode 06: อ่านครบ และหา misfire สูบ 1 ได้
+00:40 +206: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน Mode 06: อ่านครบ และหา misfire สูบ 1 ได้
+00:40 +207: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน Mode 06: อ่านครบ และหา misfire สูบ 1 ได้
+00:41 +208: /home/runner/work/proscaner/proscaner/test/v02_features_test.dart: ตัวจำลอง: Freeze Frame และ Readiness อ่าน Freeze Frame ของ P0301
+00:42 +209: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน Mode 09: Calibration ID, CVN, ตัวนับการสตาร์ท, ชื่อกล่อง
+00:42 +210: /home/runner/work/proscaner/proscaner/test/v02_features_test.dart: ตัวจำลอง: Freeze Frame และ Readiness ลบรหัสแล้ว Freeze Frame หาย และ Readiness กลับเป็นยังไม่เสร็จ
+00:43 +211: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน เลขไมล์ ชั่วโมงเครื่อง จาก PID A6 / 7F
+00:43 +212: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน เลขไมล์ ชั่วโมงเครื่อง จาก PID A6 / 7F
+00:43 +213: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน เลขไมล์ ชั่วโมงเครื่อง จาก PID A6 / 7F
+00:43 +214: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน เลขไมล์ ชั่วโมงเครื่อง จาก PID A6 / 7F
+00:43 +215: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตัวจำลอง: Mode 06 / Mode 09 / ตัวสแกน UDS: ค้นหากล่อง อ่านและลบรหัส ABS
+00:45 +216: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตรวจเลขไมล์ ตรงกันทุกอย่าง = สอดคล้อง
+00:45 +217: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตรวจเลขไมล์ หน้าปัดน้อยกว่ากล่องมาก = น่าสงสัย
+00:45 +218: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตรวจเลขไมล์ ระยะทางน้อยเกินเมื่อเทียบชั่วโมงเครื่อง = น่าสงสัย
+00:45 +219: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตรวจเลขไมล์ เลขไมล์ลดลงจากประวัติ = น่าสงสัย
+00:45 +220: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ตรวจเลขไมล์ ไม่มีข้อมูลจากรถ = ข้อมูลไม่พอ
+00:45 +221: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: VIN ถอดรหัส Toyota ไทย
+00:45 +222: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: VIN ปีรุ่นรอบใหม่ (2010+)
+00:45 +223: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: VIN VIN ผิดรูปแบบ
+00:45 +224: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: บันทึกการขับ CSV เขียนแล้วอ่านกลับได้ครบ รวม BOM
+00:45 +225: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: โรงรถ Vehicle JSON round-trip และกำหนดบำรุงรักษา
+00:45 +226: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: โรงรถ MemoryGarageStore เก็บและโหลดได้
+00:45 +227: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: แบตเตอรี่ เปอร์เซ็นต์ประจุจากแรงดันพัก
+00:45 +228: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: แบตเตอรี่ เกณฑ์ตอนสตาร์ทและชาร์จ
+00:45 +229: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: จับเวลาอัตราเร่ง เร่งคงที่ 0–100 ใน 8 วินาที อ่าน 10 Hz
+00:45 +230: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: สแกนทั้งคันผ่าน provider (ตัวจำลอง) ได้ผลกล่องอื่น เลขไมล์ ตัวนับ และบันทึกเข้าโรงรถ
+00:47 +231: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: สแกนทั้งคันผ่าน provider (ตัวจำลอง) บันทึกการขับผ่านตัวอ่านค่าสดกลาง
+00:48 +232: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: ชื่อ Mode 06 / IUPR / CALID parse
+00:48 +233: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: UDS: ตัดรหัสที่มีแค่สถานะ "ยังไม่ได้ทดสอบ" (0x50) ออก
+00:48 +234: /home/runner/work/proscaner/proscaner/test/v03_features_test.dart: รถมือสอง: กล่องที่อ่านไม่ได้ และรถไม่ใช่ CAN ต้องแจ้ง ไม่ถือว่าปกติ
+00:48 +235: All tests passed!
