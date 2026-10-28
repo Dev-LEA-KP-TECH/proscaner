@@ -134,6 +134,15 @@ jobs:
           name: android
           path: res/
           retention-days: 3
+      # APK ที่ build จากเครื่องสะอาดของ GitHub (เซ็นด้วยกุญแจชั่วคราว) ไว้ให้ Claude เซ็นด้วยกุญแจ ProScaner บนคลาวด์
+      # ลงเครื่องไม่ได้จนกว่าจะเซ็น ไม่เก็บลง branch
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 7
+          compression-level: 0
 
   # ภาพหน้าจออย่างเดียว (เสร็จเร็วกว่า build Android) ไว้ดูผลระหว่างแก้: branch test-results-screens
   publish_screens:
