@@ -30,7 +30,7 @@ class _DtcLookupScreenState extends ConsumerState<DtcLookupScreen> {
     final db = ref.watch(dtcDatabaseProvider);
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('ค้นหารหัสปัญหา')),
+      appBar: AppBar(title: const FitText('ค้นหารหัสปัญหา')),
       body: Column(children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
@@ -39,7 +39,7 @@ class _DtcLookupScreenState extends ConsumerState<DtcLookupScreen> {
             textCapitalization: TextCapitalization.characters,
             decoration: const InputDecoration(
               prefixIcon: Icon(Icons.search_rounded),
-              hintText: 'พิมพ์รหัส เช่น P0171 หรือคำว่า ส่วนผสม',
+              hintText: 'พิมพ์รหัส เช่น P0171 หรือคำค้น',
             ),
             onChanged: (_) => setState(() {}),
           ),

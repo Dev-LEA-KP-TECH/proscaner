@@ -72,7 +72,7 @@ class _ShopProfileScreenState extends ConsumerState<ShopProfileScreen> {
     final cs = Theme.of(context).colorScheme;
     final logo = _logo;
     return Scaffold(
-      appBar: AppBar(title: const Text('ข้อมูลอู่ / ผู้ตรวจ'), actions: [
+      appBar: AppBar(title: const FitText('ข้อมูลอู่ / ผู้ตรวจ'), actions: [
         TextButton(onPressed: _save, child: const Text('บันทึก')),
       ]),
       body: ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 32), children: [
@@ -150,7 +150,7 @@ class AlertSettingsScreen extends ConsumerWidget {
         );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('แจ้งเตือนค่าผิดปกติ')),
+      appBar: AppBar(title: const FitText('แจ้งเตือนค่าผิดปกติ')),
       body: ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 32), children: [
         PremiumCard(
           child: Column(children: [

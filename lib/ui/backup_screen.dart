@@ -156,7 +156,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('สำรอง / กู้คืนข้อมูล')),
+      appBar: AppBar(title: const FitText('สำรอง / กู้คืนข้อมูล')),
       body: ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 32), children: [
         Text(
           'เก็บข้อมูลทั้งหมดของแอปไว้ในไฟล์เดียว ใช้ย้ายไปเครื่องใหม่ ย้ายจากแอปตัวทดสอบมาแอปตัวจริง '

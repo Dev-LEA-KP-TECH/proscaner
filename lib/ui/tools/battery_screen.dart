@@ -261,7 +261,7 @@ class _BatteryScreenState extends ConsumerState<BatteryScreen> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('ทดสอบแบตเตอรี่และไดชาร์จ')),
+      appBar: AppBar(title: const FitText('ทดสอบแบตเตอรี่และไดชาร์จ')),
       body: NeedsConnection(
         message: 'เชื่อมต่อรถเพื่อทดสอบแบตเตอรี่',
         builder: (context, service) {
@@ -275,21 +275,32 @@ class _BatteryScreenState extends ConsumerState<BatteryScreen> {
             PremiumCard(
               glow: color,
               child: Column(children: [
+                // ตัวเลขแรงดันใหญ่ได้มากสุด 2 ใน 3 ของความกว้าง ที่เหลือเป็นสถานะเครื่อง (จอแคบ/ตัวอักษรใหญ่ ย่อลงแทนล้น)
                 Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                  Text(v == null ? '—' : v.toStringAsFixed(2),
-                      style: TextStyle(fontSize: 54, fontWeight: FontWeight.w800, color: color, height: 1)),
-                  const SizedBox(width: 6),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text('V', style: TextStyle(fontSize: 20, color: cs.onSurfaceVariant)),
+                  Expanded(
+                    flex: 2,
+                    child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                      Flexible(
+                        child: FitText(v == null ? '—' : v.toStringAsFixed(2),
+                            style: TextStyle(fontSize: 54, fontWeight: FontWeight.w800, color: color, height: 1)),
+                      ),
+                      const SizedBox(width: 6),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text('V', style: TextStyle(fontSize: 20, color: cs.onSurfaceVariant)),
+                      ),
+                    ]),
                   ),
-                  const Spacer(),
-                  Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                    Text(_rpm == null ? 'รอบเครื่อง —' : (_rpm! > 300 ? 'เครื่องติด' : 'เครื่องดับ'),
-                        style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12.5)),
-                    if (v != null && (_rpm ?? 0) < 300)
-                      Text('ประจุ ~${batterySoc(v)}%', style: const TextStyle(fontWeight: FontWeight.w700)),
-                  ]),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                      FitText(_rpm == null ? 'รอบเครื่อง —' : (_rpm! > 300 ? 'เครื่องติด' : 'เครื่องดับ'),
+                          alignment: Alignment.centerRight, style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12.5)),
+                      if (v != null && (_rpm ?? 0) < 300)
+                        FitText('ประจุ ~${batterySoc(v)}%',
+                            alignment: Alignment.centerRight, style: const TextStyle(fontWeight: FontWeight.w700)),
+                    ]),
+                  ),
                 ]),
                 const SizedBox(height: 12),
                 Sparkline(values: List.of(_series), color: color, height: 54, decimals: 1),

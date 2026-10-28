@@ -369,27 +369,30 @@ class _HeroCard extends StatelessWidget {
       glow: color,
       padding: const EdgeInsets.all(18),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          ScoreRing(score: report.healthScore, color: color, size: 108),
-          const SizedBox(width: 16),
+        // จอแคบ (มือถือเล็ก/ตัวอักษรใหญ่): วงคะแนนเล็กลง ให้ข้อความด้านข้างมีที่พอ ไม่ต้องหักหลายบรรทัด
+        LayoutBuilder(builder: (context, box) {
+          final narrow = box.maxWidth / (MediaQuery.textScalerOf(context).scale(100) / 100) < 300;
+          return Row(children: [
+          ScoreRing(score: report.healthScore, color: color, size: narrow ? 84 : 108),
+          SizedBox(width: narrow ? 12 : 16),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
                 Icon(report.overall.icon, color: color, size: 18),
                 const SizedBox(width: 6),
-                Text(report.overall.labelTh, style: TextStyle(color: color, fontWeight: FontWeight.w800)),
+                Flexible(child: Text(report.overall.labelTh, style: TextStyle(color: color, fontWeight: FontWeight.w800))),
               ]),
               const SizedBox(height: 6),
               Text(report.headlineTh,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, height: 1.25)),
               const SizedBox(height: 6),
+              // คำแนะนำแสดงครบทุกบรรทัด ไม่ตัดท้าย (เป็นข้อความสำคัญต่อความปลอดภัย)
               Text(report.overall.ownerAdvice,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.4)),
             ]),
           ),
-        ]),
+        ]);
+        }),
         const SizedBox(height: 16),
         Wrap(spacing: 8, runSpacing: 8, children: [
           _Pill(
@@ -428,13 +431,16 @@ class _Pill extends StatelessWidget {
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         Icon(icon, size: 15, color: color),
         const SizedBox(width: 6),
-        Text(text,
-            style: TextStyle(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w700,
-              color: color,
-              fontFamily: mono ? kMono : null,
-            )),
+        Flexible(
+          child: Text(text,
+              style: TextStyle(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w700,
+                color: color,
+                fontFamily: mono ? kMono : null,
+                fontFamilyFallback: const [kFont],
+              )),
+        ),
       ]),
     );
   }

@@ -74,7 +74,7 @@ class _ConnectScreenState extends ConsumerState<ConnectScreen> {
     final last = ref.watch(lastAdapterProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('เชื่อมต่อตัวสแกน')),
+      appBar: AppBar(title: const FitText('เชื่อมต่อตัวสแกน')),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
@@ -97,9 +97,9 @@ class _ConnectScreenState extends ConsumerState<ConnectScreen> {
             const SizedBox(height: 12),
             SegmentedButton<_Tab>(
               segments: const [
-                ButtonSegment(value: _Tab.bluetooth, icon: Icon(Icons.bluetooth), label: Text('Bluetooth')),
-                ButtonSegment(value: _Tab.wifi, icon: Icon(Icons.wifi), label: Text('Wi-Fi')),
-                ButtonSegment(value: _Tab.demo, icon: Icon(Icons.science_outlined), label: Text('ทดลอง')),
+                ButtonSegment(value: _Tab.bluetooth, icon: Icon(Icons.bluetooth), label: FitText('Bluetooth', alignment: Alignment.center)),
+                ButtonSegment(value: _Tab.wifi, icon: Icon(Icons.wifi), label: FitText('Wi-Fi', alignment: Alignment.center)),
+                ButtonSegment(value: _Tab.demo, icon: Icon(Icons.science_outlined), label: FitText('ทดลอง', alignment: Alignment.center)),
               ],
               selected: {_tab},
               onSelectionChanged: (s) => setState(() => _tab = s.first),
@@ -186,7 +186,7 @@ class _ErrorCard extends StatelessWidget {
           Row(children: [
             Icon(Icons.error_outline_rounded, color: cs.onErrorContainer),
             const SizedBox(width: 8),
-            Text('เชื่อมต่อไม่สำเร็จ', style: TextStyle(fontWeight: FontWeight.w800, color: cs.onErrorContainer)),
+            Expanded(child: Text('เชื่อมต่อไม่สำเร็จ', style: TextStyle(fontWeight: FontWeight.w800, color: cs.onErrorContainer))),
           ]),
           const SizedBox(height: 6),
           Text(message, style: TextStyle(color: cs.onErrorContainer, height: 1.4)),

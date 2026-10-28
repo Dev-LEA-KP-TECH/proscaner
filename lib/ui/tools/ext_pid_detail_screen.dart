@@ -373,7 +373,7 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
     final used = formulaBytes(_p.formula);
     return Scaffold(
         appBar: AppBar(
-          title: Text(_p.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+          title: FitText(_p.name),
           actions: [
             IconButton(tooltip: 'แก้ไข', icon: const Icon(Icons.edit_rounded), onPressed: _edit),
             if (widget.onSave != null)
@@ -389,16 +389,15 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
         body: ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 40), children: [
           PremiumCard(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
-                Expanded(child: Text(_p.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16))),
-                TrustPill(pid: _p),
-              ]),
+              // ชื่อค่าเต็มความกว้าง ป้ายความน่าเชื่อถืออยู่แถวป้ายด้านล่าง (จอแคบชื่อไม่ถูกบีบ)
+              Text(_p.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
               if (_p.en != null) ...[
                 const SizedBox(height: 2),
                 Text(_p.en!, style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12.5)),
               ],
               const SizedBox(height: 10),
               Wrap(spacing: 8, runSpacing: 8, children: [
+                TrustPill(pid: _p),
                 Pill(text: 'กล่อง ${_p.header.isEmpty ? '7DF (ทุกกล่อง)' : _p.header}', color: cs.primary),
                 if (_p.rx != null) Pill(text: 'ตอบจาก ${_p.rx}', color: cs.primary),
                 Pill(text: 'คำสั่ง ${_p.request}', color: cs.primary),
@@ -492,21 +491,28 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
                   style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12.5, height: 1.45),
                 ),
                 const SizedBox(height: 12),
-                Row(children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _ref,
-                      keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
-                      decoration: InputDecoration(
-                        labelText: 'ค่าจากเครื่องมือศูนย์${_p.unit.isEmpty ? '' : ' (${_p.unit})'}',
-                        isDense: true,
-                      ),
-                      onSubmitted: (_) => _addPoint(),
+                // จอแคบ: ช่องกรอกเต็มความกว้าง ปุ่มอยู่ใต้ช่อง ชื่อช่องจะไม่ถูกตัด
+                LayoutBuilder(builder: (context, box) {
+                  final field = TextField(
+                    controller: _ref,
+                    keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
+                    decoration: InputDecoration(
+                      labelText: 'ค่าจากเครื่องมือศูนย์${_p.unit.isEmpty ? '' : ' (${_p.unit})'}',
+                      isDense: true,
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  FilledButton(onPressed: connected ? _addPoint : null, child: const Text('บันทึกจุด')),
-                ]),
+                    onSubmitted: (_) => _addPoint(),
+                  );
+                  final button = FilledButton(onPressed: connected ? _addPoint : null, child: const Text('บันทึกจุด'));
+                  final textScale = MediaQuery.textScalerOf(context).scale(100) / 100;
+                  if (box.maxWidth / textScale >= 420) {
+                    return Row(children: [Expanded(child: field), const SizedBox(width: 10), button]);
+                  }
+                  return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                    field,
+                    const SizedBox(height: 10),
+                    Align(alignment: Alignment.centerRight, child: button),
+                  ]);
+                }),
                 if (_p.points.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   for (var i = 0; i < _p.points.length; i++) _pointRow(i),
@@ -634,7 +640,11 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
           child: Text('ปี ${e.year}: ${bytesToHex(e.raw)}',
               style: TextStyle(fontFamily: kMono, fontSize: 12, color: cs.onSurfaceVariant)),
         ),
-        Text('$shown ${_p.isState ? '' : _p.unit}', style: const TextStyle(fontWeight: FontWeight.w700)),
+        const SizedBox(width: 8),
+        Flexible(
+          child: Text('$shown ${_p.isState ? '' : _p.unit}',
+              textAlign: TextAlign.right, style: const TextStyle(fontWeight: FontWeight.w700)),
+        ),
       ]),
     );
   }

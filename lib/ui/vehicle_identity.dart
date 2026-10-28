@@ -157,7 +157,7 @@ Future<bool> editIdentitySheet(BuildContext context, WidgetRef ref, Vehicle v) a
               Wrap(spacing: 8, runSpacing: 8, children: [
                 for (final b in brands)
                   ChoiceChip(
-                    label: Text(b.name),
+                    label: FitText(b.name),
                     selected: make == b.name,
                     onSelected: (_) => set(() {
                       if (make != b.name) {
@@ -179,7 +179,7 @@ Future<bool> editIdentitySheet(BuildContext context, WidgetRef ref, Vehicle v) a
                 Wrap(spacing: 8, runSpacing: 8, children: [
                   for (final m in brand.models)
                     ChoiceChip(
-                      label: Text(m),
+                      label: FitText(m),
                       selected: model == m,
                       onSelected: (_) => set(() {
                         model = m;
@@ -213,7 +213,7 @@ Future<bool> editIdentitySheet(BuildContext context, WidgetRef ref, Vehicle v) a
               SegmentedButton<String>(
                 emptySelectionAllowed: true,
                 showSelectedIcon: false,
-                segments: [for (final f in fuelOptions) ButtonSegment(value: f, label: Text(f))],
+                segments: [for (final f in fuelOptions) ButtonSegment(value: f, label: FitText(f, alignment: Alignment.center))],
                 selected: {if (fuel != null) fuel!},
                 onSelectionChanged: (s) => set(() => fuel = s.isEmpty ? null : s.first),
               ),

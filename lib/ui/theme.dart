@@ -55,6 +55,8 @@ ThemeData buildTheme(AccentPreset accent, Brightness brightness, {String fontFam
     brightness: brightness,
     colorScheme: scheme,
     fontFamily: fontFamily,
+    // ข้อความฟอนต์อื่น (เช่นตัวเลขแบบ mono) ที่มีภาษาไทยปน ใช้ฟอนต์ไทยของแอปแทนฟอนต์ระบบ
+    fontFamilyFallback: const [kFont],
     scaffoldBackgroundColor: dark ? Carbon.bg : Paper.bg,
     splashFactory: InkSparkle.splashFactory,
   );
@@ -188,6 +190,24 @@ class PremiumCard extends StatelessWidget {
       ),
     );
   }
+}
+
+/// ข้อความบรรทัดเดียวที่แสดงครบเสมอ: ถ้าช่องแคบ (จอเล็ก ตัวอักษรใหญ่) ย่อตัวอักษรลงแทนการตัดคำ
+/// ใช้กับหัวข้อหน้า ชื่อปุ่ม ป้าย และตัวเลข ที่ต้องเห็นครบทั้งคำ
+class FitText extends StatelessWidget {
+  const FitText(this.text, {super.key, this.style, this.alignment = Alignment.centerLeft, this.textAlign});
+
+  final String text;
+  final TextStyle? style;
+  final AlignmentGeometry alignment;
+  final TextAlign? textAlign;
+
+  @override
+  Widget build(BuildContext context) => FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: alignment,
+        child: Text(text, maxLines: 1, softWrap: false, style: style, textAlign: textAlign),
+      );
 }
 
 /// หัวข้อส่วน ตัวเล็ก ตัวหนา ตัวพิมพ์ห่าง

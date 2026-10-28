@@ -58,7 +58,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     final connected = ref.watch(sessionProvider).isConnected;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('เทอร์มินัลตัวสแกน'),
+        title: const FitText('เทอร์มินัลตัวสแกน'),
         actions: [
           IconButton(
             tooltip: 'ล้าง log',
@@ -108,14 +108,15 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-            child: Row(children: [
+            child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Expanded(
                 child: TextField(
                   controller: _input,
                   enabled: connected && !_sending,
                   textCapitalization: TextCapitalization.characters,
                   decoration: const InputDecoration(
-                    hintText: 'เช่น 010C หรือ ATRV (ส่งได้เฉพาะคำสั่งอ่านค่า)',
+                    hintText: 'เช่น 010C หรือ ATRV',
+                    helperText: 'ส่งได้เฉพาะคำสั่งอ่านค่า',
                     border: OutlineInputBorder(),
                     isDense: true,
                   ),

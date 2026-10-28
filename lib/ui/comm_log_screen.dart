@@ -71,7 +71,7 @@ class _CommLogScreenState extends ConsumerState<CommLogScreen> {
     final on = ref.watch(commLogEnabledProvider);
     final current = ref.read(commLogProvider).currentName;
     return Scaffold(
-      appBar: AppBar(title: const Text('บันทึกการสื่อสาร'), actions: [
+      appBar: AppBar(title: const FitText('บันทึกการสื่อสาร'), actions: [
         IconButton(
           tooltip: 'ลบบันทึกทั้งหมด',
           icon: const Icon(Icons.delete_sweep_rounded),
@@ -179,7 +179,7 @@ class _CommLogViewerState extends ConsumerState<CommLogViewer> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: Text(thaiDate(widget.session.start)), actions: [
+      appBar: AppBar(title: FitText(thaiDate(widget.session.start)), actions: [
         IconButton(
           tooltip: 'ส่ง',
           icon: const Icon(Icons.share_rounded),

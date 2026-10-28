@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -154,12 +155,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     return Scaffold(
       backgroundColor: Carbon.bg,
       body: SafeArea(
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 440),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+        // จอเตี้ย (มือถือแนวนอน) หรือตัวอักษรใหญ่: ย่อทั้งหน้าลงให้พอดีจอ ไม่ล้น ไม่ถูกตัด
+        child: LayoutBuilder(
+          builder: (context, box) => Center(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: SizedBox(
+                width: math.min(440.0, box.maxWidth),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 // โลโก้และชื่อแอป ProScaner (ไฟล์เดียวกับไอคอนแอป)
                 const Center(child: BrandMark(size: 104)),
                 const SizedBox(height: 20),
@@ -225,6 +230,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 Text('v$kAppVersion',
                     textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant.withValues(alpha: 0.7))),
               ]),
+                ),
+              ),
             ),
           ),
         ),

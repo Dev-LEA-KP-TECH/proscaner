@@ -144,7 +144,7 @@ class _OdometerScreenState extends ConsumerState<OdometerScreen> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('เช็คเลขไมล์จริง')),
+      appBar: AppBar(title: const FitText('เช็คเลขไมล์จริง')),
       body: NeedsConnection(
         message: 'เชื่อมต่อรถเพื่อเช็คเลขไมล์',
         builder: (context, service) => ListView(

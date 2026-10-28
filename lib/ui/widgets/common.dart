@@ -47,11 +47,18 @@ class Pill extends StatelessWidget {
       ),
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         if (icon != null) ...[Icon(icon, size: 14, color: color), const SizedBox(width: 5)],
+        // ข้อความในป้ายไม่ตัดท้าย ถ้าที่ไม่พอให้ขึ้นบรรทัดใหม่ภายในป้าย
         Flexible(
           child: Text(
             text,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: color, fontFamily: mono ? kMono : null),
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+              color: color,
+              fontFamily: mono ? kMono : null,
+              fontFamilyFallback: const [kFont],
+              height: 1.25,
+            ),
           ),
         ),
       ]),
@@ -78,11 +85,23 @@ class KvRow extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           flex: 6,
-          child: Text(
-            value,
-            textAlign: TextAlign.right,
-            style: TextStyle(fontWeight: FontWeight.w600, fontFamily: mono ? kMono : null, color: valueColor),
-          ),
+          // รหัสยาวคำเดียว (VIN, CALID, เลขฐานสิบหก) ห้ามหักกลางรหัส: ย่อให้พอดีบรรทัดเดียวแทน
+          // ข้อความทั่วไปขึ้นบรรทัดใหม่ได้ตามปกติ
+          child: mono && !value.contains(' ')
+              ? FitText(value,
+                  alignment: Alignment.centerRight,
+                  textAlign: TextAlign.right,
+                  style: TextStyle(fontWeight: FontWeight.w600, fontFamily: kMono, color: valueColor))
+              : Text(
+                  value,
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontFamily: mono ? kMono : null,
+                    fontFamilyFallback: const [kFont],
+                    color: valueColor,
+                  ),
+                ),
         ),
       ]),
     );

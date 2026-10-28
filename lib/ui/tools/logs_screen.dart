@@ -58,7 +58,7 @@ Future<void> showStartRecording(BuildContext context, WidgetRef ref) async {
             for (final (name, list) in recordPresets)
               ActionChip(
                 avatar: const Icon(Icons.auto_awesome_rounded, size: 16),
-                label: Text(name),
+                label: FitText(name),
                 onPressed: () => setSheet(() {
                   selected
                     ..clear()
@@ -70,7 +70,7 @@ Future<void> showStartRecording(BuildContext context, WidgetRef ref) async {
           Wrap(spacing: 8, runSpacing: 8, children: [
             for (final d in all)
               FilterChip(
-                label: Text(d.nameTh),
+                label: FitText(d.nameTh),
                 selected: selected.contains(d.pid),
                 onSelected: (v) => setSheet(() => v ? selected.add(d.pid) : selected.remove(d.pid)),
               ),
@@ -123,7 +123,7 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_selected.isEmpty ? 'บันทึกการขับ' : 'เลือกแล้ว ${_selected.length}'),
+        title: FitText(_selected.isEmpty ? 'บันทึกการขับ' : 'เลือกแล้ว ${_selected.length}'),
         actions: [
           if (_selected.length == 2)
             TextButton.icon(
@@ -232,7 +232,7 @@ class _LogTile extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(log.name, style: const TextStyle(fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
+              Text(log.name, style: const TextStyle(fontWeight: FontWeight.w700)),
               const SizedBox(height: 2),
               Text('${thaiDate(log.start)} · $dur · ${log.pids.length} ค่า · ${log.rows.length} แถว',
                   style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
@@ -316,7 +316,7 @@ class _LogViewScreenState extends ConsumerState<LogViewScreen> {
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
-        title: Text(log.name),
+        title: FitText(log.name),
         actions: [
           IconButton(tooltip: 'ตั้งชื่อ', icon: const Icon(Icons.edit_rounded), onPressed: _rename),
           Builder(
@@ -333,7 +333,7 @@ class _LogViewScreenState extends ConsumerState<LogViewScreen> {
         Wrap(spacing: 8, runSpacing: 8, children: [
           for (final p in log.pids)
             FilterChip(
-              label: Text(pidTable[p]?.nameTh ?? p.toRadixString(16)),
+              label: FitText(pidTable[p]?.nameTh ?? p.toRadixString(16)),
               selected: _shown.contains(p),
               onSelected: (v) => setState(() => v ? _shown.add(p) : _shown.remove(p)),
             ),
@@ -402,14 +402,14 @@ class _CompareLogsScreenState extends ConsumerState<CompareLogsScreen> {
     final a = widget.a, b = widget.b;
     final pid = _pid;
     return Scaffold(
-      appBar: AppBar(title: const Text('เปรียบเทียบบันทึก')),
+      appBar: AppBar(title: const FitText('เปรียบเทียบบันทึก')),
       body: _common.isEmpty || pid == null
           ? const EmptyState(icon: Icons.compare_arrows_rounded, title: 'สองบันทึกนี้ไม่มีค่าที่ตรงกัน')
           : ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 32), children: [
               Wrap(spacing: 8, runSpacing: 8, children: [
                 for (final p in _common)
                   ChoiceChip(
-                    label: Text(pidTable[p]?.nameTh ?? '$p'),
+                    label: FitText(pidTable[p]?.nameTh ?? '$p'),
                     selected: p == pid,
                     onSelected: (_) => setState(() => _pid = p),
                   ),
@@ -494,6 +494,6 @@ class _Legend extends StatelessWidget {
   Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
         Container(width: 14, height: 4, color: color),
         const SizedBox(width: 6),
-        Flexible(child: Text(text, style: const TextStyle(fontSize: 12.5), overflow: TextOverflow.ellipsis)),
+        Flexible(child: Text(text, style: const TextStyle(fontSize: 12.5))),
       ]);
 }

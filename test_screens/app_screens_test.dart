@@ -87,29 +87,42 @@ ScrollableState? _mainScroll() {
 }
 
 /// ข้อความบนจอที่ถูกตัด: เกินจำนวนบรรทัด (…) หรือบรรทัดเดียวที่ยาวเกินช่อง
-List<String> _cutTexts() {
-  final out = <String>[];
+/// ปัญหาข้อความบนจอ: (ถูกตัด/ซ่อนบางส่วน, ถูกหักกลางคำ)
+/// - ถูกตัด: เกินจำนวนบรรทัดที่กำหนด (มี … หรือจางหาย) หรือข้อความบรรทัดเดียวยาวเกินช่อง
+/// - หักกลางคำ: ช่องแคบกว่าคำที่ยาวที่สุด ข้อความจึงถูกตัดขึ้นบรรทัดใหม่กลางคำ (เช่น "สว่า/ง")
+(List<String>, List<String>) _textIssues() {
+  final cut = <String>[];
+  final broken = <String>[];
+  String label(RenderParagraph ro) {
+    var t = ro.text.toPlainText().replaceAll('\n', ' ').trim();
+    if (t.length > 60) t = '${t.substring(0, 60)}…';
+    return t;
+  }
+
   for (final e in find.byType(RichText).evaluate()) {
     final ro = e.renderObject;
     if (ro is! RenderParagraph || !ro.hasSize) continue;
-    var cut = ro.didExceedMaxLines;
-    if (!cut && !ro.softWrap) {
-      // วัดความยาวจริงของข้อความบรรทัดเดียวด้วยตัววัดแยก (ไม่ไปยุ่งกับข้อความที่วาดอยู่)
-      try {
+    var isCut = ro.didExceedMaxLines;
+    var isBroken = false;
+    // วัดด้วยตัววัดแยก (ไม่ไปยุ่งกับข้อความที่วาดอยู่) ข้อความที่มีวิดเจ็ตฝังอยู่วัดแบบนี้ไม่ได้ ข้ามไป
+    try {
+      if (!isCut && !ro.softWrap) {
         final tp = TextPainter(text: ro.text, textDirection: ro.textDirection, textScaler: ro.textScaler, maxLines: 1)
           ..layout();
-        cut = tp.width > ro.size.width + 0.5;
+        isCut = tp.width > ro.size.width + 0.5;
         tp.dispose();
-      } catch (_) {
-        // ข้อความที่มีวิดเจ็ตฝังอยู่ วัดแบบนี้ไม่ได้ ข้ามไป
+      } else if (!isCut && ro.softWrap && ro.constraints.maxWidth.isFinite) {
+        final tp = TextPainter(text: ro.text, textDirection: ro.textDirection, textScaler: ro.textScaler)..layout();
+        isBroken = tp.minIntrinsicWidth > ro.constraints.maxWidth + 0.5;
+        tp.dispose();
       }
-    }
-    if (!cut) continue;
-    var t = ro.text.toPlainText().replaceAll('\n', ' ').trim();
-    if (t.length > 60) t = '${t.substring(0, 60)}…';
-    if (t.isNotEmpty && !out.contains(t)) out.add(t);
+    } catch (_) {}
+    final t = label(ro);
+    if (t.isEmpty) continue;
+    if (isCut && !cut.contains(t)) cut.add(t);
+    if (isBroken && !broken.contains(t)) broken.add(t);
   }
-  return out;
+  return (cut, broken);
 }
 
 /// บันทึกการสื่อสารตัวอย่าง 1 การเชื่อมต่อ (ข้อมูลสมมติ ไม่มีเลข VIN ของรถจริง)
@@ -209,6 +222,16 @@ void main() {
     // จดทุกภาพ: ข้อความที่ถูกตัด และ error ตอนวาด (เช่น RenderFlex overflowed) เขียนลง report.txt เสมอ แม้เทสต์หยุดกลางทาง
     final report = StringBuffer();
     final broken = <String>[];
+    // ตำแหน่งในโค้ดของวิดเจ็ตที่วาดล้น (จากรายละเอียดของ error) ใส่ในรายงานด้วย จะได้แก้ถูกที่
+    final errorSpots = <String>{};
+    final originalOnError = FlutterError.onError;
+    FlutterError.onError = (details) {
+      for (final m in RegExp(r'lib/ui/[A-Za-z0-9_/]+\.dart:\d+').allMatches(details.toString())) {
+        errorSpots.add(m.group(0)!);
+      }
+      originalOnError?.call(details);
+    };
+    addTearDown(() => FlutterError.onError = originalOnError);
     addTearDown(() => File('test_screens/$_dir/report.txt').writeAsStringSync(
         'ขนาดจอ ${_w.toStringAsFixed(0)}x${_h.toStringAsFixed(0)} dp · ตัวอักษร x$_scale\n'
         'หน้าที่วาดล้นกรอบ: ${broken.isEmpty ? 'ไม่มี' : broken.join(', ')}\n\n$report'));
@@ -269,14 +292,16 @@ void main() {
     }
 
     Future<void> shot(String name) async {
-      final cut = _cutTexts();
+      final (cut, wordBreaks) = _textIssues();
       final error = tester.takeException();
       if (error != null) broken.add(name);
       report.writeln([
         name,
-        if (error != null) 'วาดล้น/ผิดพลาด: ${'$error'.split('\n').first}',
+        if (error != null) 'วาดล้น/ผิดพลาด: ${'$error'.split('\n').first}${errorSpots.isEmpty ? '' : ' @ ${errorSpots.join(', ')}'}',
         if (cut.isNotEmpty) 'ถูกตัด ${cut.length}: ${cut.join(' | ')}',
+        if (wordBreaks.isNotEmpty) 'หักกลางคำ ${wordBreaks.length}: ${wordBreaks.join(' | ')}',
       ].join(' · '));
+      errorSpots.clear();
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('$_dir/$name.png'));
     }
 
@@ -829,6 +854,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
     }
     expect(container.read(livePollerProvider).isRunning, anyOf(true, false));
+    FlutterError.onError = originalOnError;
     expect(broken, isEmpty, reason: 'หน้าที่วาดล้นกรอบหรือผิดพลาดตอนวาด (ดู test_screens/$_dir/report.txt)');
   });
 }

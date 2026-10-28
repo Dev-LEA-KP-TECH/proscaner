@@ -393,7 +393,7 @@ class _DidScannerScreenState extends ConsumerState<DidScannerScreen> {
       (byHeader[h.header.isEmpty ? '7DF' : h.header] ??= []).add(h);
     }
     return Scaffold(
-      appBar: AppBar(title: const Text('ค้นหาค่าที่กล่องตอบ')),
+      appBar: AppBar(title: const FitText('ค้นหาค่าที่กล่องตอบ')),
       body: ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 40), children: [
         PremiumCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -449,8 +449,8 @@ class _DidScannerScreenState extends ConsumerState<DidScannerScreen> {
             ] else ...[
               SegmentedButton<int>(
                 segments: const [
-                  ButtonSegment(value: 0x21, label: Text('21 (KWP)')),
-                  ButtonSegment(value: 0x22, label: Text('22 (UDS)')),
+                  ButtonSegment(value: 0x21, label: FitText('21 (KWP)', alignment: Alignment.center)),
+                  ButtonSegment(value: 0x22, label: FitText('22 (UDS)', alignment: Alignment.center)),
                 ],
                 selected: {_service},
                 onSelectionChanged: _busy ? null : (s) => _setService(s.first),

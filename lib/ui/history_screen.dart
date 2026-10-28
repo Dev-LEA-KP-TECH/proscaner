@@ -31,7 +31,7 @@ class HistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(title: const Text('ประวัติการสแกน')),
+      appBar: AppBar(title: const FitText('ประวัติการสแกน')),
       body: HistoryList(vin: vin),
     );
   }
@@ -133,7 +133,7 @@ class HistoryDetail extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(formatThaiDate(report.snapshot.time)),
+        title: FitText(formatThaiDate(report.snapshot.time)),
         actions: [
           IconButton(
             tooltip: 'รายงาน PDF',

@@ -106,7 +106,7 @@ class _UsedCarScreenState extends ConsumerState<UsedCarScreen> {
     final cs = Theme.of(context).colorScheme;
     final scan = ref.watch(scanProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('ตรวจรถมือสอง')),
+      appBar: AppBar(title: const FitText('ตรวจรถมือสอง')),
       body: NeedsConnection(
         message: 'เชื่อมต่อรถที่ต้องการตรวจ',
         builder: (context, service) => ListView(

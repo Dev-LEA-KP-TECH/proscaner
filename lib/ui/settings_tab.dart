@@ -24,6 +24,9 @@ class SettingsTab extends ConsumerWidget {
     final commLogOn = ref.watch(commLogEnabledProvider);
     final elm = session.elm;
     final cs = Theme.of(context).colorScheme;
+    // จอแคบ/ตัวอักษรใหญ่: ปุ่มเลือกธีมไม่มีไอคอน ให้ชื่อปุ่มอ่านครบบรรทัดเดียว
+    final textScale = MediaQuery.textScalerOf(context).scale(100) / 100;
+    final narrow = MediaQuery.sizeOf(context).width / textScale < 400;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
@@ -44,7 +47,8 @@ class SettingsTab extends ConsumerWidget {
             child: _ModeCard(
               icon: Icons.engineering_rounded,
               title: 'ช่าง',
-              text: 'ค่าดิบ กราฟ Freeze Frame เทอร์มินัล',
+              // ขึ้นบรรทัดใหม่ก่อนคำทับศัพท์ ไม่ให้ระบบตัดกลางคำ (เช่น "เท/อร์มินัล") บนจอแคบ
+              text: 'ค่าดิบ กราฟ Freeze Frame\nเทอร์มินัล',
               selected: mode == AppMode.mechanic,
               onTap: () => ref.read(appModeProvider.notifier).set(AppMode.mechanic),
             ),
@@ -58,10 +62,19 @@ class SettingsTab extends ConsumerWidget {
               width: double.infinity,
               child: SegmentedButton<ThemeMode>(
                 showSelectedIcon: false,
-                segments: const [
-                  ButtonSegment(value: ThemeMode.dark, icon: Icon(Icons.dark_mode_rounded), label: Text('มืด')),
-                  ButtonSegment(value: ThemeMode.light, icon: Icon(Icons.light_mode_rounded), label: Text('สว่าง')),
-                  ButtonSegment(value: ThemeMode.system, icon: Icon(Icons.brightness_auto_rounded), label: Text('ตามเครื่อง')),
+                segments: [
+                  ButtonSegment(
+                      value: ThemeMode.dark,
+                      icon: narrow ? null : const Icon(Icons.dark_mode_rounded),
+                      label: const FitText('มืด', alignment: Alignment.center)),
+                  ButtonSegment(
+                      value: ThemeMode.light,
+                      icon: narrow ? null : const Icon(Icons.light_mode_rounded),
+                      label: const FitText('สว่าง', alignment: Alignment.center)),
+                  ButtonSegment(
+                      value: ThemeMode.system,
+                      icon: narrow ? null : const Icon(Icons.brightness_auto_rounded),
+                      label: const FitText('ตามเครื่อง', alignment: Alignment.center)),
                 ],
                 selected: {settings.themeMode},
                 onSelectionChanged: (s) => setter.setThemeMode(s.first),
@@ -85,7 +98,7 @@ class SettingsTab extends ConsumerWidget {
               label: 'อุณหภูมิ',
               child: SegmentedButton<TempUnit>(
                 showSelectedIcon: false,
-                segments: [for (final u in TempUnit.values) ButtonSegment(value: u, label: Text(u.label))],
+                segments: [for (final u in TempUnit.values) ButtonSegment(value: u, label: FitText(u.label, alignment: Alignment.center))],
                 selected: {settings.tempUnit},
                 onSelectionChanged: (s) => setter.setTempUnit(s.first),
               ),
@@ -96,7 +109,7 @@ class SettingsTab extends ConsumerWidget {
               label: 'ความเร็ว',
               child: SegmentedButton<SpeedUnit>(
                 showSelectedIcon: false,
-                segments: [for (final u in SpeedUnit.values) ButtonSegment(value: u, label: Text(u.label))],
+                segments: [for (final u in SpeedUnit.values) ButtonSegment(value: u, label: FitText(u.label, alignment: Alignment.center))],
                 selected: {settings.speedUnit},
                 onSelectionChanged: (s) => setter.setSpeedUnit(s.first),
               ),
@@ -324,12 +337,19 @@ class _UnitRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
+    final head = Row(children: [
       Icon(icon, color: Theme.of(context).colorScheme.onSurfaceVariant),
       const SizedBox(width: 10),
       Expanded(child: Text(label, style: const TextStyle(fontWeight: FontWeight.w600))),
-      child,
     ]);
+    // จอแคบ/ตัวอักษรใหญ่: ปุ่มเลือกหน่วยลงไปอยู่ใต้ชื่อ เต็มความกว้าง (ไม่บีบชื่อจนหักคำ)
+    return LayoutBuilder(builder: (context, box) {
+      final textScale = MediaQuery.textScalerOf(context).scale(100) / 100;
+      if (box.maxWidth / textScale >= 330) {
+        return Row(children: [Expanded(child: head), child]);
+      }
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [head, const SizedBox(height: 8), child]);
+    });
   }
 }
 

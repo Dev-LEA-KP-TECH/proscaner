@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/obd/ext_pid.dart';
 import '../../core/obd/formula.dart';
+import '../theme.dart';
 
 /// แก้ไข/เพิ่มค่าเฉพาะยี่ห้อ
 class ExtPidEditScreen extends StatefulWidget {
@@ -84,7 +85,7 @@ class _ExtPidEditScreenState extends State<ExtPidEditScreen> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.pid == null || widget.pid!.name.isEmpty ? 'เพิ่มค่า' : 'แก้ไขค่า'),
+        title: FitText(widget.pid == null || widget.pid!.name.isEmpty ? 'เพิ่มค่า' : 'แก้ไขค่า'),
         actions: [TextButton(onPressed: _save, child: const Text('บันทึก'))],
       ),
       body: ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 40), children: [

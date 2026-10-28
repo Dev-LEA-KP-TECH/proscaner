@@ -105,7 +105,7 @@ class VehicleScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(v.title),
+        title: FitText(v.title),
         actions: [
           IconButton(
             tooltip: 'แก้ไข',

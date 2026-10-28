@@ -347,7 +347,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
     final packs = ref.watch(extPacksProvider);
     final pack = _selected(packs);
     return Scaffold(
-      appBar: AppBar(title: const Text('ค่าเฉพาะยี่ห้อ'), actions: [
+      appBar: AppBar(title: const FitText('ค่าเฉพาะยี่ห้อ'), actions: [
         IconButton(
           tooltip: 'ค้นหาค่าที่กล่องตอบ',
           icon: const Icon(Icons.radar_rounded),
@@ -360,8 +360,12 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
       body: ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 40), children: [
         SegmentedButton<int>(
           segments: [
-            ButtonSegment(value: 0, icon: const Icon(Icons.folder_special_rounded), label: Text('ชุดของฉัน (${packs.length})')),
-            const ButtonSegment(value: 1, icon: Icon(Icons.library_books_rounded), label: Text('คลังชุดข้อมูล')),
+            ButtonSegment(
+                value: 0,
+                icon: const Icon(Icons.folder_special_rounded),
+                label: FitText('ชุดของฉัน (${packs.length})', alignment: Alignment.center)),
+            const ButtonSegment(
+                value: 1, icon: Icon(Icons.library_books_rounded), label: FitText('คลังชุดข้อมูล', alignment: Alignment.center)),
           ],
           selected: {_tab},
           onSelectionChanged: (s) => setState(() {
@@ -382,7 +386,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
       Wrap(spacing: 8, runSpacing: 8, children: [
         for (final p in packs)
           ChoiceChip(
-            label: Text(p.name),
+            label: FitText(p.name),
             avatar: p.verified ? const Icon(Icons.verified_rounded, size: 18) : null,
             selected: p.id == pack?.id,
             onSelected: (_) => _select(p.id),
@@ -468,7 +472,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
           child: TextButton.icon(
             style: TextButton.styleFrom(padding: EdgeInsets.zero, visualDensity: VisualDensity.compact),
             icon: const Icon(Icons.info_outline_rounded, size: 18),
-            label: Text('ที่มา: ${pack.sources.map((s) => s.name).join(' · ')}', overflow: TextOverflow.ellipsis),
+            label: Text('ที่มา: ${pack.sources.map((s) => s.name).join(' · ')}', style: const TextStyle(height: 1.3)),
             onPressed: () => _packMenu(pack, 'sources'),
           ),
         ),
@@ -541,7 +545,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
         Wrap(spacing: 8, runSpacing: 8, children: [
           for (final g in allGroups)
             FilterChip(
-              label: Text('$g (${pack.pids.where((p) => (p.group.isEmpty ? 'ทั่วไป' : p.group) == g).length})'),
+              label: FitText('$g (${pack.pids.where((p) => (p.group.isEmpty ? 'ทั่วไป' : p.group) == g).length})'),
               selected: active.contains(g),
               onSelected: (_) => _toggleGroup(pack, g),
             ),
@@ -671,14 +675,12 @@ class _PidRow extends StatelessWidget {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(pid.name, style: const TextStyle(fontWeight: FontWeight.w600)),
               if (pid.en != null)
-                Text(pid.en!, style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant), maxLines: 1, overflow: TextOverflow.ellipsis),
+                Text(pid.en!, style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant)),
               const SizedBox(height: 2),
               Text(
                 '${pid.header.isEmpty ? '7DF' : pid.header} · ${pid.request}'
                 '${raw != null && raw.isNotEmpty ? ' → ${bytesToHex(raw.take(8).toList())}${raw.length > 8 ? ' …' : ''}' : ''}',
-                style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant, fontFamily: kMono),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant, fontFamily: kMono, fontFamilyFallback: const [kFont]),
               ),
             ]),
           ),

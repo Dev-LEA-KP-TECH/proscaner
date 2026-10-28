@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'theme.dart';
 
 /// สแกน QR/บาร์โค้ด แล้วคืนข้อความที่อ่านได้
 class QrScanScreen extends StatefulWidget {
@@ -38,7 +39,7 @@ class _QrScanScreenState extends State<QrScanScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text(widget.title),
+        title: FitText(widget.title),
         actions: [
           IconButton(
             tooltip: 'ไฟฉาย',

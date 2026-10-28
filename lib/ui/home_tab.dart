@@ -152,7 +152,7 @@ class HomeTab extends ConsumerWidget {
           Expanded(
             child: FilledButton.icon(
               icon: const Icon(Icons.link_rounded),
-              label: Text('เชื่อมต่อ ${lastAdapter.label}', maxLines: 1, overflow: TextOverflow.ellipsis),
+              label: FitText('เชื่อมต่อ ${lastAdapter.label}'),
               style: FilledButton.styleFrom(minimumSize: const Size(0, 56)),
               onPressed: () => openConnect(context, reconnect: true),
             ),
@@ -185,7 +185,12 @@ class HomeTab extends ConsumerWidget {
                   const Icon(Icons.build_circle_rounded, color: StatusColors.warn, size: 20),
                   const SizedBox(width: 10),
                   Expanded(child: Text(m.name, style: const TextStyle(fontWeight: FontWeight.w600))),
-                  if (vehicle == null) Text(v.title, style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                  if (vehicle == null)
+                    Flexible(
+                      child: Text(v.title,
+                          textAlign: TextAlign.right,
+                          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
+                    ),
                 ]),
               ),
           ]),
@@ -259,35 +264,36 @@ class _VehicleHero extends ConsumerWidget {
           ]),
         );
 
+    // จอแคบ (มือถือเล็ก/ตัวอักษรใหญ่): รูปด้านซ้ายเล็กลง ให้ชื่อรถและป้ายด้านขวามีที่พอ ไม่ถูกตัด
+    final textScale = MediaQuery.textScalerOf(context).scale(100) / 100;
+    final narrow = MediaQuery.sizeOf(context).width / textScale < 380;
+    final ring = narrow ? 72.0 : 92.0;
     return PremiumCard(
       glow: color,
       onTap: onOpenVehicle,
       child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
         Row(children: [
           if (report != null)
-            ScoreRing(score: report.healthScore, color: color, size: 92)
+            ScoreRing(score: report.healthScore, color: color, size: ring)
           else if (connected)
-            BrandBadge(make: make, size: 84)
+            BrandBadge(make: make, size: ring - 8)
           else
             Container(
-              width: 92,
-              height: 92,
+              width: ring,
+              height: ring,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: RadialGradient(colors: [cs.primary.withValues(alpha: 0.3), cs.primary.withValues(alpha: 0.02)]),
               ),
-              child: Icon(Icons.bluetooth_disabled_rounded, size: 42, color: cs.primary),
+              child: Icon(Icons.bluetooth_disabled_rounded, size: ring * 0.45, color: cs.primary),
             ),
-          const SizedBox(width: 16),
+          SizedBox(width: narrow ? 12 : 16),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
                 if (report != null && connected) ...[BrandBadge(make: make, size: 26), const SizedBox(width: 8)],
                 Expanded(
-                  child: Text(title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 18.5, fontWeight: FontWeight.w800, height: 1.2)),
+                  child: Text(title, style: const TextStyle(fontSize: 18.5, fontWeight: FontWeight.w800, height: 1.2)),
                 ),
               ]),
               const SizedBox(height: 4),

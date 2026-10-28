@@ -121,7 +121,7 @@ class _Legend extends StatelessWidget {
   Widget build(BuildContext context) => Row(mainAxisSize: MainAxisSize.min, children: [
         Container(width: 14, height: 4, color: color),
         const SizedBox(width: 6),
-        Flexible(child: Text(text, style: const TextStyle(fontSize: 12.5), overflow: TextOverflow.ellipsis)),
+        Flexible(child: Text(text, style: const TextStyle(fontSize: 12.5))),
       ]);
 }
 
@@ -147,7 +147,8 @@ class _Tile extends StatelessWidget {
         border: Border.all(color: (color ?? cs.outline).withValues(alpha: color == null ? 1 : 0.4)),
       ),
       child: Column(children: [
-        Text(label, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant)),
+        // ชื่อช่องและหน่วยแสดงครบเสมอ: ช่องแคบย่อตัวอักษรลงแทนการตัดคำ
+        FitText(label, alignment: Alignment.center, style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant)),
         const SizedBox(height: 2),
         FittedBox(
           fit: BoxFit.scaleDown,
@@ -159,7 +160,7 @@ class _Tile extends StatelessWidget {
                 fontFeatures: const [FontFeature.tabularFigures()],
               )),
         ),
-        Text(sub ?? unit, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 10.5, color: cs.onSurfaceVariant)),
+        FitText(sub ?? unit, alignment: Alignment.center, style: TextStyle(fontSize: 10.5, color: cs.onSurfaceVariant)),
       ]),
     );
   }
@@ -291,7 +292,7 @@ class _RemapTestScreenState extends ConsumerState<RemapTestScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_selected.isEmpty ? 'ทดสอบก่อน/หลังรีแมพ' : 'เลือกแล้ว ${_selected.length}'),
+        title: FitText(_selected.isEmpty ? 'ทดสอบก่อน/หลังรีแมพ' : 'เลือกแล้ว ${_selected.length}'),
         actions: [
           if (_selected.length == 2)
             TextButton.icon(
@@ -438,8 +439,7 @@ class _RemapTestScreenState extends ConsumerState<RemapTestScreen> {
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                     Text(remapCompareHeadline(rows), style: const TextStyle(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 2),
-                    Text('${latestBefore.name}  →  ${latestAfter.name}',
-                        maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+                    Text('${latestBefore.name}  →  ${latestAfter.name}', style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
                   ]),
                 ),
                 Icon(Icons.chevron_right_rounded, color: cs.onSurfaceVariant),
@@ -535,18 +535,14 @@ class _RunTile extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [
+              // ป้ายขั้นและชื่อรอบ: ที่ไม่พอให้ชื่อขึ้นบรรทัดใหม่ (ไม่ตัดท้าย)
+              Wrap(spacing: 8, runSpacing: 4, crossAxisAlignment: WrapCrossAlignment.center, children: [
                 _StagePill(run.stage),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(run.name, style: const TextStyle(fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis),
-                ),
+                Text(run.name, style: const TextStyle(fontWeight: FontWeight.w700)),
               ]),
               const SizedBox(height: 4),
               Text(
                 '${thaiDate(run.start)} · ${_durText(run.durationS)}${run.vehicleLabel.isEmpty ? '' : ' · ${run.vehicleLabel}'}',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
                 style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
               ),
               const SizedBox(height: 2),
@@ -806,7 +802,7 @@ class _RemapLiveScreenState extends ConsumerState<RemapLiveScreen> {
         if (!didPop) unawaited(_askLeave());
       },
       child: Scaffold(
-        appBar: AppBar(title: Text('ทดสอบ: ${widget.stage.labelTh}')),
+        appBar: AppBar(title: FitText('ทดสอบ: ${widget.stage.labelTh}')),
         body: run == null
             ? _preparing(cs)
             : ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 32), children: [
@@ -875,9 +871,12 @@ class _RemapLiveScreenState extends ConsumerState<RemapLiveScreen> {
         Row(children: [
           Icon(Icons.fiber_manual_record_rounded, color: stopping ? cs.onSurfaceVariant : StatusColors.bad, size: 18),
           const SizedBox(width: 6),
-          Text(stopping ? 'กำลังอ่านรหัสปัญหาและบันทึก…' : 'กำลังบันทึก',
-              style: const TextStyle(fontWeight: FontWeight.w800)),
-          const Spacer(),
+          // ข้อความสถานะยาว (ตอนกำลังบันทึก) ขึ้นบรรทัดใหม่ได้ ไม่ดันเวลาจนล้นขอบ
+          Expanded(
+            child: Text(stopping ? 'กำลังอ่านรหัสปัญหาและบันทึก…' : 'กำลังบันทึก',
+                style: const TextStyle(fontWeight: FontWeight.w800)),
+          ),
+          const SizedBox(width: 8),
           Text('$mm:$ss', style: const TextStyle(fontFamily: kMono, fontSize: 22, fontWeight: FontWeight.w700)),
         ]),
         const SizedBox(height: 4),
@@ -1050,9 +1049,8 @@ class _RemapResultScreenState extends ConsumerState<RemapResultScreen> {
           for (final r in others.take(30))
             ListTile(
               leading: _StagePill(r.stage),
-              title: Text(r.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-              subtitle: Text('${thaiDate(r.start)}${r.vehicleLabel.isEmpty ? '' : ' · ${r.vehicleLabel}'}',
-                  maxLines: 1, overflow: TextOverflow.ellipsis),
+              title: Text(r.name),
+              subtitle: Text('${thaiDate(r.start)}${r.vehicleLabel.isEmpty ? '' : ' · ${r.vehicleLabel}'}'),
               onTap: () => Navigator.pop(ctx, r),
             ),
         ]),
@@ -1080,7 +1078,7 @@ class _RemapResultScreenState extends ConsumerState<RemapResultScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(run.name, maxLines: 1, overflow: TextOverflow.ellipsis),
+        title: FitText(run.name),
         actions: [
           IconButton(tooltip: 'เปลี่ยนชื่อ', icon: const Icon(Icons.edit_rounded), onPressed: _rename),
           IconButton(tooltip: 'ลบ', icon: const Icon(Icons.delete_outline_rounded), onPressed: _delete),
@@ -1117,7 +1115,7 @@ class _RemapResultScreenState extends ConsumerState<RemapResultScreen> {
         ),
         const SizedBox(height: 10),
         SegmentedButton<RemapStage>(
-          segments: [for (final s in RemapStage.values) ButtonSegment(value: s, label: Text(s.labelTh))],
+          segments: [for (final s in RemapStage.values) ButtonSegment(value: s, label: FitText(s.labelTh, alignment: Alignment.center))],
           selected: {run.stage},
           showSelectedIcon: false,
           onSelectionChanged: (v) async {
@@ -1309,7 +1307,7 @@ class _RemapCompareScreenState extends ConsumerState<RemapCompareScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('เทียบก่อน/หลัง'),
+        title: const FitText('เทียบก่อน/หลัง'),
         actions: [
           IconButton(
             tooltip: 'สลับก่อน/หลัง',
@@ -1336,13 +1334,15 @@ class _RemapCompareScreenState extends ConsumerState<RemapCompareScreen> {
             for (final (label, r, color) in [('ก่อน', _a, _beforeColor), ('หลัง', _b, _afterColor)])
               Padding(
                 padding: const EdgeInsets.only(bottom: 6),
-                child: Row(children: [
-                  Container(width: 14, height: 4, color: color),
+                child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 9),
+                    child: Container(width: 14, height: 4, color: color),
+                  ),
                   const SizedBox(width: 8),
                   Text('$label: ', style: const TextStyle(fontWeight: FontWeight.w700)),
                   Expanded(
-                    child: Text('${r.name} · ${thaiDate(r.start, time: false)}',
-                        maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: cs.onSurfaceVariant)),
+                    child: Text('${r.name} · ${thaiDate(r.start, time: false)}', style: TextStyle(color: cs.onSurfaceVariant)),
                   ),
                 ]),
               ),

@@ -243,7 +243,7 @@ class _ExtAutoMatchScreenState extends ConsumerState<ExtAutoMatchScreen> {
     final connected = ref.watch(sessionProvider.select((s) => s.isConnected));
     if (pack == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('จับคู่กับค่า OBD มาตรฐาน')),
+        appBar: AppBar(title: const FitText('จับคู่กับค่า OBD มาตรฐาน')),
         body: const Center(child: Text('ไม่พบชุดนี้')),
       );
     }
@@ -264,7 +264,7 @@ class _ExtAutoMatchScreenState extends ConsumerState<ExtAutoMatchScreen> {
       });
     final strong = pack.pids.where((p) => rank(p) == 0).length;
     return Scaffold(
-      appBar: AppBar(title: const Text('จับคู่กับค่า OBD มาตรฐาน')),
+      appBar: AppBar(title: const FitText('จับคู่กับค่า OBD มาตรฐาน')),
       body: ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 40), children: [
         PremiumCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

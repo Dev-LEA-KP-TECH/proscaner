@@ -54,7 +54,7 @@ class _PidChartScreenState extends ConsumerState<PidChartScreen> {
     final avg = series.isEmpty ? null : series.reduce((a, b) => a + b) / series.length;
 
     return Scaffold(
-      appBar: AppBar(title: Text(def.nameTh)),
+      appBar: AppBar(title: FitText(def.nameTh)),
       body: ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 24), children: [
         PremiumCard(
           glow: cs.primary,

@@ -23,7 +23,7 @@ class EcuInfoScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('ข้อมูลรถและกล่อง ECU')),
+      appBar: AppBar(title: const FitText('ข้อมูลรถและกล่อง ECU')),
       body: NeedsConnection(
         message: 'เชื่อมต่อรถเพื่ออ่านข้อมูลกล่อง',
         builder: (context, service) {

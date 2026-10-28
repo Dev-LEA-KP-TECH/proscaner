@@ -42,7 +42,7 @@ class _Mode06ScreenState extends ConsumerState<Mode06Screen> {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('ผลทดสอบเซ็นเซอร์ (Mode 06)')),
+      appBar: AppBar(title: const FitText('ผลทดสอบเซ็นเซอร์ (Mode 06)')),
       body: NeedsConnection(
         message: 'เชื่อมต่อรถเพื่ออ่านผลทดสอบ',
         builder: (context, service) {

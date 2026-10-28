@@ -98,7 +98,7 @@ class _ModulesScreenState extends ConsumerState<ModulesScreen> {
     final cs = Theme.of(context).colorScheme;
     final modules = ref.watch(modulesProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('กล่องทั้งหมดในรถ')),
+      appBar: AppBar(title: const FitText('กล่องทั้งหมดในรถ')),
       body: NeedsConnection(
         message: 'เชื่อมต่อรถเพื่อค้นหากล่อง',
         builder: (context, service) {
@@ -294,7 +294,7 @@ class _ModuleDetailScreenState extends ConsumerState<ModuleDetailScreen> {
     final m = widget.module;
     ref.watch(modulesProvider);
     return Scaffold(
-      appBar: AppBar(title: Text(m.title)),
+      appBar: AppBar(title: FitText(m.title)),
       body: ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 32), children: [
         PremiumCard(
           child: Column(children: [
@@ -333,9 +333,8 @@ class _ModuleDetailScreenState extends ConsumerState<ModuleDetailScreen> {
                 padding: const EdgeInsets.all(14),
                 radius: 16,
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Row(children: [
+                  Wrap(spacing: 10, runSpacing: 6, crossAxisAlignment: WrapCrossAlignment.center, children: [
                     Text(d.display, style: const TextStyle(fontFamily: kMono, fontWeight: FontWeight.w800, fontSize: 16)),
-                    const SizedBox(width: 10),
                     if (d.activeNow) const Pill(text: 'เกิดอยู่ตอนนี้', color: StatusColors.bad),
                     if (!d.activeNow && d.confirmed) const Pill(text: 'ยืนยันแล้ว', color: StatusColors.warn),
                     if (!d.confirmed && d.pending) const Pill(text: 'รอยืนยัน', color: StatusColors.info),
@@ -351,7 +350,7 @@ class _ModuleDetailScreenState extends ConsumerState<ModuleDetailScreen> {
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Wrap(spacing: 8, runSpacing: 8, children: [
               for (final (id, name) in _commonDids)
-                ActionChip(label: Text(name), onPressed: _busy ? null : () => _readDid(id)),
+                ActionChip(label: FitText(name), onPressed: _busy ? null : () => _readDid(id)),
             ]),
             const SizedBox(height: 12),
             Row(children: [

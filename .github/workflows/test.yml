@@ -170,7 +170,7 @@ jobs:
             tail -1 /tmp/res/unit_tests.log 2>/dev/null
             for r in /tmp/res/screens/*/report.txt; do
               [ -f "$r" ] || continue
-              echo "--- $(basename "$(dirname "$r")"): $(sed -n 2p "$r") · ข้อความถูกตัด $(grep -c 'ถูกตัด' "$r") หน้า"
+              echo "--- $(basename "$(dirname "$r")"): $(sed -n 2p "$r") · ข้อความถูกตัด $(grep -c 'ถูกตัด' "$r") หน้า · หักกลางคำ $(grep -c 'หักกลางคำ' "$r") หน้า"
             done
             echo "--- android"
             grep -E "Built |sha|\.apk" /tmp/res/android_build.log 2>/dev/null | tail -3

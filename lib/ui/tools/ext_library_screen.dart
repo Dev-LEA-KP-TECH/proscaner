@@ -93,7 +93,7 @@ class _ExtLibraryViewState extends ConsumerState<ExtLibraryView> {
           ),
           const SizedBox(height: 12),
           TextField(
-            decoration: const InputDecoration(prefixIcon: Icon(Icons.search_rounded), hintText: 'ค้นหารุ่น เช่น Revo, Triton, D-Max'),
+            decoration: const InputDecoration(prefixIcon: Icon(Icons.search_rounded), hintText: 'ค้นหารุ่น เช่น Revo, D-Max'),
             onChanged: (v) => setState(() => _query = v.trim()),
           ),
           const SizedBox(height: 10),
@@ -247,7 +247,7 @@ class _ExtLibraryPackScreenState extends ConsumerState<ExtLibraryPackScreen> {
     final connected = ref.watch(sessionProvider.select((s) => s.isConnected));
     final e = widget.entry;
     return Scaffold(
-      appBar: AppBar(title: Text(e.name, maxLines: 1, overflow: TextOverflow.ellipsis)),
+      appBar: AppBar(title: FitText(e.name)),
       body: pack == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 40), children: [
@@ -485,7 +485,7 @@ class _ExtMatchScreenState extends ConsumerState<ExtMatchScreen> {
     final brand = veh?.make;
     final candidates = _all || brand == null ? entries : entries.where((e) => e.brand.toLowerCase() == brand.toLowerCase()).toList();
     return Scaffold(
-      appBar: AppBar(title: const Text('หาชุดที่ตรงกับรถคันนี้')),
+      appBar: AppBar(title: const FitText('หาชุดที่ตรงกับรถคันนี้')),
       body: ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 40), children: [
         PremiumCard(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

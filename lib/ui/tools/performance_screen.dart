@@ -203,7 +203,7 @@ class _PerformanceScreenState extends ConsumerState<PerformanceScreen> {
     final best100 = _runs.map((r) => r.t100).whereType<double>().fold<double?>(null, (a, b) => a == null || b < a ? b : a);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('จับเวลาอัตราเร่ง')),
+      appBar: AppBar(title: const FitText('จับเวลาอัตราเร่ง')),
       body: NeedsConnection(
         message: 'เชื่อมต่อรถเพื่อจับเวลา',
         builder: (context, service) => ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 32), children: [

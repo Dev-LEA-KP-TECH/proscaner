@@ -140,7 +140,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
               Expanded(
                 child: Text('กดค้างที่ช่องเพื่อเปลี่ยนค่าที่แสดง · ${live.hz.toStringAsFixed(1)} ค่า/วินาที',
-                    style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant), overflow: TextOverflow.ellipsis),
+                    maxLines: 2, style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, height: 1.3)),
               ),
               IconButton(
                 tooltip: 'หมุนจอ',
@@ -202,19 +202,19 @@ class _Tile extends ConsumerWidget {
       child: PremiumCard(
         padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
         radius: 18,
+        // ชื่อค่าและตัวเลขแสดงครบเสมอ: ช่องเล็กหรือตัวอักษรใหญ่ ย่อลงให้พอดีช่อง (ทั้งกว้างและสูง) ไม่ล้น
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(def.nameTh,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, fontWeight: FontWeight.w600)),
-          const Spacer(),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
-            child: Text.rich(TextSpan(children: [
-              TextSpan(text: dv?.text ?? '—', style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w800)),
-              TextSpan(text: ' ${dv?.unit ?? def.unit}', style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant)),
-            ])),
+          FitText(def.nameTh, style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, fontWeight: FontWeight.w600)),
+          const SizedBox(height: 4),
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.bottomLeft,
+              child: Text.rich(TextSpan(children: [
+                TextSpan(text: dv?.text ?? '—', style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w800)),
+                TextSpan(text: ' ${dv?.unit ?? def.unit}', style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant)),
+              ])),
+            ),
           ),
         ]),
       ),
@@ -235,8 +235,8 @@ class _TripBar extends ConsumerWidget {
     final mins = (t.seconds / 60).floor();
     Widget cell(String label, String value) => Expanded(
           child: Column(children: [
-            Text(value, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
-            Text(label, style: TextStyle(fontSize: 10.5, color: cs.onSurfaceVariant)),
+            FitText(value, alignment: Alignment.center, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+            Text(label, textAlign: TextAlign.center, style: TextStyle(fontSize: 10.5, color: cs.onSurfaceVariant)),
           ]),
         );
     return PremiumCard(
