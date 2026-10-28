@@ -1,7 +1,7 @@
 name: obd_doctor
 description: แอปวินิจฉัยรถยนต์ผ่าน OBD-II (ตัวสแกน ELM327) สำหรับ Android และ iOS
 publish_to: 'none'
-version: 0.6.4+13
+version: 0.6.5+14
 
 environment:
   sdk: ^3.6.0

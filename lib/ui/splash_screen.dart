@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/app_info.dart';
 import '../state/providers.dart';
 import 'home_screen.dart';
+import 'orientation.dart';
 import 'theme.dart';
 import 'widgets/common.dart';
 
@@ -47,6 +48,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   void initState() {
     super.initState();
     unawaited(_boot());
+  }
+
+  bool _orientationSet = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // การหมุนจอปกติของแอป (iPhone ใช้แนวตั้ง ที่เหลือหมุนตามเครื่อง) ตั้งครั้งเดียวตอนเปิดแอป
+    if (!_orientationSet) {
+      _orientationSet = true;
+      unawaited(applyAppOrientation(iPhone: isIPhone(context)));
+    }
   }
 
   Future<void> _run(int i, Future<String> Function() work) async {

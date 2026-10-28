@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +7,7 @@ import '../../core/obd/pids.dart';
 import '../../state/live_poller.dart';
 import '../../state/providers.dart';
 import '../home_screen.dart';
+import '../orientation.dart';
 import '../theme.dart';
 import '../widgets/common.dart';
 import '../widgets/gauges.dart';
@@ -24,15 +24,11 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   static const _pollKey = 'dashboard';
   late final LivePoller _poller;
 
-  /// นับครั้งที่เปิดแดชบอร์ด (กันคำสั่งหมุนจอที่ตั้งเวลาไว้ไปทับหน้าที่เปิดใหม่)
-  static int _opened = 0;
-  late final int _openId;
-  bool _phone = true;
+  bool _iPhone = false;
 
   @override
   void initState() {
     super.initState();
-    _openId = ++_opened;
     _poller = ref.read(livePollerProvider);
     _subscribe();
     WakelockPlus.enable().catchError((Object _) {});
@@ -43,21 +39,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _phone = MediaQuery.sizeOf(context).shortestSide < 600;
-  }
-
-  /// ออกจากแดชบอร์ด: Android หมุนจอตามเครื่องเองทันที แต่ iPhone จะค้างแนวนอนจนกว่าจะเอียงเครื่อง
-  /// จึงสั่งกลับแนวตั้งก่อน (เฉพาะ iPhone) แล้วค่อยปล่อยให้หมุนตามเครื่องได้เหมือนเดิม
-  void _restoreOrientation() {
-    if (defaultTargetPlatform == TargetPlatform.iOS && _phone) {
-      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-      final id = _openId;
-      Future<void>.delayed(const Duration(milliseconds: 800), () {
-        if (_opened == id) SystemChrome.setPreferredOrientations(const []);
-      });
-    } else {
-      SystemChrome.setPreferredOrientations(const []);
-    }
+    _iPhone = isIPhone(context);
   }
 
   void _subscribe() {
@@ -69,7 +51,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   void dispose() {
     _poller.unsubscribe(_pollKey);
     WakelockPlus.disable().catchError((Object _) {});
-    _restoreOrientation();
+    // กลับการหมุนจอปกติของแอป: iPhone กลับแนวตั้งทันที (iOS ไม่หมุนกลับเอง) ที่เหลือหมุนตามเครื่อง
+    applyAppOrientation(iPhone: _iPhone);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }

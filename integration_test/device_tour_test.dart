@@ -360,12 +360,13 @@ void main() {
     await stage('14 แดชบอร์ดขับรถ', () async {
       await open(const DashboardScreen(), ms: 5000);
       await back();
-      // iPhone: ปิดแดชบอร์ด (ที่บังคับจอนอน) แล้วต้องกลับเป็นแนวตั้งเอง ไม่ค้างแนวนอน
+      // iPhone: ปิดแดชบอร์ด (ที่บังคับจอนอน) แล้วต้องกลับเป็นแนวตั้งเอง และอยู่แนวตั้งต่อ ไม่ค้างแนวนอน
       final view = tester.view;
+      bool portrait() => view.physicalSize.height > view.physicalSize.width;
       if (Platform.isIOS && view.physicalSize.shortestSide / view.devicePixelRatio < 600) {
-        await until('จอกลับเป็นแนวตั้งหลังปิดแดชบอร์ด', () => view.physicalSize.height > view.physicalSize.width,
-            seconds: 10);
-        await pause(1000);
+        await until('จอกลับเป็นแนวตั้งหลังปิดแดชบอร์ด', portrait, seconds: 10);
+        await pause(2500);
+        expect(portrait(), isTrue, reason: 'iPhone ต้องอยู่แนวตั้งต่อหลังปิดแดชบอร์ด');
       }
     });
 
