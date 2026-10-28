@@ -1,11 +1,18 @@
 // Renders the real app screens to PNG files (test_screens/out/*.png) using the demo car.
 // Run:  flutter test test_screens/app_screens_test.dart --update-goldens
 // (SCREENSHOTS.bat does this.) Not part of the normal `flutter test` suite.
+//
+// ขนาดจอและขนาดตัวอักษรตั้งได้ (CI รันหลายขนาด ดู .github/workflows/test.yml):
+//   --dart-define=SHOT_W=360 --dart-define=SHOT_H=780 --dart-define=SHOT_SCALE=1.3 --dart-define=SHOT_DIR=out_text13
+// ทุกภาพจดลง <SHOT_DIR>/report.txt ว่ามีข้อความถูกตัด (…) หรือวาดล้นกรอบ (overflow) ตรงไหนบ้าง
+// มีหน้าที่วาดล้นกรอบ = เทสต์ไม่ผ่าน
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -54,6 +61,56 @@ import 'package:obd_doctor/state/backup_providers.dart';
 import 'package:obd_doctor/ui/backup_screen.dart';
 import 'package:obd_doctor/ui/comm_log_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+/// ขนาดจอ (dp) ขนาดตัวอักษร และโฟลเดอร์ผล
+final _w = double.parse(const String.fromEnvironment('SHOT_W', defaultValue: '360'));
+final _h = double.parse(const String.fromEnvironment('SHOT_H', defaultValue: '780'));
+final _scale = double.parse(const String.fromEnvironment('SHOT_SCALE', defaultValue: '1.0'));
+const _dir = String.fromEnvironment('SHOT_DIR', defaultValue: 'out');
+
+/// รายการหลักของหน้าบนสุด: Scrollable แนวตั้งตัวที่ใหญ่ที่สุดที่ยังแตะถึงได้
+ScrollableState? _mainScroll() {
+  ScrollableState? best;
+  var bestArea = 0.0;
+  for (final e in find.byType(Scrollable).hitTestable().evaluate()) {
+    final s = e.widget as Scrollable;
+    if (axisDirectionToAxis(s.axisDirection) != Axis.vertical || s.physics is NeverScrollableScrollPhysics) continue;
+    final box = e.renderObject;
+    if (box is! RenderBox || !box.hasSize) continue;
+    final area = box.size.width * box.size.height;
+    if (area > bestArea) {
+      bestArea = area;
+      best = (e as StatefulElement).state as ScrollableState;
+    }
+  }
+  return best;
+}
+
+/// ข้อความบนจอที่ถูกตัด: เกินจำนวนบรรทัด (…) หรือบรรทัดเดียวที่ยาวเกินช่อง
+List<String> _cutTexts() {
+  final out = <String>[];
+  for (final e in find.byType(RichText).evaluate()) {
+    final ro = e.renderObject;
+    if (ro is! RenderParagraph || !ro.hasSize) continue;
+    var cut = ro.didExceedMaxLines;
+    if (!cut && !ro.softWrap) {
+      // วัดความยาวจริงของข้อความบรรทัดเดียวด้วยตัววัดแยก (ไม่ไปยุ่งกับข้อความที่วาดอยู่)
+      try {
+        final tp = TextPainter(text: ro.text, textDirection: ro.textDirection, textScaler: ro.textScaler, maxLines: 1)
+          ..layout();
+        cut = tp.width > ro.size.width + 0.5;
+        tp.dispose();
+      } catch (_) {
+        // ข้อความที่มีวิดเจ็ตฝังอยู่ วัดแบบนี้ไม่ได้ ข้ามไป
+      }
+    }
+    if (!cut) continue;
+    var t = ro.text.toPlainText().replaceAll('\n', ' ').trim();
+    if (t.length > 60) t = '${t.substring(0, 60)}…';
+    if (t.isNotEmpty && !out.contains(t)) out.add(t);
+  }
+  return out;
+}
 
 /// บันทึกการสื่อสารตัวอย่าง 1 การเชื่อมต่อ (ข้อมูลสมมติ ไม่มีเลข VIN ของรถจริง)
 const _sampleCommLog = '''# ProScaner communication log
@@ -142,9 +199,19 @@ Future<void> _loadFonts() async {
 void main() {
   testWidgets('app screens', (tester) async {
     await _loadFonts();
-    tester.view.physicalSize = const Size(1080, 2340);
+    tester.view.physicalSize = Size(_w * 3, _h * 3);
     tester.view.devicePixelRatio = 3.0;
+    tester.platformDispatcher.textScaleFactorTestValue = _scale;
     addTearDown(tester.view.reset);
+    addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+    Directory('test_screens/$_dir').createSync(recursive: true);
+
+    // จดทุกภาพ: ข้อความที่ถูกตัด และ error ตอนวาด (เช่น RenderFlex overflowed) เขียนลง report.txt เสมอ แม้เทสต์หยุดกลางทาง
+    final report = StringBuffer();
+    final broken = <String>[];
+    addTearDown(() => File('test_screens/$_dir/report.txt').writeAsStringSync(
+        'ขนาดจอ ${_w.toStringAsFixed(0)}x${_h.toStringAsFixed(0)} dp · ตัวอักษร x$_scale\n'
+        'หน้าที่วาดล้นกรอบ: ${broken.isEmpty ? 'ไม่มี' : broken.join(', ')}\n\n$report'));
 
     // ignore: invalid_use_of_visible_for_testing_member
     SharedPreferences.setMockInitialValues({});
@@ -201,8 +268,55 @@ void main() {
       }
     }
 
-    Future<void> shot(String name) =>
-        expectLater(find.byType(MaterialApp), matchesGoldenFile('out/$name.png'));
+    Future<void> shot(String name) async {
+      final cut = _cutTexts();
+      final error = tester.takeException();
+      if (error != null) broken.add(name);
+      report.writeln([
+        name,
+        if (error != null) 'วาดล้น/ผิดพลาด: ${'$error'.split('\n').first}',
+        if (cut.isNotEmpty) 'ถูกตัด ${cut.length}: ${cut.join(' | ')}',
+      ].join(' · '));
+      await expectLater(find.byType(MaterialApp), matchesGoldenFile('$_dir/$name.png'));
+    }
+
+    // รอจนเห็น [f]: ระหว่างรอเลื่อนรายการหลักลงทีละนิด (จอเล็กหรือตัวอักษรใหญ่ ของที่อยู่ท้ายรายการยังไม่ถูกสร้าง)
+    // เจอแล้วเลื่อนกลับตำแหน่งเดิม [restore] ภาพจะได้มุมเดิม
+    Future<bool> untilSeen(Finder f, {int max = 600, int realMs = 5, bool restore = true}) async {
+      final s0 = _mainScroll();
+      final start = s0?.position.pixels;
+      var moved = false;
+      for (var i = 0; i < max; i++) {
+        if (f.evaluate().isNotEmpty) {
+          if (moved && restore && s0 != null && s0.mounted && start != null) {
+            s0.position.jumpTo(start);
+            await tester.pump();
+          }
+          return true;
+        }
+        if (i % 8 == 7) {
+          final s = _mainScroll();
+          if (s != null) {
+            final p = s.position;
+            p.jumpTo(p.pixels >= p.maxScrollExtent - 1 ? p.minScrollExtent : math.min(p.pixels + 300, p.maxScrollExtent));
+            moved = true;
+          }
+        }
+        await tester.runAsync(() => Future<void>.delayed(Duration(milliseconds: realMs)));
+        await tester.pump(const Duration(milliseconds: 20));
+      }
+      return f.evaluate().isNotEmpty;
+    }
+
+    // กดสิ่งที่อาจอยู่นอกจอ: เลื่อนให้เห็นก่อน (ถ้ายังไม่เห็น) แล้วค่อยกด
+    Future<void> tapOn(Finder f) async {
+      if (f.evaluate().isEmpty) await untilSeen(f, max: 240, restore: false);
+      if (f.hitTestable().evaluate().isEmpty) {
+        await tester.ensureVisible(f.first);
+        await tester.pump(const Duration(milliseconds: 20));
+      }
+      await tester.tap(f.first);
+    }
 
     Future<void> scrollBy(double dy) async {
       await tester.drag(find.byType(Scrollable).last, Offset(0, -dy));
@@ -261,7 +375,7 @@ void main() {
 
     await tab('หน้าหลัก');
     await shot('07_home_mechanic_tools');
-    // หน้าหลักเป็น ListView ที่มี GridView (เลื่อนไม่ได้) ซ้อนอยู่: เลื่อนที่รายการหลัก
+    // เลื่อนที่รายการหลักของหน้า
     await scrollList(700);
     await shot('08_home_mechanic_tools_2');
 
@@ -275,7 +389,7 @@ void main() {
     await run(300);
     await shot('10_live_mechanic');
 
-    await tester.tap(find.text('รอบเครื่องยนต์').first);
+    await tapOn(find.text('รอบเครื่องยนต์'));
     await run(150);
     await shot('11_live_chart');
     pop();
@@ -286,8 +400,8 @@ void main() {
     // odometer check
     await open(const OdometerScreen());
     await tester.enterText(find.byType(TextField).first, '186,500');
-    await tester.tap(find.text('อ่านข้อมูลและตรวจ'));
-    await until(() => find.text('ข้อมูลที่อ่านได้').evaluate().isNotEmpty, max: 400, realMs: 5);
+    await tapOn(find.text('อ่านข้อมูลและตรวจ'));
+    await untilSeen(find.text('ข้อมูลที่อ่านได้'), max: 400);
     await settle(200);
     await shot('12_odometer');
     await scrollBy(800);
@@ -298,8 +412,15 @@ void main() {
     // used-car check (dashboard km lower than the ECU → suspicious)
     await open(const UsedCarScreen());
     await tester.enterText(find.byType(TextField).first, '98,000');
-    await tester.tap(find.textContaining('เริ่มตรวจ'));
-    await until(() => find.text('ส่งรายงาน PDF').evaluate().isNotEmpty, max: 1500, realMs: 5);
+    final usedBefore = container.read(scanProvider).report?.snapshot.time;
+    await tapOn(find.textContaining('เริ่มตรวจ'));
+    // ตรวจเสร็จ = ได้ผลสแกนครั้งใหม่ และปุ่มกลับจาก "กำลังตรวจ…" (ปุ่มส่งรายงานอยู่ท้ายรายการ อาจยังไม่ถูกสร้าง)
+    await until(
+        () =>
+            container.read(scanProvider).report?.snapshot.time != usedBefore &&
+            find.text('กำลังตรวจ…').evaluate().isEmpty,
+        max: 1500,
+        realMs: 5);
     await settle(400);
     await scrollBy(700);
     await shot('14_used_car');
@@ -312,8 +433,7 @@ void main() {
         shop: const ShopProfile(name: 'อู่ช่างเอ ออโต้เซอร์วิส', phone: '081-234-5678', address: 'ถ.พหลโยธิน กรุงเทพฯ', technician: 'ช่างเอ'),
         usedCar: evaluateUsedCar(report: report, modules: report.snapshot.modules),
       ));
-      Directory('test_screens/out').createSync(recursive: true);
-      File('test_screens/out/report.pdf').writeAsBytesSync(bytes);
+      File('test_screens/$_dir/report.pdf').writeAsBytesSync(bytes);
     });
     pop();
     await settle();
@@ -325,8 +445,8 @@ void main() {
     await settle();
 
     await open(const Mode06Screen());
-    await tester.tap(find.text('อ่านผลทดสอบ'));
-    await until(() => find.textContaining('ทดสอบทั้งหมด').evaluate().isNotEmpty, max: 600, realMs: 5);
+    await tapOn(find.text('อ่านผลทดสอบ'));
+    await untilSeen(find.textContaining('ทดสอบทั้งหมด'));
     await settle(200);
     await shot('16_mode06');
     pop();
@@ -336,8 +456,8 @@ void main() {
     await shot('17_modules');
     final abs = container.read(modulesProvider).firstWhere((m) => m.tx == '7B0');
     await open(ModuleDetailScreen(module: abs), frames: 40);
-    await tester.tap(find.text('อ่านรหัส'));
-    await until(() => find.text('C0035-31').evaluate().isNotEmpty, max: 400, realMs: 5);
+    await tapOn(find.text('อ่านรหัส'));
+    await untilSeen(find.text('C0035-31'), max: 400);
     await settle(200);
     await shot('18_module_abs');
     pop();
@@ -347,8 +467,8 @@ void main() {
     // ค่าเฉพาะยี่ห้อ (ชุดตัวอย่างของรถจำลอง)
     container.read(extPacksProvider.notifier).put(demoPack());
     await open(const BrandDataScreen(initialTab: 0), frames: 40);
-    await tester.tap(find.text('อ่านครั้งเดียว'));
-    await until(() => find.textContaining('ต่างจากสูบอื่นชัด').evaluate().isNotEmpty, max: 400, realMs: 5);
+    await tapOn(find.text('อ่านครั้งเดียว'));
+    await untilSeen(find.textContaining('ต่างจากสูบอื่นชัด'), max: 400);
     await settle(200);
     await shot('18b_brand_data');
     await scrollList(600);
@@ -370,7 +490,7 @@ void main() {
     await tester.tap(find.descendant(of: find.byType(AlertDialog), matching: find.text('ตกลง')));
     await settle(300);
     await shot('18m_import_blocked');
-    await tester.tap(find.text('รับทราบ'));
+    await tapOn(find.text('รับทราบ'));
     await settle(300);
     final imported = container.read(extPacksProvider).firstWhere((p) => p.name == 'ชุดที่นำเข้า');
     expect(imported.pids.map((p) => p.request), ['221130']);
@@ -379,21 +499,19 @@ void main() {
     await settle(200);
 
     // คลังชุดข้อมูล
-    await tester.tap(find.text('คลังชุดข้อมูล'));
-    await until(() => find.text('Toyota Hilux (Vigo, Revo) / Fortuner').evaluate().isNotEmpty, max: 600, realMs: 5);
+    await tapOn(find.text('คลังชุดข้อมูล'));
+    await untilSeen(find.text('Toyota Hilux (Vigo, Revo) / Fortuner'));
     await settle(200);
     await shot('18e_library');
     final hiluxCard = find.ancestor(of: find.text('Toyota Hilux (Vigo, Revo) / Fortuner'), matching: find.byType(PremiumCard)).first;
     final useHilux = find.descendant(of: hiluxCard, matching: find.text('ใช้ชุดนี้'));
-    await tester.ensureVisible(useHilux);
+    await tester.ensureVisible(hiluxCard);
     await settle(100);
-    await tester.tap(useHilux);
+    await tapOn(useHilux);
     await until(() => container.read(extPacksProvider).any((p) => p.lib == 'toyota_hilux'), max: 600, realMs: 5);
     await settle(200);
     await scrollList(-5000);
-    await tester.ensureVisible(find.text('อ่านครั้งเดียว'));
-    await settle(100);
-    await tester.tap(find.text('อ่านครั้งเดียว'));
+    await tapOn(find.text('อ่านครั้งเดียว'));
     await run(10);
     await until(() => find.byType(LinearProgressIndicator).evaluate().isEmpty, max: 3000, realMs: 5);
     await settle(200);
@@ -411,15 +529,13 @@ void main() {
       ..add(CalPoint(raw: const [0x68, 0x60], ref: 64.4));
     container.read(extPacksProvider.notifier).put(hp);
     await open(ExtPidDetailScreen(pid: atf, packId: hp.id), frames: 30);
-    await tester.tap(find.text('อ่านครั้งเดียว'));
+    await tapOn(find.text('อ่านครั้งเดียว'));
     await until(() => find.byType(ByteGrid).evaluate().isNotEmpty, max: 600, realMs: 5);
     await settle(200);
     await shot('18h_pid_detail');
     await scrollList(700);
     await shot('18i_pid_calibrate');
-    await tester.ensureVisible(find.text('หาสูตรจากจุดเทียบ'));
-    await settle(100);
-    await tester.tap(find.text('หาสูตรจากจุดเทียบ'));
+    await tapOn(find.text('หาสูตรจากจุดเทียบ'));
     await settle(400);
     await shot('18j_fit');
     pop();
@@ -428,10 +544,8 @@ void main() {
     await settle();
 
     await open(const DidScannerScreen(autoPreset: false), frames: 30);
-    await tester.ensureVisible(find.text('เริ่มค้นหา'));
-    await settle(100);
-    await tester.tap(find.text('เริ่มค้นหา'));
-    await until(() => find.textContaining(RegExp(r'กล่องตอบ [1-9]')).evaluate().isNotEmpty, max: 3000, realMs: 5);
+    await tapOn(find.text('เริ่มค้นหา'));
+    await untilSeen(find.textContaining(RegExp(r'กล่องตอบ [1-9]')), max: 3000);
     await settle(200);
     await shot('18d_did_scanner');
     pop();
@@ -441,8 +555,8 @@ void main() {
     // รถไม่ตอบเลย (ปิดสวิตช์กุญแจ): ต้องบอกให้เปิดสวิตช์ ไม่สรุปว่าทุกชุดไม่ตรงรุ่น
     demo.ignitionOff = true;
     await open(ExtMatchScreen(onUse: (_) {}), frames: 30);
-    await tester.tap(find.textContaining('เริ่มทดสอบ'));
-    await until(() => find.text(carSilentText).evaluate().isNotEmpty, max: 3000, realMs: 5);
+    await tapOn(find.textContaining('เริ่มทดสอบ'));
+    await untilSeen(find.text(carSilentText), max: 3000);
     await settle(200);
     await shot('18k_car_silent');
     demo.ignitionOff = false;
@@ -451,8 +565,8 @@ void main() {
 
     // battery test: rest + crank
     await open(const BatteryScreen(), frames: 80);
-    await tester.tap(find.text('เริ่ม').first);
-    await until(() => find.text('วัดใหม่').evaluate().isNotEmpty, max: 300, realMs: 40);
+    await tapOn(find.text('เริ่ม'));
+    await untilSeen(find.text('วัดใหม่'), max: 300, realMs: 40);
     await settle(300);
     await shot('19_battery');
     pop();
@@ -460,9 +574,9 @@ void main() {
 
     // performance: arm + simulated launch
     await open(const PerformanceScreen(), frames: 60);
-    await tester.tap(find.text('เตรียมพร้อม'));
+    await tapOn(find.text('เตรียมพร้อม'));
     await run(10);
-    await tester.tap(find.text('จำลองออกตัว'));
+    await tapOn(find.text('จำลองออกตัว'));
     await until(() => find.text('เตรียมพร้อม').evaluate().isNotEmpty, max: 2000, realMs: 15);
     await settle(200);
     await shot('20_performance');
@@ -487,6 +601,8 @@ void main() {
     await tester.ensureVisible(find.text(remapAfter.name).last);
     await settle(200);
     await shot('34b_remap_hub_runs');
+    await tester.ensureVisible(find.text(remapAfter.name).last);
+    await tester.pump();
     await tester.tap(find.text(remapAfter.name).last);
     await settle(400);
     await shot('35_remap_result');
@@ -512,8 +628,7 @@ void main() {
         after: analyzeRemapRun(remapAfter),
         shop: const ShopProfile(name: 'อู่ช่างเอ ออโต้เซอร์วิส', phone: '081-234-5678', technician: 'ช่างเอ'),
       );
-      Directory('test_screens/out').createSync(recursive: true);
-      File('test_screens/out/remap_report.pdf').writeAsBytesSync(bytes);
+      File('test_screens/$_dir/remap_report.pdf').writeAsBytesSync(bytes);
     });
 
     // ทดสอบจริงกับรถจำลองดีเซลเทอร์โบ: เริ่ม → จำลองออกตัว → หยุดและบันทึก
@@ -523,13 +638,11 @@ void main() {
       ..turboDiesel = true
       ..overboostKpa = 30;
     await scrollList(-3000);
-    await tester.ensureVisible(find.text('เริ่มทดสอบ หลังรีแมพ'));
-    await settle(100);
-    await tester.tap(find.text('เริ่มทดสอบ หลังรีแมพ'));
+    await tapOn(find.text('เริ่มทดสอบ หลังรีแมพ'));
     await until(() => find.text('หยุดและบันทึก').evaluate().isNotEmpty, max: 1500, realMs: 10);
     // เก็บค่าตอนจอดนิ่งก่อนสักครู่ (จับเวลา 0–100 ต้องเห็นรถหยุดนิ่งก่อนออกตัว)
     await until(() => false, max: 40, realMs: 30);
-    await tester.tap(find.text('จำลองออกตัว'));
+    await tapOn(find.text('จำลองออกตัว'));
     await until(() => false, max: 330, realMs: 30);
     await settle(200);
     await shot('39_remap_live');
@@ -537,19 +650,17 @@ void main() {
     await shot('39b_remap_live_2');
     // ปุ่มหยุดอยู่บนสุดของรายการ (ListView ทิ้งส่วนที่เลื่อนพ้นจอไปแล้ว) เลื่อนกลับขึ้นก่อนกด
     await scrollList(-3000);
-    await tester.ensureVisible(find.text('หยุดและบันทึก'));
-    await settle(100);
-    await tester.tap(find.text('หยุดและบันทึก'));
+    await tapOn(find.text('หยุดและบันทึก'));
     await until(() => find.byType(RemapResultScreen).evaluate().isNotEmpty, max: 1500, realMs: 10);
     await settle(400);
     await shot('40_remap_live_result');
     // เก็บข้อมูลดิบของรอบนี้ไว้ตรวจย้อนหลัง (CSV แบบเดียวกับปุ่มส่งออกในแอป)
     await tester.runAsync(() async {
       final live = (await remapStore.list()).firstWhere((r) => r.id.startsWith('remap_'));
-      File('test_screens/out/remap_live_run.csv').writeAsStringSync(live.toCsv());
+      File('test_screens/$_dir/remap_live_run.csv').writeAsStringSync(live.toCsv());
       // สรุปผลวิเคราะห์เป็นข้อความ ตรวจได้โดยไม่ต้องเปิดภาพ (ตั้งบูสต์เกินไว้ 30 kPa ต้องได้ระดับแจ้งเตือน)
       final a = analyzeRemapRun(live);
-      File('test_screens/out/remap_live_summary.txt').writeAsStringSync([
+      File('test_screens/$_dir/remap_live_summary.txt').writeAsStringSync([
         'level=${a.level.name} limp=${a.limpSuspected} rows=${live.times.length} hz=${live.hz}',
         for (final x in a.accel) 'accel ${x.label} ${x.seconds.toStringAsFixed(2)}',
         for (final e in a.events)
@@ -582,7 +693,7 @@ void main() {
     await settle();
     await open(const LogsScreen(), frames: 60);
     await shot('23_logs');
-    await tester.tap(find.text('ทดสอบออกตัว'));
+    await tapOn(find.text('ทดสอบออกตัว'));
     await settle(400);
     await shot('24_log_view');
     pop();
@@ -652,12 +763,8 @@ void main() {
 
     // สำรอง/กู้คืนข้อมูล (0.6.2)
     await open(const BackupScreen(), frames: 40);
-    await until(
-      () => find.text('บันทึกไฟล์สำรองลงเครื่อง').evaluate().isNotEmpty &&
-          find.byType(CircularProgressIndicator).evaluate().isEmpty,
-      max: 400,
-      realMs: 5,
-    );
+    await untilSeen(find.text('บันทึกไฟล์สำรองลงเครื่อง'), max: 400);
+    await until(() => find.byType(CircularProgressIndicator).evaluate().isEmpty, max: 400, realMs: 5);
     await settle(300);
     await shot('41_backup');
     pop();
@@ -669,8 +776,8 @@ void main() {
     await settle(300);
     await shot('42_comm_log');
     if (find.text('BLE OBDII').evaluate().isNotEmpty) {
-      await tester.tap(find.text('BLE OBDII').first);
-      await until(() => find.textContaining('221400').evaluate().isNotEmpty, max: 400, realMs: 5);
+      await tapOn(find.text('BLE OBDII'));
+      await untilSeen(find.textContaining('221400'), max: 400);
       await settle(300);
       await shot('43_comm_log_view');
       pop();
@@ -700,15 +807,13 @@ void main() {
           ],
         ));
     await open(const BrandDataScreen(initialTab: 0), frames: 40);
-    await tester.tap(find.text('ค้นพบเอง Isuzu D-Max 2007').first);
-    await until(() => find.textContaining('ตั้งชื่อจากคลัง').evaluate().isNotEmpty, max: 600, realMs: 5);
+    await tapOn(find.text('ค้นพบเอง Isuzu D-Max 2007'));
+    await untilSeen(find.textContaining('ตั้งชื่อจากคลัง'));
     await settle(200);
     await shot('44_found_known_names');
     final nameButton = find.textContaining('ตั้งชื่อจากคลัง');
     if (nameButton.evaluate().isNotEmpty) {
-      await tester.ensureVisible(nameButton.first);
-      await settle(100);
-      await tester.tap(nameButton.first);
+      await tapOn(nameButton);
       await settle(300);
     }
     await shot('45_found_named');
@@ -724,5 +829,6 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
     }
     expect(container.read(livePollerProvider).isRunning, anyOf(true, false));
+    expect(broken, isEmpty, reason: 'หน้าที่วาดล้นกรอบหรือผิดพลาดตอนวาด (ดู test_screens/$_dir/report.txt)');
   });
 }

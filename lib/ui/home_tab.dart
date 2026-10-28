@@ -58,7 +58,7 @@ final _mechTools = <_Tool>[
       color: const Color(0xFFFF4D5A)),
   _Tool(Icons.science_rounded, 'Mode 06', 'misfire รายสูบ แคท O2', () => const Mode06Screen(), color: const Color(0xFF22C474)),
   _Tool(Icons.manage_search_rounded, 'ค้นหารหัสปัญหา', 'ฐานข้อมูลภาษาไทย', () => const DtcLookupScreen(), color: const Color(0xFF3DA5FF)),
-  _Tool(Icons.terminal_rounded, 'เทอร์มินัล', 'ส่งคำสั่ง ELM327 ดิบ', () => const TerminalScreen(), color: const Color(0xFF8A95A5)),
+  _Tool(Icons.terminal_rounded, 'เทอร์มินัล', 'ส่งคำสั่งดิบถึงตัวสแกน', () => const TerminalScreen(), color: const Color(0xFF8A95A5)),
 ];
 
 class HomeTab extends ConsumerWidget {
@@ -94,20 +94,35 @@ class HomeTab extends ConsumerWidget {
       onGoTab(1);
     }
 
-    Widget grid(List<_Tool> tools) => GridView(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: cols,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            mainAxisExtent: cardHeight,
-          ),
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            for (final t in tools)
-              ToolCard(icon: t.icon, title: t.title, subtitle: t.subtitle, color: t.color, onTap: () => open(t.builder())),
-          ],
-        );
+    // การ์ดเครื่องมือเรียงเป็นแถว แต่ละแถวสูงเท่าการ์ดที่เนื้อหายาวที่สุด (ไม่ต่ำกว่า cardHeight)
+    // จอแคบหรือตั้งตัวอักษรใหญ่ การ์ดจะสูงขึ้นเอง ข้อความไม่ถูกตัด
+    Widget grid(List<_Tool> tools) => Column(children: [
+          for (var i = 0; i < tools.length; i += cols)
+            Padding(
+              padding: EdgeInsets.only(bottom: i + cols < tools.length ? 10 : 0),
+              child: IntrinsicHeight(
+                child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  for (var j = i; j < i + cols; j++) ...[
+                    if (j > i) const SizedBox(width: 10),
+                    Expanded(
+                      child: j < tools.length
+                          ? ConstrainedBox(
+                              constraints: BoxConstraints(minHeight: cardHeight),
+                              child: ToolCard(
+                                icon: tools[j].icon,
+                                title: tools[j].title,
+                                subtitle: tools[j].subtitle,
+                                color: tools[j].color,
+                                onTap: () => open(tools[j].builder()),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
+                ]),
+              ),
+            ),
+        ]);
 
     return ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 28), children: [
       _VehicleHero(vehicle: vehicle, onOpenVehicle: vehicle == null ? null : () => open(VehicleScreen(vehicleId: vehicle.id))),
@@ -277,7 +292,7 @@ class _VehicleHero extends ConsumerWidget {
               ]),
               const SizedBox(height: 4),
               if (!connected)
-                Text('เสียบตัวสแกน ELM327 แล้วกดเชื่อมต่อ แอปจะรู้จักยี่ห้อและรุ่นรถให้เอง หรือลองโหมดทดลองได้เลย',
+                Text('เสียบตัวสแกน PRO SCANNER แล้วกดเชื่อมต่อ แอปจะรู้จักยี่ห้อและรุ่นรถให้เอง หรือลองโหมดทดลองได้เลย',
                     style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.4))
               else ...[
                 if (specs.isNotEmpty)

@@ -61,6 +61,11 @@ class ObdDoctorApp extends ConsumerWidget {
       themeMode: s.themeMode,
       theme: buildTheme(s.accent, Brightness.light, fontFamily: fontFamily),
       darkTheme: buildTheme(s.accent, Brightness.dark, fontFamily: fontFamily),
+      // ตัวอักษรใหญ่ตามที่ตั้งในเครื่องได้ แต่ไม่เกิน kMaxTextScale เพื่อให้ทุกหน้าแสดงครบ ไม่ล้น ไม่ถูกตัด
+      builder: (context, child) => MediaQuery.withClampedTextScaling(
+        maxScaleFactor: kMaxTextScale,
+        child: child ?? const SizedBox.shrink(),
+      ),
       home: const SplashScreen(),
     );
   }

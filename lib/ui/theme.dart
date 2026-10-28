@@ -26,6 +26,11 @@ abstract final class Paper {
 const kFont = 'Prompt';
 const kMono = 'IBMPlexMono';
 
+/// ขนาดตัวอักษรตามที่ตั้งในเครื่องได้ไม่เกินกี่เท่า
+/// (ตั้งตัวอักษรใหญ่มากในเครื่อง หน้าจอที่มีตัวเลขใหญ่ มาตรวัด และปุ่มเรียงกันจะล้นหรือถูกตัด)
+/// ทุกหน้าตรวจด้วยภาพหน้าจอที่ขนาดนี้แล้ว (test_screens, SHOT_SCALE=1.3)
+const kMaxTextScale = 1.3;
+
 ThemeData buildTheme(AccentPreset accent, Brightness brightness, {String fontFamily = kFont}) {
   final dark = brightness == Brightness.dark;
   final base = ColorScheme.fromSeed(seedColor: accent.color, brightness: brightness);

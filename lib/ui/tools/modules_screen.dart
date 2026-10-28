@@ -106,7 +106,7 @@ class _ModulesScreenState extends ConsumerState<ModulesScreen> {
             return const EmptyState(
               icon: Icons.device_hub_rounded,
               title: 'รถใช้โปรโตคอลรุ่นเก่า',
-              text: 'การอ่านกล่องอื่น (ABS ถุงลม ฯลฯ) ผ่าน ELM327 รองรับเฉพาะรถที่ใช้ CAN (ส่วนใหญ่ปี 2008 ขึ้นไป)',
+              text: 'การอ่านกล่องอื่น (ABS ถุงลม ฯลฯ) ผ่าน PRO SCANNER รองรับเฉพาะรถที่ใช้ CAN (ส่วนใหญ่ปี 2008 ขึ้นไป)',
             );
           }
           return ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 32), children: [

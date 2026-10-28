@@ -187,19 +187,20 @@ class ToolCard extends StatelessWidget {
           const Spacer(),
           if (badge != null) Pill(text: badge!, color: c),
         ]),
+        const SizedBox(height: 10),
         const Spacer(),
-        Text(title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5, height: 1.3)),
-        const SizedBox(height: 2),
-        Flexible(
-          flex: 0,
-          child: Text(subtitle,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant, height: 1.3)),
+        // ชื่อเครื่องมือแสดงครบบรรทัดเดียวเสมอ: ช่องแคบหรือตัวอักษรใหญ่ ย่อตัวอักษรลงแทนการตัดคำ
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Text(title,
+              maxLines: 1,
+              softWrap: false,
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14.5, height: 1.3)),
         ),
+        const SizedBox(height: 2),
+        // คำอธิบายขึ้นได้หลายบรรทัด การ์ดสูงตามเนื้อหา (ดู grid ใน home_tab.dart)
+        Text(subtitle, style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant, height: 1.3)),
       ]),
     );
   }

@@ -79,7 +79,7 @@ class EcuInfoScreen extends ConsumerWidget {
               if (adapter?.kind.name == 'elmClone') ...[
                 const SizedBox(height: 10),
                 const Pill(
-                  text: 'ตัวสแกนก๊อปบางรุ่นอ่านกล่องอื่นได้ไม่ครบ ถ้าสแกนทั้งคันไม่เจอกล่อง ลองใช้ตัวสแกนชิป STN/vLinker',
+                  text: 'ตัวสแกนชิปรุ่นทั่วไปบางรุ่นอ่านกล่องอื่นได้ไม่ครบ ถ้าสแกนทั้งคันไม่เจอกล่อง ลองตัวสแกนที่ใช้ชิป STN',
                   color: StatusColors.info,
                   icon: Icons.info_rounded,
                 ),

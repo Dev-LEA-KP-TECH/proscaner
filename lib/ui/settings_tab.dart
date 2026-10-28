@@ -162,7 +162,7 @@ class SettingsTab extends ConsumerWidget {
         if (mode == AppMode.mechanic)
           _ToolTile(
             icon: Icons.terminal_rounded,
-            title: 'เทอร์มินัล ELM327',
+            title: 'เทอร์มินัลตัวสแกน',
             subtitle: 'ส่งคำสั่ง AT หรือ OBD เอง และดู log การสื่อสาร',
             onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const TerminalScreen())),
           ),

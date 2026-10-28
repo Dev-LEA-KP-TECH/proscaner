@@ -83,22 +83,29 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
       _ => const SettingsTab(),
     };
 
+    // จอแคบหรือตั้งตัวอักษรใหญ่: ป้ายสถานะการเชื่อมต่อใช้คำสั้น เหลือที่ให้ชื่อหน้าและชื่อแอป
+    final textScale = MediaQuery.textScalerOf(context).scale(100) / 100;
+    final compact = MediaQuery.sizeOf(context).width / textScale < 400;
+
     return Scaffold(
       appBar: AppBar(
-        titleSpacing: 20,
+        titleSpacing: compact ? 14 : 20,
         title: Row(children: [
           const BrandMark(size: 30),
-          const SizedBox(width: 12),
-          // ย่อชื่อได้บนจอแคบ ไม่ให้ชนป้ายสถานะการเชื่อมต่อทางขวา
+          SizedBox(width: compact ? 10 : 12),
+          // ชื่อหน้าและ PROSCANER แสดงครบเสมอ: ถ้าที่ไม่พอ ย่อลงทั้งก้อน ไม่ตัดคำ
           Flexible(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(_titles[_tab], maxLines: 1, overflow: TextOverflow.ellipsis),
-              Text('PROSCANER',
-                  maxLines: 1,
-                  overflow: TextOverflow.clip,
-                  softWrap: false,
-                  style: TextStyle(fontSize: 10, letterSpacing: 2.4, fontWeight: FontWeight.w800, color: cs.primary)),
-            ]),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(_titles[_tab], maxLines: 1, softWrap: false),
+                Text('PROSCANER',
+                    maxLines: 1,
+                    softWrap: false,
+                    style: TextStyle(fontSize: 10, letterSpacing: 2.4, fontWeight: FontWeight.w800, color: cs.primary)),
+              ]),
+            ),
           ),
         ]),
         actions: [
@@ -108,7 +115,10 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
             onPressed: () => Navigator.of(context)
                 .push(MaterialPageRoute<void>(builder: (_) => const DtcLookupScreen())),
           ),
-          Padding(padding: const EdgeInsets.only(right: 12), child: ConnectionChip(session: session)),
+          Padding(
+            padding: EdgeInsets.only(right: compact ? 10 : 12),
+            child: ConnectionChip(session: session, compact: compact),
+          ),
         ],
       ),
       body: SafeArea(
@@ -162,24 +172,31 @@ class BrandMark extends StatelessWidget {
 }
 
 class ConnectionChip extends StatelessWidget {
-  const ConnectionChip({super.key, required this.session});
+  const ConnectionChip({super.key, required this.session, this.compact = false});
 
   final SessionState session;
+
+  /// จอแคบ: ใช้คำสั้น (ความหมายเดิม) ให้หัวแอปมีที่แสดงชื่อหน้าเต็ม
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final (label, color, icon) = switch (session.status) {
-      ConnStatus.connected => (session.isPractice ? 'โหมดทดลอง' : 'เชื่อมต่อ', const Color(0xFF22C474), Icons.link_rounded),
+      ConnStatus.connected => (
+          session.isPractice ? (compact ? 'ทดลอง' : 'โหมดทดลอง') : 'เชื่อมต่อ',
+          const Color(0xFF22C474),
+          Icons.link_rounded
+        ),
       ConnStatus.connecting => ('กำลังต่อ', cs.primary, Icons.sync_rounded),
       ConnStatus.failed => ('หลุด', const Color(0xFFFF4D5A), Icons.link_off_rounded),
-      ConnStatus.disconnected => ('ไม่ได้เชื่อมต่อ', cs.onSurfaceVariant, Icons.link_off_rounded),
+      ConnStatus.disconnected => (compact ? 'ไม่ได้ต่อ' : 'ไม่ได้เชื่อมต่อ', cs.onSurfaceVariant, Icons.link_off_rounded),
     };
     return InkWell(
       borderRadius: BorderRadius.circular(30),
       onTap: () => openConnect(context),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        padding: EdgeInsets.symmetric(horizontal: compact ? 10 : 12, vertical: 7),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.12),
           borderRadius: BorderRadius.circular(30),

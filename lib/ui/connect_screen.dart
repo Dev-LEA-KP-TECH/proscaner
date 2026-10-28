@@ -335,7 +335,11 @@ class _BluetoothPanelState extends State<_BluetoothPanel> {
                   'แล้วกลับมากด "ค้นหาอีกครั้ง"');
               return;
             case BluetoothAdapterState.off:
+            case BluetoothAdapterState.turningOff:
               _fail('Bluetooth ปิดอยู่ เปิด Bluetooth (ศูนย์ควบคุม หรือ การตั้งค่า > Bluetooth) แล้วกด "ค้นหาอีกครั้ง"');
+              return;
+            case BluetoothAdapterState.unavailable:
+              _fail('เครื่องนี้ใช้ Bluetooth ไม่ได้ ใช้ตัวสแกนแบบ Wi-Fi หรือลองโหมดทดลองแทน');
               return;
             default:
               _fail('ยังใช้ Bluetooth ไม่ได้ในขณะนี้ รอสักครู่แล้วกด "ค้นหาอีกครั้ง"');
@@ -392,7 +396,7 @@ class _BluetoothPanelState extends State<_BluetoothPanel> {
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(
         _android
-            ? 'แตะชื่อตัวสแกนเพื่อเชื่อมต่อ ตัวสแกนส่วนใหญ่ชื่อ OBDII, OBD2, V-LINK หรือ ELM327 '
+            ? 'แตะชื่อตัวสแกนเพื่อเชื่อมต่อ PRO SCANNER จะขึ้นชื่อในรายการเป็น OBDII, OBD2, V-LINK หรือ ELM327 (ชื่อจากโรงงาน) '
                 'ถ้ามือถือขอรหัส PIN ให้ใส่ 1234 หรือ 0000'
             : 'iPhone ใช้ได้กับตัวสแกนแบบ Bluetooth LE (BLE) และแบบ Wi-Fi เท่านั้น '
                 '(ตัวสแกน Bluetooth ธรรมดาใช้กับ iPhone ไม่ได้ เป็นข้อจำกัดของ Apple)',

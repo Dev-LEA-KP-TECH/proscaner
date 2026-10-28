@@ -103,7 +103,7 @@ class BleTransport implements ObdTransport {
     if (rx == null || tx == null) {
       await disconnect();
       throw TransportException(
-          'ไม่พบช่องสื่อสาร OBD บนอุปกรณ์นี้ อาจไม่ใช่ตัวสแกน ELM327 แบบ BLE');
+          'ไม่พบช่องสื่อสาร OBD บนอุปกรณ์นี้ อาจไม่ใช่ตัวสแกน PRO SCANNER แบบ BLE');
     }
 
     await rx.setNotifyValue(true);

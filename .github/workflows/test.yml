@@ -1,7 +1,10 @@
-# ตรวจโค้ด + เทสต์ทั้งหมด (test/) + ภาพหน้าจอทุกหน้า (test_screens/) บนเครื่อง Linux ของ GitHub
-# เครื่อง Linux กินโควตาน้อยกว่าเครื่อง Mac มาก จึงรันทุกครั้งที่ push เข้า main
-# ผลเก็บใน branch test-results: RESULT.txt, analyze.log, unit_tests.log, screens.log และ shots/ (ภาพหน้าจอขนาดมือถือ 360 dp)
-name: Unit tests + screenshots
+# ตรวจก่อนอัปเดตทุกครั้ง (เครื่อง Linux ของ GitHub) คู่กับ ios.yml ที่ตรวจฝั่ง iPhone/iPad
+#   1) analyze + เทสต์ทั้งหมด (test/)
+#   2) ภาพหน้าจอทุกหน้า (test_screens/) หลายขนาดจอ/ขนาดตัวอักษร พร้อมรายงานข้อความที่ถูกตัดหรือวาดล้นกรอบ
+#   3) build แอป Android ตัวจริง (com.proscaner.app ยังไม่เซ็น) จากโค้ดชุดเดียวกับ iOS
+# ผลรวมอยู่ใน branch test-results: RESULT.txt, *.log, screens/<ขนาด>/ (ภาพ + report.txt)
+# กติกา: อัปเดตลงเครื่อง (Android หรือ iOS) ได้เมื่อทุกงานในไฟล์นี้และ ios.yml ผ่านหมดเท่านั้น
+name: Unit tests + screenshots + Android build
 
 on:
   workflow_dispatch:
@@ -18,84 +21,168 @@ permissions:
   contents: write
 
 jobs:
-  test:
-    name: Analyze, unit tests, screenshots
+  unit:
+    name: Analyze + unit tests
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
           flutter-version: 3.47.7
           cache: true
-
-      - name: Get packages
-        run: flutter pub get
-
+      - run: flutter pub get
       - name: Analyze
-        id: analyze
-        continue-on-error: true
         run: |
           set -o pipefail
-          flutter analyze --no-fatal-infos 2>&1 | tee analyze.log
-
+          mkdir -p res
+          flutter analyze --no-fatal-infos 2>&1 | tee res/analyze.log
       - name: Unit tests
-        id: tests
-        continue-on-error: true
         run: |
           set -o pipefail
-          flutter test --reporter expanded 2>&1 | tee unit_tests.log
-
-      - name: Screenshots of every screen
-        id: screens
-        continue-on-error: true
-        run: |
-          set -o pipefail
-          mkdir -p test_screens/out
-          flutter test test_screens/app_screens_test.dart --update-goldens --reporter expanded 2>&1 | tee screens.log
-
-      - name: Save results to branch test-results
+          flutter test --reporter expanded 2>&1 | tee res/unit_tests.log
+      - uses: actions/upload-artifact@v4
         if: always()
+        with:
+          name: unit
+          path: res/
+          retention-days: 3
+
+  screens:
+    name: Screens ${{ matrix.tag }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { tag: phone, w: 360, h: 780, scale: '1.0' }
+          - { tag: phone_text13, w: 360, h: 780, scale: '1.3' }
+          - { tag: small_phone, w: 320, h: 640, scale: '1.0' }
+          - { tag: big_phone_text13, w: 412, h: 915, scale: '1.3' }
+          - { tag: phone_landscape, w: 780, h: 360, scale: '1.0' }
+          - { tag: tablet, w: 800, h: 1280, scale: '1.0' }
+          - { tag: tablet_landscape, w: 1280, h: 800, scale: '1.0' }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.7
+          cache: true
+      - run: flutter pub get
+      - name: Screenshots ${{ matrix.tag }} (${{ matrix.w }}x${{ matrix.h }} dp, text x${{ matrix.scale }})
+        run: |
+          set -o pipefail
+          flutter test test_screens/app_screens_test.dart --update-goldens --reporter expanded \
+            --dart-define=SHOT_W=${{ matrix.w }} --dart-define=SHOT_H=${{ matrix.h }} \
+            --dart-define=SHOT_SCALE=${{ matrix.scale }} --dart-define=SHOT_DIR=out_${{ matrix.tag }} \
+            2>&1 | tee screens.log
+      - name: Shrink images
+        if: always()
+        run: |
+          python3 -m pip install --quiet --break-system-packages pillow || python3 -m pip install --quiet pillow
+          mkdir -p res
+          cp screens.log res/ 2>/dev/null || true
+          cp test_screens/out_${{ matrix.tag }}/report.txt res/ 2>/dev/null || true
+          python3 - <<'EOF'
+          import glob, os
+          from PIL import Image
+          src = 'test_screens/out_${{ matrix.tag }}'
+          for f in sorted(glob.glob(src + '/*.png')):
+              im = Image.open(f).convert('RGB')
+              w = 540 if im.width <= im.height else 900
+              im = im.resize((w, round(im.height * w / im.width)), Image.LANCZOS)
+              im.save('res/' + os.path.basename(f)[:-4] + '.jpg', quality=82)
+          EOF
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screens-${{ matrix.tag }}
+          path: res/
+          retention-days: 3
+
+  android:
+    name: Android build (real app, not signed)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.7
+          cache: true
+      - run: flutter pub get
+      - name: Build APK (com.proscaner.app, release, not signed)
+        env:
+          PROSCANER_RELEASE: '1'
+        run: |
+          set -o pipefail
+          mkdir -p res
+          flutter build apk --release 2>&1 | tee res/android_build.log
+          ls -la build/app/outputs/flutter-apk/ | tee -a res/android_build.log
+          sha256sum build/app/outputs/flutter-apk/*.apk | tee -a res/android_build.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android
+          path: res/
+          retention-days: 3
+
+  publish:
+    name: Save results to branch test-results
+    needs: [unit, screens, android]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: art
+      - name: Push results
         env:
           GH_TOKEN: ${{ github.token }}
-          ANALYZE: ${{ steps.analyze.outcome }}
-          TESTS: ${{ steps.tests.outcome }}
-          SCREENS: ${{ steps.screens.outcome }}
+          UNIT: ${{ needs.unit.result }}
+          SCREENS: ${{ needs.screens.result }}
+          ANDROID: ${{ needs.android.result }}
         run: |
-          rm -rf /tmp/res && mkdir -p /tmp/res/shots
-          cp ./*.log /tmp/res/ 2>/dev/null || true
-          for f in test_screens/out/*.png; do
-            [ -f "$f" ] || continue
-            n=$(basename "$f" .png)
-            if command -v convert >/dev/null 2>&1; then
-              convert "$f" -resize 540x -quality 82 "/tmp/res/shots/$n.jpg"
-            else
-              cp "$f" /tmp/res/shots/
-            fi
+          rm -rf /tmp/res && mkdir -p /tmp/res/screens
+          cp art/unit/* /tmp/res/ 2>/dev/null || true
+          cp art/android/* /tmp/res/ 2>/dev/null || true
+          for d in art/screens-*; do
+            [ -d "$d" ] || continue
+            t=${d#art/screens-}
+            mkdir -p "/tmp/res/screens/$t"
+            cp -R "$d"/. "/tmp/res/screens/$t/"
           done
           {
             echo "run: ${GITHUB_RUN_ID}"
             echo "commit: ${GITHUB_SHA}"
-            echo "analyze: ${ANALYZE}"
-            echo "unit tests: ${TESTS}"
-            echo "screenshots: ${SCREENS} ($(ls /tmp/res/shots | wc -l) files)"
-            echo "--- unit tests (last lines)"
-            tail -3 unit_tests.log 2>/dev/null
+            echo "analyze + unit tests: ${UNIT}"
+            echo "screenshots (all sizes): ${SCREENS}"
+            echo "android build: ${ANDROID}"
+            echo "--- unit tests (last line)"
+            tail -1 /tmp/res/unit_tests.log 2>/dev/null
+            for r in /tmp/res/screens/*/report.txt; do
+              [ -f "$r" ] || continue
+              echo "--- $(basename "$(dirname "$r")"): $(sed -n 2p "$r") · ข้อความถูกตัด $(grep -c 'ถูกตัด' "$r") หน้า"
+            done
+            echo "--- android"
+            grep -E "Built |sha|\.apk" /tmp/res/android_build.log 2>/dev/null | tail -3
           } > /tmp/res/RESULT.txt
           cd /tmp/res
           git init -q -b test-results
           git config user.name "github-actions"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -q -m "Unit tests ${GITHUB_RUN_ID} for ${GITHUB_SHA}"
+          git commit -q -m "Checks ${GITHUB_RUN_ID} for ${GITHUB_SHA}"
           git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" test-results
-
       - name: Result
-        if: always()
         run: |
-          echo "analyze: ${{ steps.analyze.outcome }}"
-          echo "unit tests: ${{ steps.tests.outcome }}"
-          echo "screenshots: ${{ steps.screens.outcome }}"
-          [ "${{ steps.analyze.outcome }}" = "success" ] && [ "${{ steps.tests.outcome }}" = "success" ] && [ "${{ steps.screens.outcome }}" = "success" ]
+          echo "unit: ${{ needs.unit.result }} / screens: ${{ needs.screens.result }} / android: ${{ needs.android.result }}"
+          [ "${{ needs.unit.result }}" = "success" ] && [ "${{ needs.screens.result }}" = "success" ] && [ "${{ needs.android.result }}" = "success" ]

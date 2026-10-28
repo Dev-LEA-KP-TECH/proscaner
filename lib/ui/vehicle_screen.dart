@@ -308,7 +308,7 @@ class VehicleScreen extends ConsumerWidget {
               ),
               Text(
                 'แตะเพื่อคัดลอก กดค้างเพื่อลบ · เก็บไว้อ้างอิงตอนเข้ารหัสด้วยเครื่องมือเฉพาะยี่ห้อ '
-                '(ตัวสแกน ELM327 เขียนรหัสหัวฉีดลงกล่องไม่ได้)',
+                '(ตัวสแกน PRO SCANNER เขียนรหัสหัวฉีดลงกล่องไม่ได้)',
                 style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, height: 1.4),
               ),
             ]),

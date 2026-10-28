@@ -58,7 +58,7 @@ class _TerminalScreenState extends ConsumerState<TerminalScreen> {
     final connected = ref.watch(sessionProvider).isConnected;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('เทอร์มินัล ELM327'),
+        title: const Text('เทอร์มินัลตัวสแกน'),
         actions: [
           IconButton(
             tooltip: 'ล้าง log',
