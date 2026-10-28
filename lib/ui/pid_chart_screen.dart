@@ -71,7 +71,7 @@ class _PidChartScreenState extends ConsumerState<PidChartScreen> {
             const SizedBox(height: 18),
             Sparkline(values: series, color: cs.primary, height: 220, showAxis: true, decimals: def.decimals),
             const SizedBox(height: 6),
-            Text('ย้อนหลัง ${series.length} ค่าล่าสุด', style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+            Text('ย้อนหลัง ${series.length}\u00A0ค่าล่าสุด', style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
           ]),
         ),
         const SizedBox(height: 14),
@@ -89,8 +89,8 @@ class _PidChartScreenState extends ConsumerState<PidChartScreen> {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                'PID 01${pid.toRadixString(16).padLeft(2, '0').toUpperCase()} · ${def.bytes} ไบต์'
-                '${def.min != null ? ' · ช่วง ${def.min} ถึง ${def.max} ${def.unit}' : ''}',
+                'PID 01${pid.toRadixString(16).padLeft(2, '0').toUpperCase()}\u00A0· ${def.bytes}\u00A0ไบต์'
+                '${def.min != null ? '\u00A0· ช่วง\u00A0${def.min} ถึง ${def.max} ${def.unit}' : ''}',
                 style: TextStyle(color: cs.onSurfaceVariant),
               ),
             ),

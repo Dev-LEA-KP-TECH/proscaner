@@ -103,15 +103,15 @@ class _Mode06ScreenState extends ConsumerState<Mode06Screen> {
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      Text(failed > 0 ? 'ไม่ผ่าน $failed รายการ' : 'ผ่านทุกรายการ',
+                      Text(failed > 0 ? 'ไม่ผ่าน $failed\u00A0รายการ' : 'ผ่านทุกรายการ',
                           style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
-                      Text('ทดสอบทั้งหมด ${results.length} รายการ', style: TextStyle(color: cs.onSurfaceVariant)),
+                      Text('ทดสอบทั้งหมด ${results.length}\u00A0รายการ', style: TextStyle(color: cs.onSurfaceVariant)),
                     ]),
                   ),
                 ]),
               ),
               if (misfire.isNotEmpty) ...[
-                const SectionLabel('การจุดระเบิดไม่สมบูรณ์รายสูบ (เฉลี่ย 10 รอบขับ)'),
+                const SectionLabel('การจุดระเบิดไม่สมบูรณ์รายสูบ (เฉลี่ย 10\u00A0รอบขับ)'),
                 PremiumCard(child: _MisfireBars(items: misfire)),
               ],
               SectionLabel('รายการทดสอบ',
@@ -224,7 +224,7 @@ class _MisfireBars extends StatelessWidget {
       const SizedBox(height: 6),
       Row(children: [
         for (final r in items)
-          Expanded(child: Text('สูบ ${r.misfireCylinder}', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant))),
+          Expanded(child: Text('สูบ\u00A0${r.misfireCylinder}', textAlign: TextAlign.center, style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant))),
       ]),
       const SizedBox(height: 8),
       Text('สูบที่ตัวเลขสูงกว่าสูบอื่นชัดเจน ให้ตรวจหัวเทียน คอยล์ หัวฉีด ของสูบนั้นก่อน',

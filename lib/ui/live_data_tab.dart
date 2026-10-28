@@ -93,10 +93,10 @@ class _LiveDataTabState extends ConsumerState<LiveDataTab> {
           child: live.error != null
               ? Text(live.error!, style: TextStyle(fontSize: 12.5, color: cs.error))
               : Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisSize: MainAxisSize.min, children: [
-                  FitText(_paused ? 'หยุดชั่วคราว' : 'สด · ${pids.length} รายการ',
+                  FitText(_paused ? 'หยุดชั่วคราว' : 'สด\u00A0· ${pids.length}\u00A0รายการ',
                       style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: cs.onSurface)),
                   if (!_paused)
-                    FitText('${live.hz.toStringAsFixed(1)} ค่า/วินาที',
+                    FitText('${live.hz.toStringAsFixed(1)}\u00A0ค่า/วินาที',
                         style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant,
                             fontFeatures: const [FontFeature.tabularFigures()])),
                 ]),
@@ -182,7 +182,7 @@ class _LiveDataTabState extends ConsumerState<LiveDataTab> {
           itemCount: pids.length,
           separatorBuilder: (_, __) => const SizedBox(height: 10),
           itemBuilder: (context, i) {
-            final narrow = MediaQuery.sizeOf(context).width / (MediaQuery.textScalerOf(context).scale(100) / 100) < 380;
+            final narrow = isNarrow(context, 340);
             final def = pidTable[pids[i]]!;
             final v = live.latest[def.pid];
             final dv = v == null ? null : displayPid(def, v, settings);
@@ -195,18 +195,18 @@ class _LiveDataTabState extends ConsumerState<LiveDataTab> {
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(builder: (_) => PidChartScreen(pid: def.pid)),
               ),
-              // ชื่อค่ายาวขึ้นบรรทัดใหม่ได้ (ไม่ตัดท้าย) จอแคบให้ชื่อได้ที่มากขึ้น กราฟเล็กลง
+              // ชื่อค่ายาวขึ้นบรรทัดใหม่ได้ (ไม่ตัดท้าย) จอแคบไม่แสดงกราฟเล็ก ให้ชื่อได้ที่เต็ม (กราฟดูได้เมื่อแตะ)
               child: Row(children: [
                 Expanded(
-                  flex: narrow ? 7 : 5,
+                  flex: 5,
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(def.nameTh, style: const TextStyle(fontWeight: FontWeight.w600, height: 1.25)),
+                    Text(thaiKeep(def.nameTh), style: const TextStyle(fontWeight: FontWeight.w600, height: 1.25)),
                     const SizedBox(height: 2),
                     Text('01${def.pid.toRadixString(16).padLeft(2, '0').toUpperCase()}',
                         style: TextStyle(fontFamily: kMono, fontSize: 11, color: cs.onSurfaceVariant)),
                   ]),
                 ),
-                Expanded(flex: narrow ? 3 : 4, child: Sparkline(values: series, color: cs.primary, height: 34)),
+                if (!narrow) Expanded(flex: 4, child: Sparkline(values: series, color: cs.primary, height: 34)),
                 const SizedBox(width: 12),
                 SizedBox(
                   width: 92,

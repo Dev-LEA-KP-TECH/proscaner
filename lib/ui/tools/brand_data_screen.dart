@@ -182,7 +182,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
   }
 
   Future<void> _newPack() async {
-    final name = await askText(context, 'ชื่อชุดค่า', hint: 'เช่น Revo 2.8 1GD ปี 2020');
+    final name = await askText(context, 'ชื่อชุดค่า', hint: 'เช่น Revo 2.8 1GD ปี\u00A02020');
     if (name == null || name.trim().isEmpty) return;
     final p = ExtPidPack(id: 'pack_${DateTime.now().millisecondsSinceEpoch}', name: name.trim());
     ref.read(extPacksProvider.notifier).put(p);
@@ -218,16 +218,16 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
     setState(() => _tab = 0);
     final notes = [
       if (r.skipped > 0) 'ข้าม ${r.skipped} บรรทัดที่อ่านไม่ได้',
-      if (r.blocked.isNotEmpty) 'ข้าม ${r.blocked.length} รายการเพื่อความปลอดภัย',
+      if (r.blocked.isNotEmpty) 'ข้าม ${r.blocked.length}\u00A0รายการเพื่อความปลอดภัย',
     ];
-    _snack('นำเข้า ${r.pack.pids.length} รายการ${notes.isEmpty ? '' : ' (${notes.join(', ')})'}');
+    _snack('นำเข้า ${r.pack.pids.length}\u00A0รายการ${notes.isEmpty ? '' : ' (${notes.join(', ')})'}');
   }
 
   Future<void> _showBlocked(List<BlockedPid> blocked) => showDialog<void>(
         context: context,
         builder: (c) => AlertDialog(
           icon: const Icon(Icons.shield_rounded),
-          title: Text('ข้าม ${blocked.length} รายการเพื่อความปลอดภัย'),
+          title: Text('ข้าม ${blocked.length}\u00A0รายการเพื่อความปลอดภัย'),
           content: SizedBox(
             width: double.maxFinite,
             child: ListView(
@@ -290,7 +290,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
           context: context,
           builder: (c) => AlertDialog(
             title: Text('ลบชุด "${pack.name}"?'),
-            content: Text('${pack.pids.length} รายการในชุดนี้ (รวมผลยืนยันของร้าน) จะถูกลบออกจากเครื่อง'),
+            content: Text('${pack.pids.length}\u00A0รายการในชุดนี้ (รวมผลยืนยันของร้าน) จะถูกลบออกจากเครื่อง'),
             actions: [
               TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('ยกเลิก')),
               FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('ลบ')),
@@ -454,7 +454,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
         ),
       ]),
       if (pack.brand.isNotEmpty || pack.models.isNotEmpty)
-        Text('${pack.brand} · ${pack.models.join(', ')}${pack.yearsText.isEmpty ? '' : ' · ${pack.yearsText}'}',
+        Text('${pack.brand}\u00A0· ${pack.models.join(', ')}${pack.yearsText.isEmpty ? '' : '\u00A0· ${pack.yearsText}'}',
             style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12.5)),
       const SizedBox(height: 8),
       Wrap(spacing: 8, runSpacing: 6, children: [
@@ -472,7 +472,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
           child: TextButton.icon(
             style: TextButton.styleFrom(padding: EdgeInsets.zero, visualDensity: VisualDensity.compact),
             icon: const Icon(Icons.info_outline_rounded, size: 18),
-            label: Text('ที่มา: ${pack.sources.map((s) => s.name).join(' · ')}', style: const TextStyle(height: 1.3)),
+            label: Text('ที่มา: ${pack.sources.map((s) => s.name).join('\u00A0· ')}', style: const TextStyle(height: 1.3)),
             onPressed: () => _packMenu(pack, 'sources'),
           ),
         ),
@@ -489,7 +489,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
             Expanded(
               child: Text(
                 '${carText.isEmpty ? 'แอปยังไม่รู้ว่ารถที่ต่ออยู่เป็นยี่ห้อ/รุ่นไหน (แตะ "เลือกรถ" ที่หน้าหลัก หรือใส่ยี่ห้อ รุ่น ปี ในโรงรถ)' : 'ชุดนี้ทำไว้สำหรับ $packFor แต่รถที่ต่ออยู่คือ $carText'} '
-                'แอปจะถามเฉพาะกล่องเลขมาตรฐาน (7DF, 7E0–7E7) และข้าม $brandOnly ค่าที่ส่งไปกล่องเลขเฉพาะยี่ห้อ '
+                'แอปจะถามเฉพาะกล่องเลขมาตรฐาน (7DF, 7E0–7E7) และข้าม $brandOnly\u00A0ค่าที่ส่งไปกล่องเลขเฉพาะยี่ห้อ '
                 'เพราะรถคนละรุ่นอาจใช้เลขนั้นเป็นข้อความปกติ คำสั่งจะไปชนกันได้',
                 style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.45),
               ),
@@ -501,20 +501,18 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
       if (!session.isConnected)
         Text('เชื่อมต่อรถเพื่ออ่านค่า', style: TextStyle(color: cs.onSurfaceVariant))
       else if (pack.pids.isNotEmpty) ...[
-        Row(children: [
-          Expanded(
-            child: FilledButton.icon(
-              icon: Icon(_live ? Icons.stop_rounded : Icons.play_arrow_rounded),
-              label: Text(_live ? 'หยุดอ่านต่อเนื่อง' : 'อ่านต่อเนื่อง'),
-              onPressed: _probing ? null : () => _toggleLive(pack),
-            ),
+        ButtonPair(
+          minWidth: 140,
+          first: FilledButton.icon(
+            icon: Icon(_live ? Icons.stop_rounded : Icons.play_arrow_rounded),
+            label: FitText(_live ? 'หยุดอ่านต่อเนื่อง' : 'อ่านต่อเนื่อง'),
+            onPressed: _probing ? null : () => _toggleLive(pack),
           ),
-          const SizedBox(width: 10),
-          OutlinedButton(
+          second: OutlinedButton(
             onPressed: _live || _reading || _probing ? null : () => _readOnce(pack),
-            child: const Text('อ่านครั้งเดียว'),
+            child: const FitText('อ่านครั้งเดียว'),
           ),
-        ]),
+        ),
         const SizedBox(height: 8),
         OutlinedButton.icon(
           icon: const Icon(Icons.rule_rounded),
@@ -531,7 +529,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
                   .push(MaterialPageRoute<void>(builder: (_) => ExtAutoMatchScreen(packId: pack.id)))
                   .then((_) => mounted ? setState(() {}) : null),
         ),
-        Text('อ่าน $readCount ค่าจาก $readCmds คำสั่ง (เลือกกลุ่มด้านล่าง)',
+        Text('อ่าน $readCount\u00A0ค่าจาก $readCmds\u00A0คำสั่ง (เลือกกลุ่มด้านล่าง)',
             style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant)),
       ],
       if (_reading || _probing)
@@ -573,7 +571,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
       if (_rounds > 0)
         Padding(
           padding: const EdgeInsets.only(top: 12),
-          child: Text('อ่านแล้ว $_rounds รอบ', style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant)),
+          child: Text('อ่านแล้ว $_rounds\u00A0รอบ', style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant)),
         ),
     ];
   }
@@ -611,7 +609,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
       }
     }
     return [
-      SectionLabel(g, trailing: Text('${pids.length} ค่า', style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant))),
+      SectionLabel(g, trailing: Text('${pids.length}\u00A0ค่า', style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant))),
       ...charts,
       PremiumCard(
         padding: const EdgeInsets.fromLTRB(8, 6, 8, 6),
@@ -627,7 +625,7 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
           if (pids.length > shown.length)
             TextButton(
               onPressed: () => setState(() => _expanded.add(g)),
-              child: Text('แสดงทั้งหมด ${pids.length} ค่า'),
+              child: Text('แสดงทั้งหมด ${pids.length}\u00A0ค่า'),
             ),
         ]),
       ),
@@ -678,7 +676,7 @@ class _PidRow extends StatelessWidget {
                 Text(pid.en!, style: TextStyle(fontSize: 11, color: cs.onSurfaceVariant)),
               const SizedBox(height: 2),
               Text(
-                '${pid.header.isEmpty ? '7DF' : pid.header} · ${pid.request}'
+                '${pid.header.isEmpty ? '7DF' : pid.header}\u00A0· ${pid.request}'
                 '${raw != null && raw.isNotEmpty ? ' → ${bytesToHex(raw.take(8).toList())}${raw.length > 8 ? ' …' : ''}' : ''}',
                 style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant, fontFamily: kMono, fontFamilyFallback: const [kFont]),
               ),
@@ -849,31 +847,31 @@ class _KnownNamesCard extends ConsumerWidget {
             const Icon(Icons.lightbulb_rounded, color: StatusColors.info, size: 22),
             const SizedBox(width: 10),
             Expanded(
-              child: Text('รู้แล้วว่าเป็นค่าอะไร ${matches.length} ค่า',
+              child: Text('รู้แล้วว่าเป็นค่าอะไร ${matches.length}\u00A0ค่า',
                   style: const TextStyle(fontWeight: FontWeight.w800)),
             ),
           ]),
           const SizedBox(height: 6),
           Text(
             'เลขเหล่านี้มีชื่ออยู่ในชุด ${sources.map((s) => '"$s"').join(', ')} ของรถรุ่นเดียวกันแล้ว: '
-            '${names.take(6).join(', ')}${names.length > 6 ? ' และอีก ${names.length - 6} ค่า' : ''}',
+            '${names.take(6).join(', ')}${names.length > 6 ? ' และอีก ${names.length - 6}\u00A0ค่า' : ''}',
             style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.45),
           ),
           if (unknown > 0) ...[
             const SizedBox(height: 4),
             Text(
-              'อีก $unknown ค่ายังไม่รู้ ใช้ "จับคู่กับค่า OBD มาตรฐาน" ตอนติดเครื่อง หรือเทียบกับเครื่องมือศูนย์ในหน้าของแต่ละค่า',
+              'อีก $unknown\u00A0ค่ายังไม่รู้ ใช้ "จับคู่กับค่า OBD มาตรฐาน" ตอนติดเครื่อง หรือเทียบกับเครื่องมือศูนย์ในหน้าของแต่ละค่า',
               style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, height: 1.45),
             ),
           ],
           const SizedBox(height: 10),
           FilledButton.icon(
             icon: const Icon(Icons.drive_file_rename_outline_rounded),
-            label: Text('ตั้งชื่อจากคลัง (${matches.length} ค่า)'),
+            label: Text('ตั้งชื่อจากคลัง (${matches.length}\u00A0ค่า)'),
             onPressed: () {
               ref.read(extPacksProvider.notifier).put(applyKnown(pack, matches));
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('ตั้งชื่อ สูตร และหน่วยจากคลังให้ ${matches.length} ค่าแล้ว')),
+                SnackBar(content: Text('ตั้งชื่อ สูตร และหน่วยจากคลังให้ ${matches.length}\u00A0ค่าแล้ว')),
               );
             },
           ),

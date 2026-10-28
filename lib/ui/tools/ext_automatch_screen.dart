@@ -275,8 +275,8 @@ class _ExtAutoMatchScreenState extends ConsumerState<ExtAutoMatchScreen> {
             ),
             const SizedBox(height: 6),
             Text(
-              'ติดเครื่อง จอดนิ่ง เกียร์ว่าง ดึงเบรกมือ แล้วเร่งเครื่องค้างไว้ทีละระดับ (เดินเบา → 1,500 → 2,500 รอบ/นาที) '
-              'ระดับละประมาณ 10–15 วินาที หรือปล่อยให้เครื่องร้อนขึ้น ยิ่งค่าเปลี่ยนหลายระดับ ยิ่งจับคู่ได้แน่นอน',
+              'ติดเครื่อง จอดนิ่ง เกียร์ว่าง ดึงเบรกมือ แล้วเร่งเครื่องค้างไว้ทีละระดับ (เดินเบา → 1,500 → 2,500\u00A0รอบ/นาที) '
+              'ระดับละประมาณ 10–15\u00A0วินาที หรือปล่อยให้เครื่องร้อนขึ้น ยิ่งค่าเปลี่ยนหลายระดับ ยิ่งจับคู่ได้แน่นอน',
               style: TextStyle(color: cs.onSurfaceVariant, height: 1.5, fontSize: 12.5),
             ),
             const SizedBox(height: 12),
@@ -287,7 +287,7 @@ class _ExtAutoMatchScreenState extends ConsumerState<ExtAutoMatchScreen> {
                 width: double.infinity,
                 child: FilledButton.icon(
                   icon: Icon(_running ? Icons.stop_rounded : Icons.play_arrow_rounded),
-                  label: Text(_running ? 'หยุด (อ่านแล้ว $_rounds รอบ)' : 'เริ่มจับคู่'),
+                  label: Text(_running ? 'หยุด (อ่านแล้ว $_rounds\u00A0รอบ)' : 'เริ่มจับคู่'),
                   onPressed: _toggle,
                 ),
               ),
@@ -295,7 +295,7 @@ class _ExtAutoMatchScreenState extends ConsumerState<ExtAutoMatchScreen> {
             if (_rounds > 0) ...[
               const SizedBox(height: 8),
               Text(
-                'อ่านแล้ว $_rounds รอบ · เทียบกับค่ามาตรฐาน ${_stdPids.length} ตัว · จับคู่ได้ $strong ค่า',
+                'อ่านแล้ว $_rounds\u00A0รอบ\u00A0· เทียบกับค่ามาตรฐาน ${_stdPids.length} ตัว\u00A0· จับคู่ได้ $strong\u00A0ค่า',
                 style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
               ),
             ],
@@ -307,7 +307,7 @@ class _ExtAutoMatchScreenState extends ConsumerState<ExtAutoMatchScreen> {
             glow: StatusColors.warn,
             child: Text(
               'ชุดนี้ไม่ใช่ของรถคันที่ต่ออยู่ (ยี่ห้อ/รุ่น/ปีไม่ตรง) แอปจะอ่านเฉพาะค่าที่ส่งไปกล่องเลขมาตรฐาน (7DF, 7E0–7E7) '
-              'และข้าม $brandOnly ค่าที่ส่งไปกล่องเลขเฉพาะยี่ห้อ เพื่อไม่ให้คำสั่งไปชนกับข้อความปกติของรถคันนี้',
+              'และข้าม $brandOnly\u00A0ค่าที่ส่งไปกล่องเลขเฉพาะยี่ห้อ เพื่อไม่ให้คำสั่งไปชนกับข้อความปกติของรถคันนี้',
               style: TextStyle(color: cs.onSurfaceVariant, height: 1.5, fontSize: 13),
             ),
           ),
@@ -385,11 +385,9 @@ class _MatchRow extends StatelessWidget {
         Text(pid.name, style: const TextStyle(fontWeight: FontWeight.w700)),
         const SizedBox(height: 2),
         Text(
-          '${pid.header.isEmpty ? '7DF' : pid.header} · ${pid.request}'
+          '${pid.header.isEmpty ? '7DF' : pid.header}\u00A0· ${pid.request}'
           '${raw != null && raw.isNotEmpty ? ' → ${bytesToHex(raw.take(8).toList())}${raw.length > 8 ? ' …' : ''}' : ''}',
           style: TextStyle(fontSize: 12, fontFamily: kMono, color: cs.onSurfaceVariant),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
         ),
         if (s == null || def == null)
           Padding(
@@ -412,7 +410,7 @@ class _MatchRow extends StatelessWidget {
             ),
           ]),
           const SizedBox(height: 2),
-          Text('สูตร ${s.formula} · ${s.note}${others > 0 ? ' · ตรงกับค่าอื่นอีก $others ตัว' : ''}',
+          Text('สูตร ${s.formula}\u00A0· ${s.note}${others > 0 ? '\u00A0· ตรงกับค่าอื่นอีก $others ตัว' : ''}',
               style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, height: 1.4)),
           Align(
             alignment: Alignment.centerRight,

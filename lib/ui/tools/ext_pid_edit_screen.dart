@@ -89,7 +89,7 @@ class _ExtPidEditScreenState extends State<ExtPidEditScreen> {
         actions: [TextButton(onPressed: _save, child: const Text('บันทึก'))],
       ),
       body: ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 40), children: [
-        TextField(controller: _name, decoration: dec('ชื่อ', 'เช่น ชดเชยหัวฉีดสูบ 1')),
+        TextField(controller: _name, decoration: dec('ชื่อ', 'เช่น ชดเชยหัวฉีดสูบ\u00A01')),
         const SizedBox(height: 10),
         Row(children: [
           Expanded(child: TextField(controller: _header, decoration: dec('Header กล่อง', '7E0 / 700 / 18DA10F1'))),
@@ -102,7 +102,7 @@ class _ExtPidEditScreenState extends State<ExtPidEditScreen> {
         TextField(controller: _formula, decoration: dec('สูตร', 'เช่น A-40 หรือ S16(A,B)/100')),
         const SizedBox(height: 6),
         Text(
-          'A, B, C … = ไบต์ข้อมูลหลังเลขคำสั่ง · S(A) = มีเครื่องหมาย · S16(A,B) / U16(A,B) = 16 บิต · {A:3} = บิตที่ 3 · bits(x,s,n) = ตัดบิต',
+          'A, B, C … = ไบต์ข้อมูลหลังเลขคำสั่ง\u00A0· S(A) = มีเครื่องหมาย\u00A0· S16(A,B) / U16(A,B) = 16 บิต\u00A0· {A:3} = บิตที่ 3\u00A0· bits(x,s,n) = ตัดบิต',
           style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant, height: 1.4),
         ),
         if (preview != null) ...[

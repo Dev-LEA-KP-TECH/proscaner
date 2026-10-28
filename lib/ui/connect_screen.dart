@@ -95,11 +95,21 @@ class _ConnectScreenState extends ConsumerState<ConnectScreen> {
               ),
             if (session.status == ConnStatus.failed && session.message != null) _ErrorCard(message: session.message!),
             const SizedBox(height: 12),
+            // จอแคบ/ตัวอักษรใหญ่: ไม่แสดงไอคอนในปุ่ม ให้ชื่อปุ่มอ่านครบบรรทัดเดียว
             SegmentedButton<_Tab>(
-              segments: const [
-                ButtonSegment(value: _Tab.bluetooth, icon: Icon(Icons.bluetooth), label: FitText('Bluetooth', alignment: Alignment.center)),
-                ButtonSegment(value: _Tab.wifi, icon: Icon(Icons.wifi), label: FitText('Wi-Fi', alignment: Alignment.center)),
-                ButtonSegment(value: _Tab.demo, icon: Icon(Icons.science_outlined), label: FitText('ทดลอง', alignment: Alignment.center)),
+              segments: [
+                ButtonSegment(
+                    value: _Tab.bluetooth,
+                    icon: isNarrow(context) ? null : const Icon(Icons.bluetooth),
+                    label: const FitText('Bluetooth', alignment: Alignment.center)),
+                ButtonSegment(
+                    value: _Tab.wifi,
+                    icon: isNarrow(context) ? null : const Icon(Icons.wifi),
+                    label: const FitText('Wi-Fi', alignment: Alignment.center)),
+                ButtonSegment(
+                    value: _Tab.demo,
+                    icon: isNarrow(context) ? null : const Icon(Icons.science_outlined),
+                    label: const FitText('ทดลอง', alignment: Alignment.center)),
               ],
               selected: {_tab},
               onSelectionChanged: (s) => setState(() => _tab = s.first),
@@ -154,8 +164,7 @@ class _LastAdapterCard extends StatelessWidget {
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('ตัวสแกนล่าสุด', style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
-            Text(memento.label,
-                maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5)),
+            Text(memento.label, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5)),
             Text(memento.kindLabel, style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
           ]),
         ),
@@ -192,8 +201,8 @@ class _ErrorCard extends StatelessWidget {
           Text(message, style: TextStyle(color: cs.onErrorContainer, height: 1.4)),
           const SizedBox(height: 8),
           Text(
-            'ลองตรวจ: บิดกุญแจ ON หรือติดเครื่อง · เสียบตัวสแกนให้แน่น (ไฟที่ตัวสแกนต้องติด) · '
-            'ปิดแอป OBD อื่นที่อาจต่อค้างอยู่ · ถอดตัวสแกนออกแล้วเสียบใหม่',
+            'ลองตรวจ: บิดกุญแจ ON หรือติดเครื่อง\u00A0· เสียบตัวสแกนให้แน่น (ไฟที่ตัวสแกนต้องติด)\u00A0· '
+            'ปิดแอป OBD อื่นที่อาจต่อค้างอยู่\u00A0· ถอดตัวสแกนออกแล้วเสียบใหม่',
             style: TextStyle(color: cs.onErrorContainer.withValues(alpha: 0.85), fontSize: 12.5, height: 1.4),
           ),
         ]),
@@ -218,8 +227,8 @@ class _Progress extends ConsumerWidget {
       const SizedBox(height: 14),
       Text(message, style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: 4),
-      Text('ครั้งแรกอาจใช้เวลาถึง 20 วินาทีระหว่างตัวสแกนค้นหาโปรโตคอลของรถ '
-          'ถ้าตัวสแกนค้นหาเองไม่เจอ แอปจะลองทีละโปรโตคอลให้ (อาจนานถึง 1 นาที)',
+      Text('ครั้งแรกอาจใช้เวลาถึง 20\u00A0วินาทีระหว่างตัวสแกนค้นหาโปรโตคอลของรถ '
+          'ถ้าตัวสแกนค้นหาเองไม่เจอ แอปจะลองทีละโปรโตคอลให้ (อาจนานถึง 1\u00A0นาที)',
           style: Theme.of(context).textTheme.bodySmall),
       const SizedBox(height: 12),
       for (final l in tail) Text(l, style: const TextStyle(fontFamily: kMono, fontSize: 12)),
@@ -396,7 +405,7 @@ class _BluetoothPanelState extends State<_BluetoothPanel> {
     return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
       Text(
         _android
-            ? 'แตะชื่อตัวสแกนเพื่อเชื่อมต่อ PRO SCANNER จะขึ้นชื่อในรายการเป็น OBDII, OBD2, V-LINK หรือ ELM327 (ชื่อจากโรงงาน) '
+            ? 'แตะชื่อตัวสแกนเพื่อเชื่อมต่อ PRO\u00A0SCANNER จะขึ้นชื่อในรายการเป็น OBDII, OBD2, V-LINK หรือ ELM327 (ชื่อจากโรงงาน) '
                 'ถ้ามือถือขอรหัส PIN ให้ใส่ 1234 หรือ 0000'
             : 'iPhone ใช้ได้กับตัวสแกนแบบ Bluetooth LE (BLE) และแบบ Wi-Fi เท่านั้น '
                 '(ตัวสแกน Bluetooth ธรรมดาใช้กับ iPhone ไม่ได้ เป็นข้อจำกัดของ Apple)',
@@ -471,14 +480,14 @@ class _BluetoothPanelState extends State<_BluetoothPanel> {
             for (final d in nearby)
               _DeviceTile(
                 name: d.label,
-                subtitle: '${d.address} · ยังไม่จับคู่ (จะขอ PIN 1234/0000)',
+                subtitle: '${d.address}\u00A0· ยังไม่จับคู่ (จะขอ PIN 1234/0000)',
                 tag: 'Bluetooth',
                 onTap: () => widget.onConnect(ClassicBtTransport(d)),
               ),
             for (final r in ble)
               _DeviceTile(
                 name: r.device.platformName.isEmpty ? '(ไม่มีชื่อ)' : r.device.platformName,
-                subtitle: '${r.device.remoteId.str} · สัญญาณ ${r.rssi} dBm',
+                subtitle: '${r.device.remoteId.str}\u00A0· สัญญาณ ${r.rssi} dBm',
                 tag: 'BLE',
                 onTap: () => widget.onConnect(BleTransport(r.device)),
               ),

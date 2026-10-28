@@ -37,11 +37,12 @@ class EcuInfoScreen extends ConsumerWidget {
               const SectionLabel('เลขตัวถัง (VIN)'),
               PremiumCard(
                 child: vin == null
-                    ? Text('รถคันนี้ไม่ส่ง VIN ผ่าน OBD (พบบ่อยในรถก่อนปี 2008)', style: TextStyle(color: cs.onSurfaceVariant))
+                    ? Text('รถคันนี้ไม่ส่ง VIN ผ่าน OBD (พบบ่อยในรถก่อนปี\u00A02008)', style: TextStyle(color: cs.onSurfaceVariant))
                     : Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Row(children: [
+                          // VIN 17 หลักอยู่บรรทัดเดียวเสมอ (จอแคบย่อตัวอักษรลง ไม่หักกลางเลข) คัดลอกด้วยปุ่มด้านขวา
                           Expanded(
-                            child: SelectableText(vin.vin,
+                            child: FitText(vin.vin,
                                 style: const TextStyle(fontFamily: kMono, fontSize: 19, fontWeight: FontWeight.w700, letterSpacing: 1.2)),
                           ),
                           IconButton(
@@ -73,7 +74,7 @@ class EcuInfoScreen extends ConsumerWidget {
                   KvRow('อ่านกล่องอื่น (ABS, ถุงลม)', service.elm.isCan
                       ? ((adapter?.flowControl ?? false) ? 'รองรับ (กล่องที่ใช้ UDS/KWP บน CAN)' : 'รองรับบางส่วน')
                       : 'ไม่รองรับ (รถไม่ใช่ CAN)'),
-                  KvRow('จำนวนค่าสดที่รองรับ', '${service.supported.length} ค่า'),
+                  KvRow('จำนวนค่าสดที่รองรับ', '${service.supported.length}\u00A0ค่า'),
                 ]),
               ),
               if (adapter?.kind.name == 'elmClone') ...[

@@ -45,16 +45,16 @@ final _ownerTools = <_Tool>[
   _Tool(Icons.battery_charging_full_rounded, 'เช็คแบตเตอรี่', 'แบต + ไดชาร์จ 4 ขั้นตอน', () => const BatteryScreen(),
       color: const Color(0xFF22C474)),
   _Tool(Icons.timeline_rounded, 'บันทึกการขับ', 'กราฟ / CSV / เทียบก่อน-หลัง', () => const LogsScreen(), color: const Color(0xFFFFA824)),
-  _Tool(Icons.timer_rounded, 'จับเวลาอัตราเร่ง', '0–100, 402 ม.', () => const PerformanceScreen(), color: const Color(0xFFFF8A1F)),
+  _Tool(Icons.timer_rounded, 'จับเวลาอัตราเร่ง', '0–100, 402\u00A0ม.', () => const PerformanceScreen(), color: const Color(0xFFFF8A1F)),
   _Tool(Icons.badge_rounded, 'ข้อมูลรถ / VIN', 'ปีรุ่น ผู้ผลิต รุ่นซอฟต์แวร์', () => const EcuInfoScreen(), color: const Color(0xFF2BD9D9)),
   _Tool(Icons.history_rounded, 'ประวัติการสแกน', 'ผลทุกครั้งที่เคยตรวจ', () => const HistoryScreen()),
 ];
 
 final _mechTools = <_Tool>[
-  _Tool(Icons.hub_rounded, 'กล่องทั้งหมด', 'ABS ถุงลม เกียร์ · อ่าน/ลบ · DID', () => const ModulesScreen(), color: const Color(0xFFA06BFF)),
-  _Tool(Icons.tune_rounded, 'ค่าเฉพาะยี่ห้อ', 'Revo Triton D-Max · หัวฉีด DPF เกียร์', () => const BrandDataScreen(),
+  _Tool(Icons.hub_rounded, 'กล่องทั้งหมด', 'ABS ถุงลม เกียร์\u00A0· อ่าน/ลบ\u00A0· DID', () => const ModulesScreen(), color: const Color(0xFFA06BFF)),
+  _Tool(Icons.tune_rounded, 'ค่าเฉพาะยี่ห้อ', 'Revo Triton D-Max\u00A0· หัวฉีด DPF เกียร์', () => const BrandDataScreen(),
       color: const Color(0xFFFF8A1F)),
-  _Tool(Icons.rocket_launch_rounded, 'ทดสอบรีแมพ', 'ก่อน/หลัง · บูสต์ ราง อัตราเร่ง', () => const RemapTestScreen(),
+  _Tool(Icons.rocket_launch_rounded, 'ทดสอบรีแมพ', 'ก่อน/หลัง\u00A0· บูสต์ ราง อัตราเร่ง', () => const RemapTestScreen(),
       color: const Color(0xFFFF4D5A)),
   _Tool(Icons.science_rounded, 'Mode 06', 'misfire รายสูบ แคท O2', () => const Mode06Screen(), color: const Color(0xFF22C474)),
   _Tool(Icons.manage_search_rounded, 'ค้นหารหัสปัญหา', 'ฐานข้อมูลภาษาไทย', () => const DtcLookupScreen(), color: const Color(0xFF3DA5FF)),
@@ -128,25 +128,21 @@ class HomeTab extends ConsumerWidget {
       _VehicleHero(vehicle: vehicle, onOpenVehicle: vehicle == null ? null : () => open(VehicleScreen(vehicleId: vehicle.id))),
       const SizedBox(height: 12),
       if (session.isConnected)
-        Row(children: [
-          Expanded(
-            child: FilledButton.icon(
-              icon: const Icon(Icons.radar_rounded),
-              label: const Text('สแกนด่วน'),
-              style: FilledButton.styleFrom(minimumSize: const Size(0, 54)),
-              onPressed: scan.running ? () => onGoTab(1) : () => startScan(all: false),
-            ),
+        ButtonPair(
+          minWidth: 120,
+          first: FilledButton.icon(
+            icon: const Icon(Icons.radar_rounded),
+            label: const FitText('สแกนด่วน'),
+            style: FilledButton.styleFrom(minimumSize: const Size(0, 54)),
+            onPressed: scan.running ? () => onGoTab(1) : () => startScan(all: false),
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: FilledButton.tonalIcon(
-              icon: const Icon(Icons.hub_rounded),
-              label: const Text('สแกนทั้งคัน'),
-              style: FilledButton.styleFrom(minimumSize: const Size(0, 54)),
-              onPressed: scan.running ? () => onGoTab(1) : () => startScan(all: true),
-            ),
+          second: FilledButton.tonalIcon(
+            icon: const Icon(Icons.hub_rounded),
+            label: const FitText('สแกนทั้งคัน'),
+            style: FilledButton.styleFrom(minimumSize: const Size(0, 54)),
+            onPressed: scan.running ? () => onGoTab(1) : () => startScan(all: true),
           ),
-        ])
+        )
       else if (lastAdapter != null)
         Row(children: [
           Expanded(
@@ -243,10 +239,13 @@ class _VehicleHero extends ConsumerWidget {
     final color = report == null ? cs.primary : report.overall.color(cs);
     final make = v?.make ?? info?.brand;
     final specs = <String>[
-      if (v?.year != null) 'ปี ${v!.year}' else if (info != null && info.yearReliable && info.modelYear != null) 'ปี ${info.modelYear}',
+      if (v?.year != null) 'ปี\u00A0${v!.year}' else if (info != null && info.yearReliable && info.modelYear != null) 'ปี\u00A0${info.modelYear}',
       if (v?.fuel != null) v!.fuel! else if (connected) (session.diesel ? 'ดีเซล' : 'เบนซิน'),
       if (connected && session.elm != null) session.elm!.protocolLabel,
     ];
+
+    // จอแคบ (มือถือเล็ก/ตัวอักษรใหญ่): รูปด้านซ้ายเล็กลง ให้ชื่อรถและป้ายด้านขวามีที่พอ ไม่ถูกตัด
+    final narrow = isNarrow(context, 380);
 
     Widget action(IconData icon, String text, String button, VoidCallback onTap) => Container(
           margin: const EdgeInsets.only(top: 14),
@@ -256,17 +255,27 @@ class _VehicleHero extends ConsumerWidget {
             borderRadius: BorderRadius.circular(14),
             border: Border.all(color: cs.primary.withValues(alpha: 0.25)),
           ),
-          child: Row(children: [
-            Icon(icon, size: 18, color: cs.primary),
-            const SizedBox(width: 10),
-            Expanded(child: Text(text, style: const TextStyle(fontSize: 12.5, height: 1.35))),
-            TextButton(onPressed: onTap, child: Text(button)),
-          ]),
+          // จอแคบ: ข้อความเต็มความกว้าง ปุ่มอยู่ใต้ข้อความชิดขวา (ข้อความไม่ถูกบีบจนขึ้นบรรทัดทีละคำ)
+          child: narrow
+              ? Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6, right: 6),
+                    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                      Icon(icon, size: 18, color: cs.primary),
+                      const SizedBox(width: 10),
+                      Expanded(child: Text(thaiKeep(text), style: const TextStyle(fontSize: 12.5, height: 1.35))),
+                    ]),
+                  ),
+                  Align(alignment: Alignment.centerRight, child: TextButton(onPressed: onTap, child: Text(button))),
+                ])
+              : Row(children: [
+                  Icon(icon, size: 18, color: cs.primary),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text(thaiKeep(text), style: const TextStyle(fontSize: 12.5, height: 1.35))),
+                  TextButton(onPressed: onTap, child: Text(button)),
+                ]),
         );
 
-    // จอแคบ (มือถือเล็ก/ตัวอักษรใหญ่): รูปด้านซ้ายเล็กลง ให้ชื่อรถและป้ายด้านขวามีที่พอ ไม่ถูกตัด
-    final textScale = MediaQuery.textScalerOf(context).scale(100) / 100;
-    final narrow = MediaQuery.sizeOf(context).width / textScale < 380;
     final ring = narrow ? 72.0 : 92.0;
     return PremiumCard(
       glow: color,
@@ -298,14 +307,14 @@ class _VehicleHero extends ConsumerWidget {
               ]),
               const SizedBox(height: 4),
               if (!connected)
-                Text('เสียบตัวสแกน PRO SCANNER แล้วกดเชื่อมต่อ แอปจะรู้จักยี่ห้อและรุ่นรถให้เอง หรือลองโหมดทดลองได้เลย',
+                Text(thaiKeep('เสียบตัวสแกน PRO\u00A0SCANNER แล้วกดเชื่อมต่อ แอปจะรู้จักยี่ห้อและรุ่นรถให้เอง หรือลองโหมดทดลองได้เลย'),
                     style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.4))
               else ...[
                 if (specs.isNotEmpty)
-                  Text(specs.join(' · '), style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant)),
+                  Text(thaiKeep(specs.join('\u00A0· ')), style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant)),
                 const SizedBox(height: 2),
                 if (report != null)
-                  Text(report.headlineTh, style: TextStyle(fontSize: 13, color: color, fontWeight: FontWeight.w700))
+                  Text(thaiKeep(report.headlineTh), style: TextStyle(fontSize: 13, color: color, fontWeight: FontWeight.w700))
                 else
                   Text('พร้อมสแกน', style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant)),
               ],

@@ -103,9 +103,9 @@ Widget identitySourcePill(Vehicle v) => switch (v.idSource) {
 
 /// รายละเอียดสั้น เช่น "ปี 2019 · ดีเซล"
 String vehicleSpecLine(Vehicle v) => [
-      if (v.year != null) 'ปี ${v.year}',
+      if (v.year != null) 'ปี\u00A0${v.year}',
       if (v.fuel != null) v.fuel!,
-    ].join(' · ');
+    ].join('\u00A0· ');
 
 const fuelOptions = ['ดีเซล', 'เบนซิน', 'ไฮบริด', 'ไฟฟ้า'];
 
@@ -136,7 +136,7 @@ Future<bool> editIdentitySheet(BuildContext context, WidgetRef ref, Vehicle v) a
             child: Text(t, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14.5)),
           );
       return Padding(
-        padding: EdgeInsets.fromLTRB(20, 0, 20, MediaQuery.of(c).viewInsets.bottom + 20),
+        padding: EdgeInsets.fromLTRB(20, 0, 20, MediaQuery.viewInsetsOf(c).bottom + MediaQuery.paddingOf(c).bottom + 20),
         child: ConstrainedBox(
           constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(c).height * 0.82),
           child: SingleChildScrollView(
@@ -253,7 +253,7 @@ Future<void> chooseVehicleSheet(BuildContext context, WidgetRef ref) async {
       final cs = Theme.of(c).colorScheme;
       return ConstrainedBox(
         constraints: BoxConstraints(maxHeight: MediaQuery.sizeOf(c).height * 0.75),
-        child: ListView(shrinkWrap: true, padding: const EdgeInsets.fromLTRB(16, 0, 16, 24), children: [
+        child: ListView(shrinkWrap: true, padding: EdgeInsets.fromLTRB(16, 0, 16, 24 + MediaQuery.paddingOf(c).bottom), children: [
           const Text('รถคันนี้คือคันไหน?', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
           const SizedBox(height: 4),
           Text('รถคันนี้ไม่ส่งเลขตัวถัง (VIN) แอปจึงระบุเองไม่ได้ เลือกครั้งเดียว ผลสแกนและเลขไมล์จะบันทึกเข้ารถคันนี้',
@@ -280,7 +280,7 @@ Future<void> chooseVehicleSheet(BuildContext context, WidgetRef ref) async {
                     child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                       Text(v.title, style: const TextStyle(fontWeight: FontWeight.w700)),
                       if ([v.plate, vehicleSpecLine(v)].any((s) => s != null && s.isNotEmpty))
-                        Text([v.plate, vehicleSpecLine(v)].whereType<String>().where((s) => s.isNotEmpty).join(' · '),
+                        Text([v.plate, vehicleSpecLine(v)].whereType<String>().where((s) => s.isNotEmpty).join('\u00A0· '),
                             style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant)),
                     ]),
                   ),

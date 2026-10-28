@@ -210,6 +210,51 @@ class FitText extends StatelessWidget {
       );
 }
 
+/// คำไทยที่ระบบตัดคำ (ICU) มักตัดกลางคำประสม/คำทับศัพท์เมื่อช่องแคบ เช่น "น้ำหล่อ|เย็น", "โซ|ล่า", "คำ|สั่ง"
+/// [thaiKeep] ใส่ตัวเชื่อมคำที่มองไม่เห็น (U+2060 WORD JOINER) ระหว่างพยางค์ของคำเหล่านี้ ให้ขึ้นบรรทัดใหม่ทั้งคำ
+/// ใช้กับข้อความที่แสดงบนจอเท่านั้น (ห้ามใช้กับข้อมูลที่บันทึก ส่งออก หรือค้นหา)
+/// ห้ามใส่คำที่เทสต์ค้นด้วย find.text (เช่น เครื่องยนต์ หัวฉีด รีแมพ) ไม่อย่างนั้นเทสต์หาข้อความไม่เจอ
+const _thaiKeepWords = [
+  'น้ำหล่อเย็น', 'น้ำมันเครื่อง', 'เชื้อเพลิง', 'คำสั่ง', 'ไอดี', 'ไอเสีย', 'โซล่า', 'ล่วงหน้า', 'สอดคล้อง', 'ตัดสินใจ',
+  'สิ้นเปลือง', 'ขั้นตอน', 'ร้ายแรง', 'เทอร์มินัล', 'ซอฟต์แวร์', 'เซ็นเซอร์', 'เซนเซอร์', 'แบตเตอรี่', 'ไดชาร์จ', 'สตาร์ท',
+  'เทอร์โบ', 'คันเร่ง', 'ลิ้นเร่ง', 'แคมชาฟท์', 'ข้อเหวี่ยง', 'หัวเทียน', 'ถุงลม', 'อัตราเร่ง', 'ความเร็ว', 'ความดัน',
+  'ความร้อน', 'บูสต์', 'ไฟเตือน', 'ปีกผีเสื้อ', 'คอยล์', 'โปรโตคอล', 'แคตาไลติก', 'ออกซิเจน', 'อินเตอร์คูลเลอร์',
+  'มาตรฐาน', 'ผิดปกติ', 'ปลอดภัย', 'ตรวจสภาพ', 'เลขไมล์', 'หน้าปัด', 'สัญญาณ', 'แรงดัน', 'อุณหภูมิ', 'ระยะทาง',
+];
+final _thaiKeepRe = RegExp(_thaiKeepWords.join('|'));
+final _thaiSlashRe = RegExp(r'([\u0E00-\u0E7F.])/(?=[\u0E00-\u0E7F])');
+final _unitRe = RegExp(r'(\d) (bit|kbps|กม\.|ครั้ง|วัน|เดือน|ปี|ชม\.|วินาที|นาที|ค่า|รายการ|°C|V|kPa|MPa|%)');
+
+String thaiKeep(String s) {
+  // ตัวเลขติดกับหน่วยเสมอ (เช่น "11 bit", "500 kbps", "10,000 กม.") ไม่ให้หน่วยไปขึ้นบรรทัดใหม่
+  s = s.replaceAllMapped(_unitRe, (m) => '${m[1]}\u00A0${m[2]}');
+  if (!s.codeUnits.any((c) => c >= 0x0E01 && c <= 0x0E5B)) return s;
+  // หน่วยไทยที่มีทับ (กม./ชม., รอบ/นาที, อ่าน/ลบ) ไม่ขึ้นบรรทัดใหม่หลังเครื่องหมายทับ
+  s = s.replaceAllMapped(_thaiSlashRe, (m) => '${m[1]}/\u2060');
+  return s.replaceAllMapped(_thaiKeepRe, (m) => _glue(m[0]!));
+}
+
+/// เชื่อมพยางค์ในคำ: ใส่ตัวเชื่อมก่อนพยัญชนะ/สระหน้า เท่านั้น (ไม่แยกพยัญชนะออกจากสระ/วรรณยุกต์ของมัน
+/// และไม่แยกสระหน้า เ แ โ ใ ไ ออกจากพยัญชนะตัวถัดไป) การแสดงผลจึงเหมือนเดิมทุกตัวอักษร
+String _glue(String w) {
+  final b = StringBuffer();
+  for (var i = 0; i < w.length; i++) {
+    final c = w.codeUnitAt(i);
+    final startsSyllable = (c >= 0x0E01 && c <= 0x0E2E) || (c >= 0x0E40 && c <= 0x0E44);
+    final afterLeadingVowel = i > 0 && w.codeUnitAt(i - 1) >= 0x0E40 && w.codeUnitAt(i - 1) <= 0x0E44;
+    if (i > 0 && startsSyllable && !afterLeadingVowel) b.write('\u2060');
+    b.writeCharCode(c);
+  }
+  return b.toString();
+}
+
+/// จอแคบเมื่อคิดรวมขนาดตัวอักษร (เช่น มือถือ 360 dp ที่ตั้งตัวอักษรใหญ่ 1.3 เท่า ≈ จอ 277 dp)
+/// ใช้เลือกรูปแบบที่กะทัดรัดกว่า (ซ่อนไอคอนในปุ่ม ย่อรูป) ให้ข้อความแสดงครบ
+bool isNarrow(BuildContext context, [double limit = 400]) {
+  final scale = MediaQuery.textScalerOf(context).scale(100) / 100;
+  return MediaQuery.sizeOf(context).width / scale < limit;
+}
+
 /// หัวข้อส่วน ตัวเล็ก ตัวหนา ตัวพิมพ์ห่าง
 class SectionLabel extends StatelessWidget {
   const SectionLabel(this.text, {super.key, this.trailing});
@@ -226,7 +271,7 @@ class SectionLabel extends StatelessWidget {
         Container(width: 4, height: 16, decoration: BoxDecoration(color: cs.primary, borderRadius: BorderRadius.circular(2))),
         const SizedBox(width: 10),
         Expanded(
-          child: Text(text,
+          child: Text(thaiKeep(text),
               style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15, color: cs.onSurface, letterSpacing: 0.3)),
         ),
         if (trailing != null) trailing!,

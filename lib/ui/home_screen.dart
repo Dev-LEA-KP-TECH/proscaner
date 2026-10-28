@@ -57,7 +57,7 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
             Expanded(
               child: Text(practice
                   ? 'โหมดทดลอง: ${v.title} (รถจำลอง ผลสแกนไม่ถูกบันทึกลงโรงรถ)'
-                  : '${next.newVehicle ? 'พบรถใหม่' : 'รู้จักรถคันนี้'}: ${v.title}${spec.isEmpty ? '' : ' · $spec'}'),
+                  : '${next.newVehicle ? 'พบรถใหม่' : 'รู้จักรถคันนี้'}: ${v.title}${spec.isEmpty ? '' : '\u00A0· $spec'}'),
             ),
           ]),
           action: v.needsModel && !practice
@@ -252,7 +252,7 @@ class GlobalBanners extends ConsumerWidget {
         _Banner(
           color: const Color(0xFFFF8A1F),
           icon: Icons.fiber_manual_record_rounded,
-          text: 'กำลังบันทึก ${rec.pids.length} ค่า · ${rec.rows} แถว',
+          text: 'กำลังบันทึก ${rec.pids.length}\u00A0ค่า\u00A0· ${rec.rows}\u00A0แถว',
           action: 'หยุดและบันทึก',
           onAction: () async {
             final log = await ref.read(recorderProvider.notifier).stop();

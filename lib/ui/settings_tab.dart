@@ -25,8 +25,7 @@ class SettingsTab extends ConsumerWidget {
     final elm = session.elm;
     final cs = Theme.of(context).colorScheme;
     // จอแคบ/ตัวอักษรใหญ่: ปุ่มเลือกธีมไม่มีไอคอน ให้ชื่อปุ่มอ่านครบบรรทัดเดียว
-    final textScale = MediaQuery.textScalerOf(context).scale(100) / 100;
-    final narrow = MediaQuery.sizeOf(context).width / textScale < 400;
+    final narrow = isNarrow(context);
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
@@ -81,7 +80,7 @@ class SettingsTab extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 18),
-            Text('สีเน้น · ${settings.accent.labelTh}', style: TextStyle(color: cs.onSurfaceVariant, fontSize: 13)),
+            Text('สีเน้น\u00A0· ${settings.accent.labelTh}', style: TextStyle(color: cs.onSurfaceVariant, fontSize: 13)),
             const SizedBox(height: 12),
             Wrap(spacing: 12, runSpacing: 12, children: [
               for (final a in AccentPreset.values)
@@ -137,7 +136,7 @@ class SettingsTab extends ConsumerWidget {
                   _row(context, 'ตัวสแกน', session.adapter?.kind.labelTh ?? '-'),
                   _row(context, 'รุ่นชิป', session.adapter?.stnVersion ?? elm?.version ?? '-'),
                   _row(context, 'โปรโตคอลรถ', elm?.protocolLabel ?? '-'),
-                  _row(context, 'PID ที่รองรับ', '${session.service?.supported.length ?? 0} รายการ'),
+                  _row(context, 'PID ที่รองรับ', '${session.service?.supported.length ?? 0}\u00A0รายการ'),
                   const SizedBox(height: 10),
                   SizedBox(
                     width: double.infinity,
@@ -161,7 +160,7 @@ class SettingsTab extends ConsumerWidget {
           icon: Icons.notifications_active_rounded,
           title: 'แจ้งเตือนค่าผิดปกติ',
           subtitle: settings.alerts.enabled
-              ? 'ความร้อน ${settings.alerts.coolantMax.round()} °C · ไฟชาร์จ ${settings.alerts.voltLow}–${settings.alerts.voltHigh} V'
+              ? 'ความร้อน ${settings.alerts.coolantMax.round()}\u00A0°C\u00A0· ไฟชาร์จ ${settings.alerts.voltLow}–${settings.alerts.voltHigh}\u00A0V'
               : 'ปิดอยู่',
           onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const AlertSettingsScreen())),
         ),
@@ -213,7 +212,7 @@ class SettingsTab extends ConsumerWidget {
         _ToolTile(
           icon: Icons.receipt_long_rounded,
           title: 'บันทึกการสื่อสาร',
-          subtitle: commLogOn ? 'เปิดอยู่ · ส่งให้ผู้พัฒนาเมื่ออ่านค่ารถไม่ได้' : 'ปิดอยู่',
+          subtitle: commLogOn ? 'เปิดอยู่\u00A0· ส่งให้ผู้พัฒนาเมื่ออ่านค่ารถไม่ได้' : 'ปิดอยู่',
           onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const CommLogScreen())),
         ),
 

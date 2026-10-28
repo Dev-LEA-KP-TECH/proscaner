@@ -153,14 +153,14 @@ class _EntryCard extends StatelessWidget {
           if (suggested) const Pill(text: 'แนะนำสำหรับรถคันนี้', color: StatusColors.good, icon: Icons.thumb_up_alt_rounded),
         ]),
         const SizedBox(height: 4),
-        Text('${e.brand} · ${e.models.join(', ')}${e.yearsText.isEmpty ? '' : ' · ${e.yearsText}'}',
+        Text('${e.brand}\u00A0· ${e.models.join(', ')}${e.yearsText.isEmpty ? '' : '\u00A0· ${e.yearsText}'}',
             style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12.5)),
         const SizedBox(height: 8),
         Wrap(spacing: 8, runSpacing: 6, children: [
-          Pill(text: '${e.count} ค่า · ${e.commands} คำสั่ง', color: cs.primary),
+          Pill(text: '${e.count}\u00A0ค่า\u00A0· ${e.commands}\u00A0คำสั่ง', color: cs.primary),
           if (e.evidenceCount > 0)
             Pill(
-              text: 'พบในรถจริง ${e.evidenceCount} ค่า (ปี ${ev.length == 1 ? ev.first : '${ev.first}–${ev.last}'})',
+              text: 'พบในรถจริง ${e.evidenceCount}\u00A0ค่า (ปี\u00A0${ev.length == 1 ? ev.first : '${ev.first}–${ev.last}'})',
               color: StatusColors.info,
               icon: Icons.fact_check_rounded,
             )
@@ -168,7 +168,7 @@ class _EntryCard extends StatelessWidget {
             const Pill(text: 'ทุกค่ารอยืนยัน', color: StatusColors.warn, icon: Icons.help_outline_rounded),
         ]),
         const SizedBox(height: 6),
-        Text('ที่มา: ${e.sources.join(' · ')}', style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant)),
+        Text('ที่มา: ${e.sources.join('\u00A0· ')}', style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant)),
         const SizedBox(height: 4),
         Align(
           alignment: Alignment.centerRight,
@@ -255,33 +255,32 @@ class _ExtLibraryPackScreenState extends ConsumerState<ExtLibraryPackScreen> {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(e.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
                   const SizedBox(height: 4),
-                  Text('${e.brand} · ${e.models.join(', ')}${e.yearsText.isEmpty ? '' : ' · ${e.yearsText}'}',
+                  Text('${e.brand}\u00A0· ${e.models.join(', ')}${e.yearsText.isEmpty ? '' : '\u00A0· ${e.yearsText}'}',
                       style: TextStyle(color: cs.onSurfaceVariant)),
                   const SizedBox(height: 10),
                   Text(pack.note, style: const TextStyle(height: 1.5, fontSize: 13)),
                   const SizedBox(height: 14),
-                  Row(children: [
-                    Expanded(
-                      child: FilledButton.icon(
-                        icon: const Icon(Icons.download_done_rounded),
-                        label: const Text('ใช้ชุดนี้'),
-                        onPressed: () {
-                          final adopted = ref.read(extPacksProvider.notifier).adopt(pack.copyWithId(pack.id));
-                          widget.onUse(adopted);
-                        },
+                  Builder(builder: (context) {
+                    final use = FilledButton.icon(
+                      icon: const Icon(Icons.download_done_rounded),
+                      label: const FitText('ใช้ชุดนี้'),
+                      onPressed: () {
+                        final adopted = ref.read(extPacksProvider.notifier).adopt(pack.copyWithId(pack.id));
+                        widget.onUse(adopted);
+                      },
+                    );
+                    if (!connected) return SizedBox(width: double.infinity, child: use);
+                    // จอแคบวางปุ่มซ้อนกันเต็มความกว้าง ชื่อปุ่มอ่านครบบรรทัดเดียว
+                    return ButtonPair(
+                      minWidth: 150,
+                      first: use,
+                      second: OutlinedButton.icon(
+                        icon: const Icon(Icons.rule_rounded),
+                        label: const FitText('ทดสอบกับรถคันนี้'),
+                        onPressed: _testing ? null : _test,
                       ),
-                    ),
-                    if (connected) ...[
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          icon: const Icon(Icons.rule_rounded),
-                          label: const Text('ทดสอบกับรถคันนี้'),
-                          onPressed: _testing ? null : _test,
-                        ),
-                      ),
-                    ],
-                  ]),
+                    );
+                  }),
                   if (_testing) ...[const SizedBox(height: 10), LinearProgressIndicator(value: _progress)],
                 ]),
               ),
@@ -293,12 +292,17 @@ class _ExtLibraryPackScreenState extends ConsumerState<ExtLibraryPackScreen> {
                   for (final g in pack.groups)
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: Row(children: [
-                        Expanded(child: Text(g, style: const TextStyle(fontWeight: FontWeight.w600))),
-                        Text(
-                          '${pack.pids.where((p) => p.group == g).length} ค่า'
-                          ' · พบในรถจริง ${pack.pids.where((p) => p.group == g && p.hasEvidence).length}',
-                          style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12.5),
+                      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Expanded(flex: 5, child: Text(thaiKeep(g), style: const TextStyle(fontWeight: FontWeight.w600))),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          flex: 4,
+                          child: Text(
+                            '${pack.pids.where((p) => p.group == g).length}\u00A0ค่า'
+                            '\u00A0· พบในรถจริง\u00A0${pack.pids.where((p) => p.group == g && p.hasEvidence).length}',
+                            textAlign: TextAlign.right,
+                            style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12.5),
+                          ),
                         ),
                       ]),
                     ),
@@ -380,10 +384,10 @@ class ProbeResultCard extends StatelessWidget {
         ]),
         const SizedBox(height: 8),
         Text(
-          'ทดสอบ ${r.commands} คำสั่ง: ตอบ ${r.responded} · ปฏิเสธ ${r.negative} · เงียบ ${r.silent}'
-          '${r.pidsTested > 0 ? '\nถอดค่าได้ ${r.pidsTested} ค่า อยู่ในช่วงที่เป็นไปได้ ${r.pidsOk} ค่า' : ''}'
-          '${r.incompatible > 0 ? '\nข้าม ${r.incompatible} ค่าที่เป็นของรถ CAN คนละแบบ' : ''}'
-          '${r.notForThisCar > 0 ? '\nไม่ถาม ${r.notForThisCar} ค่าที่ส่งไปกล่องเลขเฉพาะยี่ห้อ (ชุดนี้ไม่ใช่ของรถคันนี้)' : ''}',
+          'ทดสอบ ${r.commands}\u00A0คำสั่ง: ตอบ ${r.responded}\u00A0· ปฏิเสธ ${r.negative}\u00A0· เงียบ ${r.silent}'
+          '${r.pidsTested > 0 ? '\nถอดค่าได้ ${r.pidsTested}\u00A0ค่า อยู่ในช่วงที่เป็นไปได้ ${r.pidsOk}\u00A0ค่า' : ''}'
+          '${r.incompatible > 0 ? '\nข้าม ${r.incompatible}\u00A0ค่าที่เป็นของรถ CAN คนละแบบ' : ''}'
+          '${r.notForThisCar > 0 ? '\nไม่ถาม ${r.notForThisCar}\u00A0ค่าที่ส่งไปกล่องเลขเฉพาะยี่ห้อ (ชุดนี้ไม่ใช่ของรถคันนี้)' : ''}',
           style: TextStyle(color: cs.onSurfaceVariant, height: 1.5, fontSize: 13),
         ),
       ]),
@@ -507,7 +511,7 @@ class _ExtMatchScreenState extends ConsumerState<ExtMatchScreen> {
               const SizedBox(height: 8),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text(_all ? 'ทดสอบทุกยี่ห้อ (${entries.length} ชุด)' : 'เฉพาะ $brand (${candidates.length} ชุด)'),
+                title: Text(_all ? 'ทดสอบทุกยี่ห้อ (${entries.length}\u00A0ชุด)' : 'เฉพาะ $brand (${candidates.length}\u00A0ชุด)'),
                 subtitle: const Text('ปิดเพื่อทดสอบเฉพาะยี่ห้อของรถคันนี้'),
                 value: _all,
                 onChanged: _running ? null : (v) => setState(() => _all = v),
@@ -518,7 +522,7 @@ class _ExtMatchScreenState extends ConsumerState<ExtMatchScreen> {
               width: double.infinity,
               child: FilledButton.icon(
                 icon: Icon(_running ? Icons.stop_rounded : Icons.play_arrow_rounded),
-                label: Text(_running ? 'หยุด ($_step)' : 'เริ่มทดสอบ ${candidates.length} ชุด'),
+                label: Text(_running ? 'หยุด ($_step)' : 'เริ่มทดสอบ ${candidates.length}\u00A0ชุด'),
                 onPressed: _running ? () => setState(() => _cancel = true) : () => _run(candidates),
               ),
             ),

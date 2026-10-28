@@ -26,7 +26,8 @@ Future<Vehicle?> editVehicleDialog(BuildContext context, Vehicle v) async {
     isScrollControlled: true,
     showDragHandle: true,
     builder: (c) => Padding(
-      padding: EdgeInsets.fromLTRB(20, 0, 20, MediaQuery.of(c).viewInsets.bottom + 20),
+      // เว้นที่ด้านล่างให้แป้นพิมพ์และแถบโฮมของ iPhone / แถบนำทางของ Android
+      padding: EdgeInsets.fromLTRB(20, 0, 20, MediaQuery.viewInsetsOf(c).bottom + MediaQuery.paddingOf(c).bottom + 20),
       child: SingleChildScrollView(
         child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, mainAxisSize: MainAxisSize.min, children: [
           const Text('ข้อมูลรถ', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
@@ -243,7 +244,7 @@ class VehicleScreen extends ConsumerWidget {
                   [
                     if (e.dashKm != null) 'หน้าปัด ${formatKm(e.dashKm!)}',
                     if (e.ecuKm != null) 'ECU ${formatKm(e.ecuKm!)}',
-                    if (e.dashKm == null && e.ecuKm == null && e.engineHours != null) '${e.engineHours!.round()} ชม.',
+                    if (e.dashKm == null && e.ecuKm == null && e.engineHours != null) '${e.engineHours!.round()}\u00A0ชม.',
                   ].join('\n'),
                 ),
             ]),
@@ -284,7 +285,7 @@ class VehicleScreen extends ConsumerWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 6),
                       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        SizedBox(width: 56, child: Text('สูบ ${inj.cylinder}', style: const TextStyle(fontWeight: FontWeight.w700))),
+                        SizedBox(width: 56, child: Text('สูบ\u00A0${inj.cylinder}', style: const TextStyle(fontWeight: FontWeight.w700))),
                         Expanded(
                           child: Text(inj.code, style: const TextStyle(fontFamily: kMono, fontSize: 13, height: 1.4)),
                         ),
@@ -307,8 +308,8 @@ class VehicleScreen extends ConsumerWidget {
                 },
               ),
               Text(
-                'แตะเพื่อคัดลอก กดค้างเพื่อลบ · เก็บไว้อ้างอิงตอนเข้ารหัสด้วยเครื่องมือเฉพาะยี่ห้อ '
-                '(ตัวสแกน PRO SCANNER เขียนรหัสหัวฉีดลงกล่องไม่ได้)',
+                'แตะเพื่อคัดลอก กดค้างเพื่อลบ\u00A0· เก็บไว้อ้างอิงตอนเข้ารหัสด้วยเครื่องมือเฉพาะยี่ห้อ '
+                '(ตัวสแกน PRO\u00A0SCANNER เขียนรหัสหัวฉีดลงกล่องไม่ได้)',
                 style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, height: 1.4),
               ),
             ]),
@@ -344,11 +345,11 @@ class _MaintRow extends StatelessWidget {
     final parts = <String>[
       if (never) 'ยังไม่ได้บันทึกครั้งล่าสุด',
       if (kLeft != null) kLeft < 0 ? 'เลยมา ${formatKm(-kLeft)}' : 'อีก ${formatKm(kLeft)}',
-      if (dLeft != null) dLeft < 0 ? 'เลยกำหนด ${-dLeft} วัน' : 'อีก $dLeft วัน',
+      if (dLeft != null) dLeft < 0 ? 'เลยกำหนด ${-dLeft}\u00A0วัน' : 'อีก $dLeft\u00A0วัน',
     ];
     final every = [
-      if (item.intervalKm != null) 'ทุก ${formatKm(item.intervalKm!.toDouble())}',
-      if (item.intervalMonths != null) 'ทุก ${item.intervalMonths} เดือน',
+      if (item.intervalKm != null) 'ทุก\u00A0${formatKm(item.intervalKm!.toDouble())}',
+      if (item.intervalMonths != null) 'ทุก\u00A0${item.intervalMonths}\u00A0เดือน',
     ].join(' หรือ ');
     return InkWell(
       onTap: onEdit,
@@ -360,8 +361,8 @@ class _MaintRow extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text(item.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-              Text([every, ...parts].where((s) => s.isNotEmpty).join(' · '),
+              Text(thaiKeep(item.name), style: const TextStyle(fontWeight: FontWeight.w600)),
+              Text(thaiKeep([every, ...parts].where((s) => s.isNotEmpty).join('\u00A0· ')),
                   style: TextStyle(fontSize: 12, color: never ? cs.onSurfaceVariant : color)),
             ]),
           ),

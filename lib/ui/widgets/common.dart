@@ -50,7 +50,7 @@ class Pill extends StatelessWidget {
         // ข้อความในป้ายไม่ตัดท้าย ถ้าที่ไม่พอให้ขึ้นบรรทัดใหม่ภายในป้าย
         Flexible(
           child: Text(
-            text,
+            mono ? text : thaiKeep(text),
             style: TextStyle(
               fontSize: 12.5,
               fontWeight: FontWeight.w600,
@@ -81,7 +81,7 @@ class KvRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Expanded(flex: 5, child: Text(label, style: TextStyle(color: cs.onSurfaceVariant))),
+        Expanded(flex: 5, child: Text(thaiKeep(label), style: TextStyle(color: cs.onSurfaceVariant))),
         const SizedBox(width: 10),
         Expanded(
           flex: 6,
@@ -93,7 +93,7 @@ class KvRow extends StatelessWidget {
                   textAlign: TextAlign.right,
                   style: TextStyle(fontWeight: FontWeight.w600, fontFamily: kMono, color: valueColor))
               : Text(
-                  value,
+                  mono ? value : thaiKeep(value),
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     fontWeight: FontWeight.w600,
@@ -105,6 +105,30 @@ class KvRow extends StatelessWidget {
         ),
       ]),
     );
+  }
+}
+
+/// ปุ่มสองปุ่มคู่กัน: ที่พอ (แต่ละปุ่มกว้างอย่างน้อย [minWidth] dp เมื่อคิดรวมขนาดตัวอักษร) วางข้างกัน
+/// ที่ไม่พอ (มือถือจอเล็ก/ตัวอักษรใหญ่) วางซ้อนกันเต็มความกว้าง ชื่อปุ่มจึงอยู่บรรทัดเดียวครบเสมอ
+/// (ชื่อปุ่มควรเป็น [FitText] ถ้าวางข้างกันแล้วยาวเกินนิดหน่อยจะย่อลงแทนการขึ้นบรรทัดใหม่)
+class ButtonPair extends StatelessWidget {
+  const ButtonPair({super.key, required this.first, required this.second, this.minWidth = 150, this.gap = 10});
+
+  final Widget first;
+  final Widget second;
+  final double minWidth;
+  final double gap;
+
+  @override
+  Widget build(BuildContext context) {
+    final scale = MediaQuery.textScalerOf(context).scale(100) / 100;
+    return LayoutBuilder(builder: (context, box) {
+      final each = (box.maxWidth - gap) / 2 / scale;
+      if (each >= minWidth) {
+        return Row(children: [Expanded(child: first), SizedBox(width: gap), Expanded(child: second)]);
+      }
+      return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [first, SizedBox(height: gap), second]);
+    });
   }
 }
 
@@ -126,10 +150,10 @@ class EmptyState extends StatelessWidget {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Icon(icon, size: 60, color: cs.onSurfaceVariant.withValues(alpha: 0.6)),
           const SizedBox(height: 14),
-          Text(title, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+          Text(thaiKeep(title), textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
           if (text != null) ...[
             const SizedBox(height: 6),
-            Text(text!, textAlign: TextAlign.center, style: TextStyle(color: cs.onSurfaceVariant, height: 1.45)),
+            Text(thaiKeep(text!), textAlign: TextAlign.center, style: TextStyle(color: cs.onSurfaceVariant, height: 1.45)),
           ],
           if (action != null) ...[const SizedBox(height: 18), action!],
         ]),
@@ -156,10 +180,10 @@ class CheckRow extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.w700, height: 1.3)),
+            Text(thaiKeep(title), style: const TextStyle(fontWeight: FontWeight.w700, height: 1.3)),
             if (detail.isNotEmpty) ...[
               const SizedBox(height: 3),
-              Text(detail, style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant, height: 1.45)),
+              Text(thaiKeep(detail), style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant, height: 1.45)),
             ],
           ]),
         ),
@@ -219,7 +243,7 @@ class ToolCard extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         // คำอธิบายขึ้นได้หลายบรรทัด การ์ดสูงตามเนื้อหา (ดู grid ใน home_tab.dart)
-        Text(subtitle, style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant, height: 1.3)),
+        Text(thaiKeep(subtitle), style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant, height: 1.3)),
       ]),
     );
   }

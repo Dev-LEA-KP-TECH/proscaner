@@ -100,7 +100,7 @@ UsedCarReport evaluateUsedCar({
   // 3) กล่องอื่น (ABS, ถุงลม, เกียร์)
   if (!modulesScanned) {
     flags.add(const UsedCarFlag(CheckLevel.warn, 'ตรวจได้เฉพาะกล่องเครื่องยนต์',
-        'รถใช้โปรโตคอลรุ่นเก่า (ไม่ใช่ CAN) ตัวสแกน PRO SCANNER อ่าน ABS ถุงลม เกียร์ ของรถคันนี้ไม่ได้ ควรให้อู่ตรวจด้วยเครื่องมือเฉพาะยี่ห้อ'));
+        'รถใช้โปรโตคอลรุ่นเก่า (ไม่ใช่ CAN) ตัวสแกน PRO\u00A0SCANNER อ่าน ABS ถุงลม เกียร์ ของรถคันนี้ไม่ได้ ควรให้อู่ตรวจด้วยเครื่องมือเฉพาะยี่ห้อ'));
   }
   for (final m in modules) {
     if (m.error != null) {

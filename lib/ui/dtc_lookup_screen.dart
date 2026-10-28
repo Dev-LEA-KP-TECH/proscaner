@@ -39,7 +39,7 @@ class _DtcLookupScreenState extends ConsumerState<DtcLookupScreen> {
             textCapitalization: TextCapitalization.characters,
             decoration: const InputDecoration(
               prefixIcon: Icon(Icons.search_rounded),
-              hintText: 'พิมพ์รหัส เช่น P0171 หรือคำค้น',
+              hintText: 'เช่น P0171 หรือคำค้น',
             ),
             onChanged: (_) => setState(() {}),
           ),
@@ -76,6 +76,15 @@ class _DtcTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final color = info.severity.color(cs);
+    final code = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(10)),
+      child: Text(info.code, style: TextStyle(fontFamily: kMono, fontWeight: FontWeight.w800, color: color, fontSize: 13)),
+    );
+    final description =
+        Text(thaiKeep(info.descriptionTh), style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, height: 1.35));
+    // จอแคบ: รหัสและระดับความรุนแรงอยู่แถวบน คำอธิบายเต็มความกว้าง (ไม่ถูกบีบข้างกล่องรหัส)
+    final narrow = isNarrow(context, 380);
     return PremiumCard(
       padding: EdgeInsets.zero,
       radius: 18,
@@ -83,25 +92,33 @@ class _DtcTile extends StatelessWidget {
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
           tilePadding: const EdgeInsets.fromLTRB(14, 4, 12, 4),
-          leading: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-            decoration: BoxDecoration(color: color.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(10)),
-            child: Text(info.code,
-                style: TextStyle(fontFamily: kMono, fontWeight: FontWeight.w800, color: color, fontSize: 13)),
-          ),
-          title: Text(info.descriptionTh, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14, height: 1.35)),
-          subtitle: Padding(padding: const EdgeInsets.only(top: 6), child: Align(alignment: Alignment.centerLeft, child: SeverityChip(info.severity))),
+          leading: narrow ? null : code,
+          title: narrow
+              ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Wrap(spacing: 8, runSpacing: 6, crossAxisAlignment: WrapCrossAlignment.center, children: [
+                    code,
+                    SeverityChip(info.severity),
+                  ]),
+                  const SizedBox(height: 8),
+                  description,
+                ])
+              : description,
+          subtitle: narrow
+              ? null
+              : Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Align(alignment: Alignment.centerLeft, child: SeverityChip(info.severity))),
           childrenPadding: const EdgeInsets.fromLTRB(18, 0, 18, 16),
           expandedCrossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (info.causes.isNotEmpty) ...[
               const Text('สาเหตุที่พบบ่อย', style: TextStyle(fontWeight: FontWeight.w800)),
-              for (final c in info.causes) Padding(padding: const EdgeInsets.only(top: 4), child: Text('• $c')),
+              for (final c in info.causes) Padding(padding: const EdgeInsets.only(top: 4), child: Text('• ${thaiKeep(c)}')),
               const SizedBox(height: 10),
             ],
             if (info.checks.isNotEmpty) ...[
               const Text('วิธีตรวจเช็ก', style: TextStyle(fontWeight: FontWeight.w800)),
-              for (final c in info.checks) Padding(padding: const EdgeInsets.only(top: 4), child: Text('• $c')),
+              for (final c in info.checks) Padding(padding: const EdgeInsets.only(top: 4), child: Text('• ${thaiKeep(c)}')),
             ],
           ],
         ),

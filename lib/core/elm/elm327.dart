@@ -22,9 +22,9 @@ class BlockedCommandException extends ElmException {
 
 /// ชนิดชิปของตัวสแกน (เดาจากคำตอบของ ATI / STI)
 enum AdapterKind {
-  stn('PRO SCANNER (ชิป STN)'),
-  elmGenuine('PRO SCANNER'),
-  elmClone('PRO SCANNER (ชิปรุ่นทั่วไป)'),
+  stn('PRO\u00A0SCANNER (ชิป STN)'),
+  elmGenuine('PRO\u00A0SCANNER'),
+  elmClone('PRO\u00A0SCANNER (ชิปรุ่นทั่วไป)'),
   simulator('ตัวจำลอง'),
   unknown('ไม่ทราบ');
 

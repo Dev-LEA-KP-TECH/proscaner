@@ -9,7 +9,7 @@ import 'theme.dart';
 import 'widgets/common.dart';
 
 String _size(int bytes) {
-  if (bytes < 1024) return '$bytes B';
+  if (bytes < 1024) return '$bytes\u00A0B';
   if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(0)} KB';
   return '${(bytes / 1024 / 1024).toStringAsFixed(1)} MB';
 }
@@ -92,7 +92,7 @@ class _CommLogScreenState extends ConsumerState<CommLogScreen> {
                   const Text('บันทึกทุกครั้งที่เชื่อมต่อ', style: TextStyle(fontWeight: FontWeight.w700)),
                   const SizedBox(height: 4),
                   Text(
-                    'เก็บทุกคำสั่งที่แอปส่ง และทุกคำตอบจากตัวสแกน/รถ พร้อมเวลา ไว้ในเครื่องนี้ 30 ครั้งล่าสุด '
+                    'เก็บทุกคำสั่งที่แอปส่ง และทุกคำตอบจากตัวสแกน/รถ พร้อมเวลา ไว้ในเครื่องนี้ 30\u00A0ครั้งล่าสุด '
                     'ถ้าแอปอ่านค่ารถคันไหนไม่ได้หรือค่าแปลกๆ ส่งบันทึกครั้งนั้นให้ผู้พัฒนาตรวจได้',
                     style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.45),
                   ),
@@ -138,7 +138,7 @@ class _CommLogScreenState extends ConsumerState<CommLogScreen> {
                                 style: const TextStyle(fontWeight: FontWeight.w700)),
                             const SizedBox(height: 2),
                             Text(
-                              '${thaiDate(s.start)} · ${_size(s.bytes)}${s.name == current ? ' · กำลังบันทึก' : ''}',
+                              '${thaiDate(s.start)}\u00A0· ${_size(s.bytes)}${s.name == current ? '\u00A0· กำลังบันทึก' : ''}',
                               style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
                             ),
                           ]),

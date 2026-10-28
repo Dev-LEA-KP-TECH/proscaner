@@ -48,10 +48,11 @@ Future<void> showStartRecording(BuildContext context, WidgetRef ref) async {
       return DraggableScrollableSheet(
         expand: false,
         initialChildSize: 0.75,
-        builder: (c, scroll) => ListView(controller: scroll, padding: const EdgeInsets.fromLTRB(16, 0, 16, 24), children: [
+        builder: (c, scroll) => ListView(
+            controller: scroll, padding: EdgeInsets.fromLTRB(16, 0, 16, 24 + MediaQuery.paddingOf(c).bottom), children: [
           const Text('เลือกค่าที่จะบันทึก', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
           const SizedBox(height: 4),
-          Text('ยิ่งเลือกน้อย ยิ่งบันทึกได้ถี่ (ตัวสแกนทั่วไปอ่านได้ ~10–20 ค่า/วินาที)',
+          Text('ยิ่งเลือกน้อย ยิ่งบันทึกได้ถี่ (ตัวสแกนทั่วไปอ่านได้ ~10–20\u00A0ค่า/วินาที)',
               style: TextStyle(fontSize: 12.5, color: Theme.of(c).colorScheme.onSurfaceVariant)),
           const SizedBox(height: 12),
           Wrap(spacing: 8, runSpacing: 8, children: [
@@ -78,7 +79,7 @@ Future<void> showStartRecording(BuildContext context, WidgetRef ref) async {
           const SizedBox(height: 18),
           FilledButton.icon(
             icon: const Icon(Icons.fiber_manual_record_rounded),
-            label: Text('เริ่มบันทึก ${selected.length} ค่า'),
+            label: Text('เริ่มบันทึก ${selected.length}\u00A0ค่า'),
             onPressed: selected.isEmpty ? null : () => Navigator.pop(c, selected.toList()),
           ),
         ]),
@@ -170,7 +171,7 @@ class _LogsScreenState extends ConsumerState<LogsScreen> {
             );
           }
           return ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 96), children: [
-            Text('แตะค้างเพื่อเลือก 2 รายการแล้วเปรียบเทียบ (เช่น ก่อน-หลังซ่อม)',
+            Text('แตะค้างเพื่อเลือก 2\u00A0รายการแล้วเปรียบเทียบ (เช่น ก่อน-หลังซ่อม)',
                 style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant)),
             const SizedBox(height: 10),
             for (final log in items)
@@ -214,7 +215,7 @@ class _LogTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final d = log.durationS;
-    final dur = d < 60 ? '${d.round()} วินาที' : '${(d / 60).floor()} นาที ${(d % 60).round()} วินาที';
+    final dur = d < 60 ? '${d.round()}\u00A0วินาที' : '${(d / 60).floor()}\u00A0นาที ${(d % 60).round()}\u00A0วินาที';
     return GestureDetector(
       onLongPress: onLongPress,
       child: PremiumCard(
@@ -234,7 +235,7 @@ class _LogTile extends StatelessWidget {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(log.name, style: const TextStyle(fontWeight: FontWeight.w700)),
               const SizedBox(height: 2),
-              Text('${thaiDate(log.start)} · $dur · ${log.pids.length} ค่า · ${log.rows.length} แถว',
+              Text('${thaiDate(log.start)}\u00A0· $dur\u00A0· ${log.pids.length}\u00A0ค่า\u00A0· ${log.rows.length}\u00A0แถว',
                   style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
             ]),
           ),
@@ -367,7 +368,7 @@ class _LogViewScreenState extends ConsumerState<LogViewScreen> {
                     if (st != null) ...[
                       const SizedBox(height: 8),
                       Text(
-                        'ต่ำสุด ${st.$1.toStringAsFixed(def.decimals)} · เฉลี่ย ${st.$2.toStringAsFixed(def.decimals)} · สูงสุด ${st.$3.toStringAsFixed(def.decimals)}',
+                        'ต่ำสุด ${st.$1.toStringAsFixed(def.decimals)}\u00A0· เฉลี่ย ${st.$2.toStringAsFixed(def.decimals)}\u00A0· สูงสุด ${st.$3.toStringAsFixed(def.decimals)}',
                         style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
                       ),
                     ],

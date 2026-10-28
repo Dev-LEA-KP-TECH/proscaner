@@ -193,7 +193,7 @@ class _TimePainter extends CustomPainter {
   }
 
   static String _fmtT(double s) {
-    if (s < 120) return '${s.toStringAsFixed(s < 10 ? 1 : 0)} วิ';
+    if (s < 120) return '${s.toStringAsFixed(s < 10 ? 1 : 0)}\u00A0วิ';
     final m = s ~/ 60;
     final r = (s % 60).round();
     return '$m:${r.toString().padLeft(2, '0')}';

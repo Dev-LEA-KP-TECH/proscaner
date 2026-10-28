@@ -224,7 +224,7 @@ class _PerformanceScreenState extends ConsumerState<PerformanceScreen> {
               Text(dv?.unit ?? speedDef.unit, style: TextStyle(color: cs.onSurfaceVariant)),
               const SizedBox(height: 8),
               Text(
-                _phase == _Phase.running ? '${elapsed.toStringAsFixed(1)} วินาที · ${calc!.distanceM.round()} ม.' : ' ',
+                _phase == _Phase.running ? '${elapsed.toStringAsFixed(1)}\u00A0วินาที\u00A0· ${calc!.distanceM.round()}\u00A0ม.' : ' ',
                 style: const TextStyle(fontFamily: kMono, fontSize: 18, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 14),
@@ -254,12 +254,12 @@ class _PerformanceScreenState extends ConsumerState<PerformanceScreen> {
                 ],
               ]),
               const SizedBox(height: 10),
-              Text('อัตราอ่านค่า ${_hz.toStringAsFixed(1)} ครั้ง/วินาที${_error != null ? ' · $_error' : ''}',
+              Text('อัตราอ่านค่า ${_hz.toStringAsFixed(1)}\u00A0ครั้ง/วินาที${_error != null ? '\u00A0· $_error' : ''}',
                   style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
             ]),
           ),
           if (_runs.isNotEmpty) ...[
-            SectionLabel('ผลล่าสุด', trailing: best100 == null ? null : Pill(text: 'ดีที่สุด 0–100: ${best100.toStringAsFixed(2)} วิ', color: cs.primary)),
+            SectionLabel('ผลล่าสุด', trailing: best100 == null ? null : Pill(text: 'ดีที่สุด 0–100: ${best100.toStringAsFixed(2)}\u00A0วิ', color: cs.primary)),
             _RunCard(run: _runs.first, highlight: true),
             if (_runs.length > 1) ...[
               const SectionLabel('รอบก่อนหน้า'),
@@ -277,7 +277,7 @@ class _PerformanceScreenState extends ConsumerState<PerformanceScreen> {
             ),
             child: Text(
               'ทดสอบในสนามหรือพื้นที่ปิดเท่านั้น ห้ามทดสอบบนถนนสาธารณะ ความแม่นยำขึ้นกับความเร็วตัวสแกน '
-              '(ตัวสแกนทั่วไป ±0.2–0.3 วินาที) และความเร็วจาก ECU อาจคลาดจากจริงเล็กน้อยตามขนาดยาง',
+              '(ตัวสแกนทั่วไป ±0.2–0.3\u00A0วินาที) และความเร็วจาก ECU อาจคลาดจากจริงเล็กน้อยตามขนาดยาง',
               style: TextStyle(fontSize: 12, height: 1.5, color: cs.onSurface),
             ),
           ),
@@ -297,12 +297,14 @@ class _RunCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     String f(double? v) => v == null ? '—' : v.toStringAsFixed(2);
+    // ช่องละ 1 ใน 4 ของความกว้าง: ชื่อ ตัวเลข และหน่วยอยู่บรรทัดเดียวเสมอ (ช่องแคบย่อตัวอักษรลง)
     Widget tile(String label, String value, String unit) => Expanded(
           child: Column(children: [
-            Text(label, style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant)),
+            FitText(label, alignment: Alignment.center, style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant)),
             const SizedBox(height: 2),
-            Text(value, style: TextStyle(fontSize: highlight ? 24 : 18, fontWeight: FontWeight.w800)),
-            Text(unit, style: TextStyle(fontSize: 10.5, color: cs.onSurfaceVariant)),
+            FitText(value,
+                alignment: Alignment.center, style: TextStyle(fontSize: highlight ? 24 : 18, fontWeight: FontWeight.w800)),
+            FitText(unit, alignment: Alignment.center, style: TextStyle(fontSize: 10.5, color: cs.onSurfaceVariant)),
           ]),
         );
     return PremiumCard(
@@ -314,10 +316,10 @@ class _RunCard extends StatelessWidget {
           tile('0–60', f(run.t60), 'วินาที'),
           tile('0–100', f(run.t100), 'วินาที'),
           tile('60–100', f(run.t60to100), 'วินาที'),
-          tile('402 ม.', f(run.quarter), run.quarterSpeed == null ? 'วินาที' : '@ ${run.quarterSpeed!.round()} กม./ชม.'),
+          tile('402\u00A0ม.', f(run.quarter), run.quarterSpeed == null ? 'วินาที' : '@ ${run.quarterSpeed!.round()}\u00A0กม./ชม.'),
         ]),
         const SizedBox(height: 8),
-        Text('${thaiDate(run.time)} · สูงสุด ${run.maxSpeed.round()} กม./ชม. · ${run.hz.toStringAsFixed(1)} Hz',
+        Text('${thaiDate(run.time)}\u00A0· สูงสุด ${run.maxSpeed.round()}\u00A0กม./ชม.\u00A0· ${run.hz.toStringAsFixed(1)}\u00A0Hz',
             style: TextStyle(fontSize: 11.5, color: cs.onSurfaceVariant)),
       ]),
     );

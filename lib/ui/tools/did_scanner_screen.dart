@@ -27,10 +27,10 @@ class _Preset {
   final ExtLibraryEntry? entry;
 }
 
-const _kwpPresetTitle = 'KWP 21 กล่องหลัก';
+const _kwpPresetTitle = 'KWP 21\u00A0กล่องหลัก';
 
 const _genericPresets = <_Preset>[
-  _Preset(_kwpPresetTitle, 'เครื่อง เกียร์ และกล่องที่ 3 (7E0/7E1/7E2) · Toyota, Mitsubishi และรถรุ่นเก่า', [
+  _Preset(_kwpPresetTitle, 'เครื่อง เกียร์ และกล่องที่ 3 (7E0/7E1/7E2)\u00A0· Toyota, Mitsubishi และรถรุ่นเก่า', [
     ScanJob(header: '7E0', service: 0x21, start: 0x00, end: 0xFF),
     ScanJob(header: '7E1', service: 0x21, start: 0x00, end: 0xFF),
     ScanJob(header: '7E2', service: 0x21, start: 0x00, end: 0xFF),
@@ -129,7 +129,7 @@ class _DidScannerScreenState extends ConsumerState<DidScannerScreen> {
     if (h.isNotEmpty && probe.validate() != null) err = probe.validate();
     if (s == null || e == null || e < s) err = 'ช่วงเลขไม่ถูกต้อง';
     final maxId = _service == 0x21 ? 0xFF : 0xFFFF;
-    if (err == null && (e! > maxId || e - s! > 4096)) err = 'ค้นหาได้ครั้งละไม่เกิน 4,096 เลข';
+    if (err == null && (e! > maxId || e - s! > 4096)) err = 'ค้นหาได้ครั้งละไม่เกิน 4,096\u00A0เลข';
     if (err != null) {
       setState(() => _error = err);
       return null;
@@ -256,7 +256,7 @@ class _DidScannerScreenState extends ConsumerState<DidScannerScreen> {
             final id = resumeIdFrom(_current, _service);
             if (id != null) {
               _start.text = id;
-              _note = 'หยุดที่เลข $id · บันทึกเลขที่เจอไว้ก่อน แล้วกด "เริ่มค้นหา" เพื่อค้นต่อจาก $id';
+              _note = 'หยุดที่เลข $id\u00A0· บันทึกเลขที่เจอไว้ก่อน แล้วกด "เริ่มค้นหา" เพื่อค้นต่อจาก $id';
             }
           }
         });
@@ -306,7 +306,7 @@ class _DidScannerScreenState extends ConsumerState<DidScannerScreen> {
     final pack = ExtPidPack(
       id: 'pack_${now.millisecondsSinceEpoch}',
       name: 'ค้นพบเอง ${label.isEmpty ? 'ชุดของฉัน' : label} $date',
-      note: 'เลขที่กล่องตอบตอนค้นหา ${hits.length} รายการ ยังไม่รู้ว่าเป็นค่าอะไร '
+      note: 'เลขที่กล่องตอบตอนค้นหา ${hits.length}\u00A0รายการ ยังไม่รู้ว่าเป็นค่าอะไร '
           'ใช้ "จับคู่กับค่า OBD มาตรฐาน" ตอนติดเครื่อง หรือแตะแต่ละค่าเพื่อดูไบต์สดและหาสูตร',
       brand: make ?? '',
       models: [if (model != null) model],
@@ -329,7 +329,7 @@ class _DidScannerScreenState extends ConsumerState<DidScannerScreen> {
     // ปุ่ม "จับคู่กับค่า OBD มาตรฐาน" ของชุดนี้จะแสดงแทนปุ่มบันทึกในรายการผลค้นหา
     setState(() => _savedAllPackId = pack.id);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('บันทึก ${hits.length} เลขเป็นชุด "${pack.name}" แล้ว (อยู่ใน "ชุดของฉัน")'),
+      content: Text('บันทึก ${hits.length}\u00A0เลขเป็นชุด "${pack.name}" แล้ว (อยู่ใน "ชุดของฉัน")'),
     ));
   }
 
@@ -379,7 +379,7 @@ class _DidScannerScreenState extends ConsumerState<DidScannerScreen> {
     final presets = <_Preset>[
       for (final e in lib)
         if (e.scan.isNotEmpty)
-          _Preset('ตามชุด ${e.name}', '${e.scan.length} ช่วง · ${e.scan.map((j) => j.label).take(3).join(', ')}${e.scan.length > 3 ? ' …' : ''}', e.scan,
+          _Preset('ตามชุด ${e.name}', '${e.scan.length} ช่วง\u00A0· ${e.scan.map((j) => j.label).take(3).join(', ')}${e.scan.length > 3 ? ' …' : ''}', e.scan,
               entry: e),
       ..._genericPresets,
     ];
@@ -418,7 +418,7 @@ class _DidScannerScreenState extends ConsumerState<DidScannerScreen> {
           items: [
             const DropdownMenuItem(value: -1, child: Text('กำหนดเอง')),
             for (var i = 0; i < presets.length; i++)
-              DropdownMenuItem(value: i, child: Text(presets[i].title, overflow: TextOverflow.ellipsis)),
+              DropdownMenuItem(value: i, child: FitText(presets[i].title)),
           ],
           onChanged: _busy
               ? null
@@ -444,7 +444,7 @@ class _DidScannerScreenState extends ConsumerState<DidScannerScreen> {
                   child: Text(j.label, style: const TextStyle(fontFamily: kMono, fontSize: 13)),
                 ),
               const SizedBox(height: 4),
-              Text('รวม $total เลข ใช้เวลาประมาณ ${((total ?? 0) * 0.15 / 60).ceil()} นาที (หยุดกลางทางได้)',
+              Text('รวม $total\u00A0เลข ใช้เวลาประมาณ ${((total ?? 0) * 0.15 / 60).ceil()}\u00A0นาที (หยุดกลางทางได้)',
                   style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12)),
             ] else ...[
               SegmentedButton<int>(
@@ -524,7 +524,7 @@ class _DidScannerScreenState extends ConsumerState<DidScannerScreen> {
             ),
         ],
         if (hits != null) ...[
-          SectionLabel('กล่องตอบ ${hits.length} รายการ'),
+          SectionLabel('กล่องตอบ ${hits.length}\u00A0รายการ'),
           if (hits.isEmpty && !_busy)
             Text('ไม่มีเลขที่กล่องตอบในช่วงนี้ ลองเปลี่ยนช่วง ชนิดคำสั่ง หรือ header',
                 style: TextStyle(color: cs.onSurfaceVariant)),
@@ -539,14 +539,14 @@ class _DidScannerScreenState extends ConsumerState<DidScannerScreen> {
                     )
                   : FilledButton.tonalIcon(
                       icon: const Icon(Icons.auto_fix_high_rounded),
-                      label: const Text('บันทึกแล้ว · จับคู่กับค่า OBD มาตรฐาน'),
+                      label: const Text('บันทึกแล้ว\u00A0· จับคู่กับค่า OBD มาตรฐาน'),
                       onPressed: () => _openAutoMatch(_savedAllPackId!),
                     ),
             ),
           for (final e in byHeader.entries) ...[
             Padding(
               padding: const EdgeInsets.fromLTRB(4, 6, 4, 6),
-              child: Text('กล่อง ${e.key} · ${e.value.length} รายการ',
+              child: Text('กล่อง ${e.key}\u00A0· ${e.value.length}\u00A0รายการ',
                   style: TextStyle(fontWeight: FontWeight.w700, color: cs.onSurfaceVariant)),
             ),
             for (final h in e.value)
@@ -561,10 +561,9 @@ class _DidScannerScreenState extends ConsumerState<DidScannerScreen> {
                       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                         Text(h.request, style: const TextStyle(fontWeight: FontWeight.w800, fontFamily: kMono)),
                         const SizedBox(height: 2),
-                        Text('${h.data.length} B: ${h.hex}',
-                            style: TextStyle(fontSize: 12, fontFamily: kMono, color: cs.onSurfaceVariant),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis),
+                        // ตัวอย่างข้อมูล 16 ไบต์แรก (แตะเพื่อดูทั้งหมด) แสดงครบไม่ตัดกลางบรรทัด
+                        Text('${h.data.length}\u00A0B: ${bytesToHex(h.data.take(16).toList())}${h.data.length > 16 ? ' …' : ''}',
+                            style: TextStyle(fontSize: 12, fontFamily: kMono, color: cs.onSurfaceVariant)),
                       ]),
                     ),
                     const Icon(Icons.chevron_right_rounded),

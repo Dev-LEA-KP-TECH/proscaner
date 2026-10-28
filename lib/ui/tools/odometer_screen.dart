@@ -297,9 +297,9 @@ class _DataCard extends StatelessWidget {
         KvRow('เลขไมล์ในกล่อง ECU', reading.ecuKm == null ? none : formatKm(reading.ecuKm!),
             valueColor: reading.ecuKm == null ? cs.onSurfaceVariant : null),
         KvRow('ชั่วโมงเครื่องสะสม',
-            reading.engineHours == null ? none : '${groupDigits(reading.engineHours!)} ชม.',
+            reading.engineHours == null ? none : '${groupDigits(reading.engineHours!)}\u00A0ชม.',
             valueColor: reading.engineHours == null ? cs.onSurfaceVariant : null),
-        KvRow('จำนวนครั้งที่สตาร์ท', reading.ignitions == null ? none : '${groupDigits(reading.ignitions!)} ครั้ง',
+        KvRow('จำนวนครั้งที่สตาร์ท', reading.ignitions == null ? none : '${groupDigits(reading.ignitions!)}\u00A0ครั้ง',
             valueColor: reading.ignitions == null ? cs.onSurfaceVariant : null),
         KvRow('ปีรุ่นจาก VIN', reading.modelYear == null ? 'ไม่ทราบ' : '${reading.modelYear}'),
       ]),
@@ -320,7 +320,7 @@ class _Disclaimer extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
       ),
       child: Text(
-        'ผลนี้เป็นหลักฐานประกอบการตัดสินใจ ไม่ใช่ข้อพิสูจน์ทางกฎหมาย รถรุ่นก่อนปี 2019 ส่วนใหญ่ไม่ส่งเลขไมล์ผ่าน OBD '
+        'ผลนี้เป็นหลักฐานประกอบการตัดสินใจ ไม่ใช่ข้อพิสูจน์ทางกฎหมาย รถรุ่นก่อนปี\u00A02019 ส่วนใหญ่ไม่ส่งเลขไมล์ผ่าน OBD '
         'และบางยี่ห้อเก็บเลขไมล์สำรองไว้ในกล่องอื่น (ABS, กล่องเกียร์, กล่องกุญแจ) ซึ่งต้องใช้เครื่องมือเฉพาะยี่ห้ออ่าน '
         'ควรดูประกอบกับสมุดเช็กระยะ สภาพพวงมาลัย เบาะ แป้นเหยียบ',
         style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, height: 1.5),

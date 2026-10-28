@@ -67,7 +67,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         for (final d in defs)
           ListTile(
             title: Text(d.nameTh),
-            subtitle: Text('${d.code} · ${d.unit}', style: const TextStyle(fontFamily: kMono, fontSize: 12)),
+            subtitle: Text('${d.code}\u00A0· ${d.unit}', style: const TextStyle(fontFamily: kMono, fontSize: 12)),
             onTap: () => Navigator.pop(c, d.pid),
           ),
       ]),
@@ -102,7 +102,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   fraction: sv?.fraction,
                   valueText: sv?.text ?? '—',
                   unit: sv?.unit ?? speedDef.unit,
-                  label: rpm == null ? 'ความเร็ว' : '${rpm.round()} รอบ',
+                  label: rpm == null ? 'ความเร็ว' : '${rpm.round()}\u00A0รอบ',
                   color: (rpm ?? 0) > 4500 ? StatusColors.bad : cs.primary,
                 ),
               ),
@@ -139,7 +139,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 onPressed: () => Navigator.of(context).maybePop(),
               ),
               Expanded(
-                child: Text('กดค้างที่ช่องเพื่อเปลี่ยนค่าที่แสดง · ${live.hz.toStringAsFixed(1)} ค่า/วินาที',
+                child: Text('กดค้างที่ช่องเพื่อเปลี่ยนค่าที่แสดง\u00A0· ${live.hz.toStringAsFixed(1)}\u00A0ค่า/วินาที',
                     maxLines: 2, style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, height: 1.3)),
               ),
               IconButton(

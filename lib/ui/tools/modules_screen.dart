@@ -106,7 +106,7 @@ class _ModulesScreenState extends ConsumerState<ModulesScreen> {
             return const EmptyState(
               icon: Icons.device_hub_rounded,
               title: 'รถใช้โปรโตคอลรุ่นเก่า',
-              text: 'การอ่านกล่องอื่น (ABS ถุงลม ฯลฯ) ผ่าน PRO SCANNER รองรับเฉพาะรถที่ใช้ CAN (ส่วนใหญ่ปี 2008 ขึ้นไป)',
+              text: 'การอ่านกล่องอื่น (ABS ถุงลม ฯลฯ) ผ่าน PRO\u00A0SCANNER รองรับเฉพาะรถที่ใช้ CAN (ส่วนใหญ่ปี\u00A02008 ขึ้นไป)',
             );
           }
           return ListView(padding: const EdgeInsets.fromLTRB(16, 4, 16, 32), children: [
@@ -118,27 +118,20 @@ class _ModulesScreenState extends ConsumerState<ModulesScreen> {
                   style: TextStyle(fontSize: 13, color: cs.onSurfaceVariant, height: 1.45),
                 ),
                 const SizedBox(height: 14),
-                Row(children: [
-                  Expanded(
-                    child: FilledButton.icon(
-                      icon: const Icon(Icons.radar_rounded),
-                      label: const Text('ค้นหาด่วน'),
-                      onPressed: _busy ? null : () => _discover(false),
-                    ),
+                // จอแคบวางปุ่มซ้อนกันเต็มความกว้าง ชื่อปุ่มอ่านครบบรรทัดเดียว
+                ButtonPair(
+                  minWidth: 165,
+                  first: FilledButton.icon(
+                    icon: const Icon(Icons.radar_rounded),
+                    label: const FitText('ค้นหาด่วน'),
+                    onPressed: _busy ? null : () => _discover(false),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.travel_explore_rounded),
-                      // จอแคบ (มือถือ) ให้ย่อตัวอักษรลงแทนการตัดขึ้นบรรทัดใหม่กลางวงเล็บ
-                      label: const FittedBox(
-                        fit: BoxFit.scaleDown,
-                        child: Text('ละเอียด (~2 นาที)', maxLines: 1, softWrap: false),
-                      ),
-                      onPressed: _busy ? null : () => _discover(true),
-                    ),
+                  second: OutlinedButton.icon(
+                    icon: const Icon(Icons.travel_explore_rounded),
+                    label: const FitText('ค้นหาละเอียด (~2\u00A0นาที)'),
+                    onPressed: _busy ? null : () => _discover(true),
                   ),
-                ]),
+                ),
                 if (_busy) ...[
                   const SizedBox(height: 14),
                   LinearProgressIndicator(value: _progress),
@@ -148,7 +141,7 @@ class _ModulesScreenState extends ConsumerState<ModulesScreen> {
               ]),
             ),
             if (modules.isNotEmpty) ...[
-              SectionLabel('พบ ${modules.length} กล่อง'),
+              SectionLabel('พบ ${modules.length}\u00A0กล่อง'),
               for (final m in modules)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
@@ -177,7 +170,7 @@ class _ModulesScreenState extends ConsumerState<ModulesScreen> {
                       if (m.error != null)
                         const Pill(text: 'อ่านไม่ได้', color: StatusColors.info)
                       else if (m.dtcs.isNotEmpty)
-                        Pill(text: '${m.dtcs.length} รหัส', color: StatusColors.warn)
+                        Pill(text: '${m.dtcs.length}\u00A0รหัส', color: StatusColors.warn)
                       else
                         Icon(Icons.chevron_right_rounded, color: cs.onSurfaceVariant),
                     ]),
@@ -270,7 +263,7 @@ class _ModuleDetailScreenState extends ConsumerState<ModuleDetailScreen> {
       widget.module.dtcs = await uds.readDtcs(widget.module);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(done ? 'ส่งคำสั่งลบแล้ว เหลือ ${widget.module.dtcs.length} รหัส' : 'กล่องไม่ยืนยันการลบ'),
+          content: Text(done ? 'ส่งคำสั่งลบแล้ว เหลือ ${widget.module.dtcs.length}\u00A0รหัส' : 'กล่องไม่ยืนยันการลบ'),
         ));
       }
     });
@@ -301,24 +294,20 @@ class _ModuleDetailScreenState extends ConsumerState<ModuleDetailScreen> {
             KvRow('ที่อยู่ส่ง / รับ', '${m.tx} / ${m.rx}', mono: true),
             if (m.error != null) KvRow('สถานะล่าสุด', m.error!),
             const SizedBox(height: 10),
-            Row(children: [
-              Expanded(
-                child: FilledButton.icon(
-                  icon: const Icon(Icons.qr_code_scanner_rounded),
-                  label: const Text('อ่านรหัส'),
-                  onPressed: _busy ? null : _readDtcs,
-                ),
+            ButtonPair(
+              minWidth: 120,
+              first: FilledButton.icon(
+                icon: const Icon(Icons.qr_code_scanner_rounded),
+                label: const FitText('อ่านรหัส'),
+                onPressed: _busy ? null : _readDtcs,
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(foregroundColor: StatusColors.bad),
-                  icon: const Icon(Icons.delete_sweep_rounded),
-                  label: const Text('ลบรหัส'),
-                  onPressed: _busy ? null : _clear,
-                ),
+              second: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(foregroundColor: StatusColors.bad),
+                icon: const Icon(Icons.delete_sweep_rounded),
+                label: const FitText('ลบรหัส'),
+                onPressed: _busy ? null : _clear,
               ),
-            ]),
+            ),
             if (_busy) const Padding(padding: EdgeInsets.only(top: 12), child: LinearProgressIndicator()),
           ]),
         ),

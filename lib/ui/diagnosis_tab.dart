@@ -97,37 +97,33 @@ class DiagnosisTab extends ConsumerWidget {
             ]),
           ),
           const SizedBox(height: 16),
-          Row(children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                icon: const Icon(Icons.refresh_rounded),
-                label: Text(scan.fullScan ? 'สแกนทั้งคันใหม่' : 'สแกนใหม่'),
-                onPressed: () => ref.read(scanProvider.notifier).run(allModules: scan.fullScan),
-              ),
+          ButtonPair(
+            minWidth: 140,
+            first: OutlinedButton.icon(
+              icon: const Icon(Icons.refresh_rounded),
+              label: FitText(scan.fullScan ? 'สแกนทั้งคันใหม่' : 'สแกนใหม่'),
+              onPressed: () => ref.read(scanProvider.notifier).run(allModules: scan.fullScan),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: FilledButton.icon(
-                icon: const Icon(Icons.picture_as_pdf_rounded),
-                label: const Text('รายงาน PDF'),
-                onPressed: () => shareReportPdf(context, ref, report: report),
-              ),
+            second: FilledButton.icon(
+              icon: const Icon(Icons.picture_as_pdf_rounded),
+              label: const FitText('รายงาน PDF'),
+              onPressed: () => shareReportPdf(context, ref, report: report),
             ),
-          ]),
+          ),
           const SizedBox(height: 10),
           Row(children: [
             if (!scan.fullScan)
               Expanded(
                 child: TextButton.icon(
                   icon: const Icon(Icons.hub_rounded),
-                  label: const Text('สแกนทั้งคัน'),
+                  label: const FitText('สแกนทั้งคัน'),
                   onPressed: () => ref.read(scanProvider.notifier).run(allModules: true),
                 ),
               ),
             Expanded(
               child: TextButton.icon(
                 icon: const Icon(Icons.copy_all_rounded),
-                label: const Text('คัดลอกข้อความ'),
+                label: const FitText('คัดลอกข้อความ'),
                 onPressed: () async {
                   await Clipboard.setData(ClipboardData(text: buildReportText(report)));
                   if (context.mounted) {
@@ -150,7 +146,7 @@ class DiagnosisTab extends ConsumerWidget {
           ],
           const SizedBox(height: 8),
           Text(
-            'วิเคราะห์โดย ${report.engineName} · ผลเป็นแนวทางเบื้องต้น ควรให้ช่างยืนยันก่อนเปลี่ยนอะไหล่',
+            'วิเคราะห์โดย ${report.engineName}\u00A0· ผลเป็นแนวทางเบื้องต้น ควรให้ช่างยืนยันก่อนเปลี่ยนอะไหล่',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
           ),
@@ -251,7 +247,7 @@ class _ReadyToScanState extends State<_ReadyToScan> {
           Text('พร้อมตรวจรถ', style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
           Text(
-            'สแกนด่วน: กล่องเครื่องยนต์ ~15 วินาที\nสแกนทั้งคัน: รวม ABS ถุงลม เกียร์ ฯลฯ ~30–60 วินาที',
+            'สแกนด่วน: กล่องเครื่องยนต์ ~15\u00A0วินาที\nสแกนทั้งคัน: รวม ABS ถุงลม เกียร์ ฯลฯ ~30–60\u00A0วินาที',
             textAlign: TextAlign.center,
             style: TextStyle(color: cs.onSurfaceVariant, height: 1.5),
           ),
@@ -285,7 +281,7 @@ class _ReadyToScanState extends State<_ReadyToScan> {
               value: _deep,
               onChanged: (v) => setState(() => _deep = v),
               title: const Text('ค้นหากล่องแบบละเอียด', style: TextStyle(fontSize: 14)),
-              subtitle: const Text('ไล่ทุกที่อยู่ ใช้เวลา ~2 นาที', style: TextStyle(fontSize: 12)),
+              subtitle: const Text('ไล่ทุกที่อยู่ ใช้เวลา ~2\u00A0นาที', style: TextStyle(fontSize: 12)),
             ),
         ]),
       ),
@@ -340,7 +336,7 @@ class ReportView extends StatelessWidget {
         _ReadinessCard(snapshot: s),
       ],
       if (mech && s.freezeFrame != null) ...[
-        SectionLabel('ข้อมูลตอนเกิดปัญหา · ${s.freezeFrame!.dtc}'),
+        SectionLabel('ข้อมูลตอนเกิดปัญหา\u00A0· ${s.freezeFrame!.dtc}'),
         _FreezeFrameCard(snapshot: s),
       ],
       if (s.modules.isNotEmpty) ...[
@@ -369,29 +365,50 @@ class _HeroCard extends StatelessWidget {
       glow: color,
       padding: const EdgeInsets.all(18),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // จอแคบ (มือถือเล็ก/ตัวอักษรใหญ่): วงคะแนนเล็กลง ให้ข้อความด้านข้างมีที่พอ ไม่ต้องหักหลายบรรทัด
+        // จอแคบ (มือถือ/ตัวอักษรใหญ่): วงคะแนนเล็กลง หัวข้ออยู่ข้างวง คำแนะนำเต็มความกว้างใต้วง
+        // ข้อความจึงไม่ถูกบีบจนขึ้นบรรทัดใหม่ทีละคำ
         LayoutBuilder(builder: (context, box) {
-          final narrow = box.maxWidth / (MediaQuery.textScalerOf(context).scale(100) / 100) < 300;
-          return Row(children: [
-          ScoreRing(score: report.healthScore, color: color, size: narrow ? 84 : 108),
-          SizedBox(width: narrow ? 12 : 16),
-          Expanded(
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          final narrow = box.maxWidth / (MediaQuery.textScalerOf(context).scale(100) / 100) < 330;
+          final status = Row(children: [
+            Icon(report.overall.icon, color: color, size: 18),
+            const SizedBox(width: 6),
+            Flexible(child: Text(report.overall.labelTh, style: TextStyle(color: color, fontWeight: FontWeight.w800))),
+          ]);
+          final headline = Text(thaiKeep(report.headlineTh),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, height: 1.25));
+          // คำแนะนำแสดงครบทุกบรรทัด ไม่ตัดท้าย (เป็นข้อความสำคัญต่อความปลอดภัย)
+          final advice = Text(thaiKeep(report.overall.ownerAdvice),
+              style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.4));
+          if (narrow) {
+            return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Row(children: [
-                Icon(report.overall.icon, color: color, size: 18),
-                const SizedBox(width: 6),
-                Flexible(child: Text(report.overall.labelTh, style: TextStyle(color: color, fontWeight: FontWeight.w800))),
+                ScoreRing(score: report.healthScore, color: color, size: 80),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    status,
+                    const SizedBox(height: 6),
+                    headline,
+                  ]),
+                ),
               ]),
-              const SizedBox(height: 6),
-              Text(report.headlineTh,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w900, height: 1.25)),
-              const SizedBox(height: 6),
-              // คำแนะนำแสดงครบทุกบรรทัด ไม่ตัดท้าย (เป็นข้อความสำคัญต่อความปลอดภัย)
-              Text(report.overall.ownerAdvice,
-                  style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.4)),
-            ]),
-          ),
-        ]);
+              const SizedBox(height: 10),
+              advice,
+            ]);
+          }
+          return Row(children: [
+            ScoreRing(score: report.healthScore, color: color, size: 108),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                status,
+                const SizedBox(height: 6),
+                headline,
+                const SizedBox(height: 6),
+                advice,
+              ]),
+            ),
+          ]);
         }),
         const SizedBox(height: 16),
         Wrap(spacing: 8, runSpacing: 8, children: [
@@ -400,7 +417,7 @@ class _HeroCard extends StatelessWidget {
             text: 'ไฟเตือน ${s.milOn ? 'ติด' : 'ดับ'}',
             color: s.milOn ? const Color(0xFFFFA824) : const Color(0xFF22C474),
           ),
-          _Pill(icon: Icons.qr_code_2_rounded, text: 'รหัส ${s.codes.length}', color: cs.primary),
+          _Pill(icon: Icons.qr_code_2_rounded, text: 'รหัส\u00A0${s.codes.length}', color: cs.primary),
           if (mode == AppMode.mechanic)
             _Pill(icon: Icons.local_gas_station_rounded, text: s.fuelName, color: cs.onSurfaceVariant),
           if (mode == AppMode.mechanic && s.vin != null)
@@ -503,7 +520,7 @@ class _ReadinessCard extends StatelessWidget {
                 color: m.complete ? const Color(0xFF22C474) : const Color(0xFFFFA824),
               ),
               const SizedBox(width: 10),
-              Expanded(child: Text(m.nameTh)),
+              Expanded(child: Text(thaiKeep(m.nameTh))),
               Text(
                 m.complete ? 'เสร็จ' : 'ยังไม่เสร็จ',
                 style: TextStyle(
@@ -587,7 +604,7 @@ class _FindingCard extends StatelessWidget {
             decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(12)),
             child: Icon(f.severity.icon, color: color),
           ),
-          title: Text(f.title, style: const TextStyle(fontWeight: FontWeight.w700, height: 1.35)),
+          title: Text(thaiKeep(f.title), style: const TextStyle(fontWeight: FontWeight.w700, height: 1.35)),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 6),
             child: Wrap(spacing: 8, runSpacing: 4, crossAxisAlignment: WrapCrossAlignment.center, children: [
@@ -597,7 +614,7 @@ class _FindingCard extends StatelessWidget {
               if (f.module != null)
                 Text(f.module!, style: TextStyle(fontSize: 12, color: cs.primary, fontWeight: FontWeight.w700)),
               if (mech && f.kinds.isNotEmpty)
-                Text(f.kinds.map((k) => k.labelTh).join(' · '), style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
+                Text(f.kinds.map((k) => k.labelTh).join('\u00A0· '), style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
               if (mech && f.ecus.isNotEmpty)
                 Text('ECU ${f.ecus.join(', ')}', style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
             ]),
@@ -608,7 +625,7 @@ class _FindingCard extends StatelessWidget {
             if (!mech) ...[
               Text('ควรทำอย่างไร', style: label),
               const SizedBox(height: 4),
-              Text(f.severity.ownerAdvice, style: const TextStyle(height: 1.45)),
+              Text(thaiKeep(f.severity.ownerAdvice), style: const TextStyle(height: 1.45)),
               const SizedBox(height: 12),
             ],
             if (f.evidence.isNotEmpty) ...[
@@ -635,7 +652,7 @@ class _FindingCard extends StatelessWidget {
         padding: const EdgeInsets.only(top: 6),
         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Padding(padding: const EdgeInsets.only(top: 2, right: 8), child: Icon(icon, size: 16, color: color)),
-          Expanded(child: Text(text, style: const TextStyle(height: 1.45))),
+          Expanded(child: Text(thaiKeep(text), style: const TextStyle(height: 1.45))),
         ]),
       );
 
@@ -650,7 +667,7 @@ class _FindingCard extends StatelessWidget {
             decoration: BoxDecoration(color: color.withValues(alpha: 0.16), shape: BoxShape.circle),
             child: Text('$n', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: color)),
           ),
-          Expanded(child: Text(text, style: const TextStyle(height: 1.45))),
+          Expanded(child: Text(thaiKeep(text), style: const TextStyle(height: 1.45))),
         ]),
       );
 }
@@ -672,7 +689,7 @@ class _ModulesCard extends StatelessWidget {
               size: 19, color: color),
           const SizedBox(width: 10),
           Expanded(child: Text(name)),
-          Text(err != null ? 'อ่านไม่ได้' : (codes == 0 ? 'ปกติ' : '$codes รหัส'),
+          Text(err != null ? 'อ่านไม่ได้' : (codes == 0 ? 'ปกติ' : '$codes\u00A0รหัส'),
               style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: codes == 0 && err == null ? cs.onSurfaceVariant : color)),
         ]),
       );

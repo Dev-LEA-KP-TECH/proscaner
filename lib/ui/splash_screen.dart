@@ -90,8 +90,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       return 'OK';
     });
     await _run(1, () async => '${(await ref.read(dtcDatabaseProvider.future)).length}');
-    await _run(2, () async => '${(await ref.read(garageProvider.future)).length} คัน');
-    await _run(3, () async => '${(await ref.read(historyProvider.future)).length} ครั้ง');
+    await _run(2, () async => '${(await ref.read(garageProvider.future)).length}\u00A0คัน');
+    await _run(3, () async => '${(await ref.read(historyProvider.future)).length}\u00A0ครั้ง');
     await _run(4, () async {
       if (!(Platform.isAndroid || Platform.isIOS)) return 'ไม่มี';
       // iOS: แค่ถามสถานะ Bluetooth ระบบก็ขึ้นหน้าต่างขอสิทธิ์ทันที จึงไม่ถามตอนเปิดแอป

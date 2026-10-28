@@ -148,7 +148,7 @@ class _UsedCarScreenState extends ConsumerState<UsedCarScreen> {
                   width: double.infinity,
                   child: FilledButton.icon(
                     icon: const Icon(Icons.policy_rounded),
-                    label: Text(_busy ? 'กำลังตรวจ…' : 'เริ่มตรวจ (ประมาณ 1 นาที)'),
+                    label: Text(_busy ? 'กำลังตรวจ…' : 'เริ่มตรวจ (ประมาณ 1\u00A0นาที)'),
                     onPressed: _busy ? null : () => _run(service),
                   ),
                 ),

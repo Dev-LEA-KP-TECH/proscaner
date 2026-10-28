@@ -96,7 +96,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             Text([
               if (data.appVersion.isNotEmpty) 'จาก ProScaner ${data.appVersion}',
               if (data.created.year > 2000) 'สร้างเมื่อ ${thaiDate(data.created)}',
-            ].join(' · ')),
+            ].join('\u00A0· ')),
             const SizedBox(height: 10),
             for (final l in data.contentsTh()) Text('• $l'),
             const SizedBox(height: 12),

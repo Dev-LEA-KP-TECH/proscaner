@@ -97,7 +97,7 @@ class _VehicleTile extends StatelessWidget {
       if (v.make == null && info != null && info.valid && info.maker != null) info.maker!,
       if (v.customer != null && v.customer!.isNotEmpty) 'ลูกค้า: ${v.customer}',
       if (v.latestKm != null) formatKm(v.latestKm!),
-    ].join(' · ');
+    ].join('\u00A0· ');
     return PremiumCard(
       glow: current ? cs.primary : null,
       padding: const EdgeInsets.all(14),
@@ -108,16 +108,14 @@ class _VehicleTile extends StatelessWidget {
         const SizedBox(width: 14),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Row(children: [
-              Flexible(
-                child: Text(v.title,
-                    maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5)),
-              ),
-              if (current) ...[const SizedBox(width: 8), const Pill(text: 'เชื่อมต่ออยู่', color: StatusColors.good)],
+            // ชื่อรถยาวขึ้นบรรทัดใหม่ได้ ป้าย "เชื่อมต่ออยู่" ลงบรรทัดถัดไปเองถ้าที่ไม่พอ
+            Wrap(spacing: 8, runSpacing: 4, crossAxisAlignment: WrapCrossAlignment.center, children: [
+              Text(v.title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 15.5)),
+              if (current) const Pill(text: 'เชื่อมต่ออยู่', color: StatusColors.good),
             ]),
             if (sub.isNotEmpty) ...[
               const SizedBox(height: 3),
-              Text(sub, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant)),
+              Text(sub, style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant)),
             ],
             if (v.plate != null && v.plate!.isNotEmpty && v.plate != v.title) ...[
               const SizedBox(height: 3),

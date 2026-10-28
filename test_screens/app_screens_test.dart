@@ -60,6 +60,9 @@ import 'package:obd_doctor/data/comm_log.dart';
 import 'package:obd_doctor/state/backup_providers.dart';
 import 'package:obd_doctor/ui/backup_screen.dart';
 import 'package:obd_doctor/ui/comm_log_screen.dart';
+import 'package:obd_doctor/ui/history_screen.dart';
+import 'package:obd_doctor/ui/terminal_screen.dart';
+import 'package:obd_doctor/ui/tools/ext_pid_edit_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// ขนาดจอ (dp) ขนาดตัวอักษร และโฟลเดอร์ผล
@@ -86,13 +89,46 @@ ScrollableState? _mainScroll() {
   return best;
 }
 
-/// ข้อความบนจอที่ถูกตัด: เกินจำนวนบรรทัด (…) หรือบรรทัดเดียวที่ยาวเกินช่อง
+/// ตำแหน่งตัวอักษรตัวแรกของแต่ละบรรทัด (ยกเว้นบรรทัดแรก) ของข้อความที่วางแล้ว
+List<int> _lineStarts(TextPainter tp) {
+  final out = <int>[];
+  final lines = tp.computeLineMetrics();
+  for (var i = 1; i < lines.length; i++) {
+    final m = lines[i];
+    final pos = tp.getPositionForOffset(Offset(m.left + 0.5, m.baseline - m.ascent + m.height / 2)).offset;
+    if (pos > 0 && (out.isEmpty || pos > out.last)) out.add(pos);
+  }
+  return out;
+}
+
+bool _isThai(int c) => c >= 0x0E01 && c <= 0x0E5B;
+
+/// จุดขึ้นบรรทัดใหม่ที่ตัดคำไทยผิดหลัก (ระบบตัดคำของ ICU ไม่รู้จักคำทับศัพท์บางคำ)
+/// เช่น "เท|อร์มินัล" (สระเอ-อ ถูกแยก), "เทอ|ร์" (ตัวการันต์ไปขึ้นบรรทัดใหม่), "เ|ก" (สระหน้าค้างท้ายบรรทัด)
+bool _badThaiBreak(String s, int b) {
+  if (b <= 0 || b >= s.length) return false;
+  final prev = s.codeUnitAt(b - 1), next = s.codeUnitAt(b);
+  if (!_isThai(prev) || !_isThai(next)) return false;
+  const leading = 'เแโใไ';
+  const following = 'ะาำๅๆฯัิีึืุู็่้๊๋์';
+  if (leading.contains(s[b - 1])) return true;
+  if (following.contains(s[b])) return true;
+  // พยัญชนะที่มีการันต์ (์) เป็นส่วนท้ายของพยางค์ก่อนหน้า ห้ามขึ้นบรรทัดใหม่ก่อนมัน
+  if (b + 1 < s.length && s[b + 1] == '์') return true;
+  if (b + 2 < s.length && s[b + 2] == '์' && 'ิุ'.contains(s[b + 1])) return true;
+  // สระเอ-อ / เอ-า: "เท|อ", "เก|า"
+  if ((s[b] == 'อ' || s[b] == 'า') && b >= 2 && s[b - 2] == 'เ') return true;
+  if ((s[b] == 'อ' || s[b] == 'า') && b >= 3 && s[b - 3] == 'เ' && '่้๊๋'.contains(s[b - 1])) return true;
+  return false;
+}
+
 /// ปัญหาข้อความบนจอ: (ถูกตัด/ซ่อนบางส่วน, ถูกหักกลางคำ)
 /// - ถูกตัด: เกินจำนวนบรรทัดที่กำหนด (มี … หรือจางหาย) หรือข้อความบรรทัดเดียวยาวเกินช่อง
-/// - หักกลางคำ: ช่องแคบกว่าคำที่ยาวที่สุด ข้อความจึงถูกตัดขึ้นบรรทัดใหม่กลางคำ (เช่น "สว่า/ง")
-(List<String>, List<String>) _textIssues() {
+/// - หักกลางคำ: ขึ้นบรรทัดใหม่กลางคำเพราะคำยาวกว่าช่อง (เช่น "สว่า|ง", "Blueto|oth") แสดงเป็น "ข้อความก่อน|ข้อความหลัง"
+(List<String>, List<String>, List<String>) _textIssues() {
   final cut = <String>[];
   final broken = <String>[];
+  final thai = <String>[];
   String label(RenderParagraph ro) {
     var t = ro.text.toPlainText().replaceAll('\n', ' ').trim();
     if (t.length > 60) t = '${t.substring(0, 60)}…';
@@ -103,26 +139,47 @@ ScrollableState? _mainScroll() {
     final ro = e.renderObject;
     if (ro is! RenderParagraph || !ro.hasSize) continue;
     var isCut = ro.didExceedMaxLines;
-    var isBroken = false;
     // วัดด้วยตัววัดแยก (ไม่ไปยุ่งกับข้อความที่วาดอยู่) ข้อความที่มีวิดเจ็ตฝังอยู่วัดแบบนี้ไม่ได้ ข้ามไป
     try {
-      if (!isCut && !ro.softWrap) {
-        final tp = TextPainter(text: ro.text, textDirection: ro.textDirection, textScaler: ro.textScaler, maxLines: 1)
-          ..layout();
-        isCut = tp.width > ro.size.width + 0.5;
-        tp.dispose();
-      } else if (!isCut && ro.softWrap && ro.constraints.maxWidth.isFinite) {
-        final tp = TextPainter(text: ro.text, textDirection: ro.textDirection, textScaler: ro.textScaler)..layout();
-        isBroken = tp.minIntrinsicWidth > ro.constraints.maxWidth + 0.5;
-        tp.dispose();
+      // วางข้อความแบบเดียวกับที่วาดจริง: กว้าง/สูงกว่ากรอบของตัวเอง = ล้นออกนอกกรอบหรือถูกบังบางส่วน
+      final c = ro.constraints;
+      final wrapWidth = ro.softWrap || ro.overflow == TextOverflow.ellipsis;
+      final real = TextPainter(
+        text: ro.text,
+        textDirection: ro.textDirection,
+        textAlign: ro.textAlign,
+        textScaler: ro.textScaler,
+        maxLines: ro.maxLines,
+        ellipsis: ro.overflow == TextOverflow.ellipsis ? '\u2026' : null,
+        locale: ro.locale,
+        strutStyle: ro.strutStyle,
+        textWidthBasis: ro.textWidthBasis,
+        textHeightBehavior: ro.textHeightBehavior,
+      )..layout(minWidth: c.minWidth, maxWidth: wrapWidth ? c.maxWidth : double.infinity);
+      if (real.width > ro.size.width + 0.5 || real.height > ro.size.height + 0.5) isCut = true;
+      // จุดขึ้นบรรทัดใหม่แต่ละจุด: อยู่กลางคำ (ตามตัวแบ่งคำของ ICU ซึ่งรู้จักคำไทยจากพจนานุกรม) = คำยาวกว่าช่องจนถูกหัก
+      // ส่วนคำไทยที่พจนานุกรมไม่รู้จัก (คำทับศัพท์) ตรวจด้วยกฎการสะกด [_badThaiBreak]
+      final plain = ro.text.toPlainText();
+      for (final at in _lineStarts(real)) {
+        if (at >= plain.length) continue;
+        final before = plain.codeUnitAt(at - 1);
+        if (before == 0x0A || before == 0x20 || plain.codeUnitAt(at) == 0x20) continue;
+        final word = real.getWordBoundary(TextPosition(offset: at));
+        final from = math.max(0, at - 8), to = math.min(plain.length, at + 8);
+        final ctx = '${plain.substring(from, at)}|${plain.substring(at, to)}'.replaceAll('\n', ' ');
+        if (word.start < at && at < word.end) {
+          if (!broken.contains(ctx)) broken.add(ctx);
+        } else if (_badThaiBreak(plain, at)) {
+          if (!thai.contains(ctx)) thai.add(ctx);
+        }
       }
+      real.dispose();
     } catch (_) {}
     final t = label(ro);
     if (t.isEmpty) continue;
     if (isCut && !cut.contains(t)) cut.add(t);
-    if (isBroken && !broken.contains(t)) broken.add(t);
   }
-  return (cut, broken);
+  return (cut, broken, thai);
 }
 
 /// บันทึกการสื่อสารตัวอย่าง 1 การเชื่อมต่อ (ข้อมูลสมมติ ไม่มีเลข VIN ของรถจริง)
@@ -292,7 +349,7 @@ void main() {
     }
 
     Future<void> shot(String name) async {
-      final (cut, wordBreaks) = _textIssues();
+      final (cut, wordBreaks, thaiBreaks) = _textIssues();
       final error = tester.takeException();
       if (error != null) broken.add(name);
       report.writeln([
@@ -300,6 +357,7 @@ void main() {
         if (error != null) 'วาดล้น/ผิดพลาด: ${'$error'.split('\n').first}${errorSpots.isEmpty ? '' : ' @ ${errorSpots.join(', ')}'}',
         if (cut.isNotEmpty) 'ถูกตัด ${cut.length}: ${cut.join(' | ')}',
         if (wordBreaks.isNotEmpty) 'หักกลางคำ ${wordBreaks.length}: ${wordBreaks.join(' | ')}',
+        if (thaiBreaks.isNotEmpty) 'ตัดคำไทยผิด ${thaiBreaks.length}: ${thaiBreaks.join(' / ')}',
       ].join(' · '));
       errorSpots.clear();
       await expectLater(find.byType(MaterialApp), matchesGoldenFile('$_dir/$name.png'));
@@ -845,6 +903,52 @@ void main() {
     tester.state<ScaffoldMessengerState>(find.byType(ScaffoldMessenger).first).clearSnackBars();
     pop();
     await settle();
+
+    // ---------------- หน้าที่ยังไม่เคยถ่าย (ตรวจครบทุกหน้า ทุกขนาดจอ) ----------------
+    // เทอร์มินัล: ส่งคำสั่งอ่านรอบเครื่อง ให้มีข้อความโต้ตอบในหน้า
+    await open(const TerminalScreen(), frames: 40);
+    await tester.enterText(find.byType(TextField).first, '010C');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await until(() => false, max: 60, realMs: 20);
+    await settle(200);
+    await shot('46_terminal');
+    pop();
+    await settle();
+
+    // ประวัติการสแกน + รายละเอียดครั้งล่าสุด
+    await open(const HistoryScreen(), frames: 60);
+    await settle(200);
+    await shot('47_history');
+    final historyItem = find.byIcon(Icons.chevron_right_rounded);
+    if (historyItem.evaluate().isNotEmpty) {
+      await tapOn(historyItem);
+      await settle(400);
+      await shot('47b_history_detail');
+      pop();
+      await settle();
+    }
+    pop();
+    await settle();
+
+    // ฟอร์มเพิ่มค่าเฉพาะยี่ห้อ
+    await open(const ExtPidEditScreen(), frames: 40);
+    await shot('48_ext_pid_new');
+    pop();
+    await settle();
+
+    // เทียบสองบันทึกการขับ: บันทึกรอบที่สองแล้วเปิดหน้าเทียบ
+    container.read(recorderProvider.notifier).start(recordPresets.first.$2);
+    await run(120);
+    await tester.runAsync(() => container.read(recorderProvider.notifier).stop(name: 'ทดสอบรอบสอง'));
+    await settle();
+    final logs = await tester.runAsync(() => container.read(logStoreProvider).list()) ?? const <DriveLog>[];
+    if (logs.length >= 2) {
+      await open(CompareLogsScreen(a: logs[1], b: logs[0]), frames: 60);
+      await settle(300);
+      await shot('49_compare_logs');
+      pop();
+      await settle();
+    }
 
     // wind down: leave the live-data loop and disconnect
     await tab('หน้าหลัก');

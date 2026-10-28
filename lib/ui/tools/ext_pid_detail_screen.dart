@@ -204,7 +204,7 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
     final cands = _selected.isEmpty ? all : all.where((c) => c.bytesUsed.every(_selected.contains)).toList();
     if (!mounted) return;
     if (cands.isEmpty) {
-      _snack(_p.points.length < 2 ? 'ต้องมีอย่างน้อย 2 จุดที่ค่าต่างกัน' : 'ยังหาสูตรที่ตรงไม่ได้ ลองเพิ่มจุดเทียบที่ค่าต่างกันมากขึ้น');
+      _snack(_p.points.length < 2 ? 'ต้องมีอย่างน้อย 2\u00A0จุดที่ค่าต่างกัน' : 'ยังหาสูตรที่ตรงไม่ได้ ลองเพิ่มจุดเทียบที่ค่าต่างกันมากขึ้น');
       return;
     }
     final chosen = await showModalBottomSheet<FitCandidate>(
@@ -219,7 +219,7 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
             const SizedBox(height: 4),
             Text(
               _p.points.length < 3
-                  ? 'มีแค่ ${_p.points.length} จุด หลายสูตรจะตรงพอ ๆ กัน ควรเพิ่มจุดที่ค่าต่างกันชัดเจน (เช่น ตอนเครื่องเย็นและร้อน)'
+                  ? 'มีแค่ ${_p.points.length}\u00A0จุด หลายสูตรจะตรงพอ ๆ กัน ควรเพิ่มจุดที่ค่าต่างกันชัดเจน (เช่น ตอนเครื่องเย็นและร้อน)'
                   : 'เรียงจากสูตรที่ตรงและเรียบง่ายที่สุด ยอมให้ต่างได้ไม่เกิน ${cands.first.tolerance.toStringAsFixed(2)}',
               style: TextStyle(color: cs.onSurfaceVariant, fontSize: 12.5, height: 1.4),
             ),
@@ -231,7 +231,7 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
                   leading: Icon(c.fits ? Icons.check_circle_rounded : Icons.error_outline_rounded,
                       color: c.fits ? StatusColors.good : StatusColors.warn),
                   title: Text(c.formula, style: const TextStyle(fontFamily: kMono, fontWeight: FontWeight.w700)),
-                  subtitle: Text('ต่างมากสุด ${c.maxError.toStringAsFixed(3)} · ใช้ไบต์ ${c.bytesUsed.map(ByteGrid.letter).join(', ')}'),
+                  subtitle: Text('ต่างมากสุด ${c.maxError.toStringAsFixed(3)}\u00A0· ใช้ไบต์ ${c.bytesUsed.map(ByteGrid.letter).join(', ')}'),
                   trailing: const Icon(Icons.chevron_right_rounded),
                   onTap: () => Navigator.pop(ctx, c),
                 ),
@@ -259,7 +259,7 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
         builder: (c) => AlertDialog(
           title: const Text('ยังเทียบค่าไม่ครบ'),
           content: Text(_p.points.length < 2
-              ? 'ควรบันทึกจุดเทียบกับเครื่องมือศูนย์อย่างน้อย 2 จุดที่ค่าต่างกัน ก่อนยืนยัน\n\nยืนยันเลยไหม?'
+              ? 'ควรบันทึกจุดเทียบกับเครื่องมือศูนย์อย่างน้อย 2\u00A0จุดที่ค่าต่างกัน ก่อนยืนยัน\n\nยืนยันเลยไหม?'
               : 'ค่าที่แอปคำนวณยังต่างจากเครื่องมือศูนย์ (ต่างสูงสุด ${check?.$1.toStringAsFixed(2) ?? '-'})\n\nยืนยันเลยไหม?'),
           actions: [
             TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('ยกเลิก')),
@@ -402,7 +402,7 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
                 if (_p.rx != null) Pill(text: 'ตอบจาก ${_p.rx}', color: cs.primary),
                 Pill(text: 'คำสั่ง ${_p.request}', color: cs.primary),
                 Pill(text: _p.formula, color: cs.secondary, mono: true),
-                if (_p.years != null) Pill(text: 'ปี ${_p.years}', color: StatusColors.info),
+                if (_p.years != null) Pill(text: 'ปี\u00A0${_p.years}', color: StatusColors.info),
               ]),
               if (_p.verified) ...[
                 const SizedBox(height: 10),
@@ -454,17 +454,16 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
                   const Text('ค่าออกนอกช่วงที่เป็นไปได้ อาจเป็นเลขคำสั่งหรือสูตรของรุ่นอื่น',
                       style: TextStyle(fontSize: 12, color: StatusColors.bad)),
                 const SizedBox(height: 12),
-                Row(children: [
-                  Expanded(
-                    child: FilledButton.icon(
-                      icon: Icon(_watch ? Icons.stop_rounded : Icons.visibility_rounded),
-                      label: Text(_watch ? 'หยุดดูไบต์สด' : 'ดูไบต์สด'),
-                      onPressed: _toggleWatch,
-                    ),
+                ButtonPair(
+                  minWidth: 130,
+                  first: FilledButton.icon(
+                    icon: Icon(_watch ? Icons.stop_rounded : Icons.visibility_rounded),
+                    label: FitText(_watch ? 'หยุดดูไบต์สด' : 'ดูไบต์สด'),
+                    onPressed: _toggleWatch,
                   ),
-                  const SizedBox(width: 10),
-                  OutlinedButton(onPressed: _busy || _watch ? null : _readOnce, child: const Text('อ่านครั้งเดียว')),
-                ]),
+                  second: OutlinedButton(
+                      onPressed: _busy || _watch ? null : _readOnce, child: const FitText('อ่านครั้งเดียว')),
+                ),
                 if (raw != null) ...[
                   const SizedBox(height: 14),
                   Text('ไบต์ข้อมูล (กรอบสี = สูตรใช้อยู่, สีส้ม = ไบต์ที่เปลี่ยนค่า, แตะเพื่อเลือกไบต์ให้หาสูตร)',
@@ -594,7 +593,7 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
         SizedBox(width: 26, child: Text('${i + 1}', style: TextStyle(color: cs.onSurfaceVariant))),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('ศูนย์ ${pt.ref}  ·  แอป ${ours == null ? '-' : _p.format(ours)}',
+            Text('ศูนย์\u00A0${pt.ref}\u00A0·  แอป\u00A0${ours == null ? '-' : _p.format(ours)}',
                 style: const TextStyle(fontWeight: FontWeight.w700, fontFeatures: [FontFeature.tabularFigures()])),
             Text(bytesToHex(pt.raw.take(12).toList()) + (pt.raw.length > 12 ? ' …' : ''),
                 style: TextStyle(fontSize: 11, fontFamily: kMono, color: cs.onSurfaceVariant)),
@@ -637,7 +636,7 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
         Icon(match ? Icons.check_circle_rounded : Icons.error_rounded, size: 18, color: match ? StatusColors.good : StatusColors.warn),
         const SizedBox(width: 8),
         Expanded(
-          child: Text('ปี ${e.year}: ${bytesToHex(e.raw)}',
+          child: Text('ปี\u00A0${e.year}: ${bytesToHex(e.raw)}',
               style: TextStyle(fontFamily: kMono, fontSize: 12, color: cs.onSurfaceVariant)),
         ),
         const SizedBox(width: 8),

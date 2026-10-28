@@ -75,7 +75,7 @@ String _fmt(double? v, [int d = 0]) => v == null ? '—' : v.toStringAsFixed(d);
 String _durText(double s) {
   final m = s ~/ 60;
   final r = (s % 60).round();
-  return m == 0 ? '$r วินาที' : '$m นาที $r วินาที';
+  return m == 0 ? '$r\u00A0วินาที' : '$m\u00A0นาที $r\u00A0วินาที';
 }
 
 /// ลำดับก่อน/หลัง: รอบ "ก่อนรีแมพ" อยู่ซ้ายเสมอ ถ้าไม่ระบุใช้รอบที่เก่ากว่า
@@ -353,29 +353,26 @@ class _RemapTestScreenState extends ConsumerState<RemapTestScreen> {
             ]),
           )
         else ...[
-          Row(children: [
-            Expanded(
-              child: FilledButton.icon(
-                icon: const Icon(Icons.flag_rounded),
-                label: const Text('เริ่มทดสอบ ก่อนรีแมพ'),
-                style: FilledButton.styleFrom(backgroundColor: _beforeColor, minimumSize: const Size(0, 52)),
-                onPressed: () => _start(RemapStage.before, candidates),
-              ),
+          // จอแคบวางปุ่มซ้อนกันเต็มความกว้าง ชื่อปุ่มอ่านครบบรรทัดเดียว
+          ButtonPair(
+            minWidth: 175,
+            first: FilledButton.icon(
+              icon: const Icon(Icons.flag_rounded),
+              label: const FitText('เริ่มทดสอบ ก่อนรีแมพ'),
+              style: FilledButton.styleFrom(backgroundColor: _beforeColor, minimumSize: const Size(0, 52)),
+              onPressed: () => _start(RemapStage.before, candidates),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: FilledButton.icon(
-                icon: const Icon(Icons.bolt_rounded),
-                label: const Text('เริ่มทดสอบ หลังรีแมพ'),
-                style: FilledButton.styleFrom(backgroundColor: _afterColor, minimumSize: const Size(0, 52)),
-                onPressed: () => _start(RemapStage.after, candidates),
-              ),
+            second: FilledButton.icon(
+              icon: const Icon(Icons.bolt_rounded),
+              label: const FitText('เริ่มทดสอบ หลังรีแมพ'),
+              style: FilledButton.styleFrom(backgroundColor: _afterColor, minimumSize: const Size(0, 52)),
+              onPressed: () => _start(RemapStage.after, candidates),
             ),
-          ]),
+          ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
             icon: const Icon(Icons.speed_rounded),
-            label: const Text('ทดสอบทั่วไป (ไม่ระบุก่อน/หลัง)'),
+            label: const FitText('ทดสอบทั่วไป (ไม่ระบุก่อน/หลัง)'),
             onPressed: () => _start(RemapStage.other, candidates),
           ),
           if (candidates.isNotEmpty) ...[
@@ -383,7 +380,7 @@ class _RemapTestScreenState extends ConsumerState<RemapTestScreen> {
             PremiumCard(
               padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text('จากชุดค่าของรถรุ่นนี้ อ่านทุก 4 รอบของค่ามาตรฐาน (เลือกเฉพาะที่จำเป็น เพื่อให้อ่านค่าได้ถี่)',
+                Text('จากชุดค่าของรถรุ่นนี้ อ่านทุก\u00A04\u00A0รอบของค่ามาตรฐาน (เลือกเฉพาะที่จำเป็น เพื่อให้อ่านค่าได้ถี่)',
                     style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant)),
                 const SizedBox(height: 4),
                 for (final c in candidates)
@@ -401,7 +398,7 @@ class _RemapTestScreenState extends ConsumerState<RemapTestScreen> {
                       }
                     }),
                     title: Text(c.pid.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                    subtitle: Text('ใช้เป็น: ${c.signal.labelTh} · ${trustStyle(c.pid).$1}'),
+                    subtitle: Text('ใช้เป็น: ${c.signal.labelTh}\u00A0· ${trustStyle(c.pid).$1}'),
                     secondary: TrustPill(pid: c.pid, compact: true),
                   ),
               ]),
@@ -418,8 +415,8 @@ class _RemapTestScreenState extends ConsumerState<RemapTestScreen> {
           ),
           child: Text(
             'ทดสอบในสนามหรือพื้นที่ปิดเท่านั้น ให้อีกคนดูจอ คนขับมองถนน แอปอ่านค่าอย่างเดียว ไม่เขียนหรือแก้ไขกล่อง '
-            'เกณฑ์ความร้อน ${limits.coolantMax.round()} °C'
-            '${limits.boostCapGauge > 0 ? ' และบูสต์สูงสุด ${limits.boostCapGauge.round()} kPa (เกจ)' : ''} '
+            'เกณฑ์ความร้อน ${limits.coolantMax.round()}\u00A0°C'
+            '${limits.boostCapGauge > 0 ? ' และบูสต์สูงสุด ${limits.boostCapGauge.round()}\u00A0kPa (เกจ)' : ''} '
             'ตั้งได้ที่ ตั้งค่า > แจ้งเตือน',
             style: TextStyle(fontSize: 12, height: 1.5, color: cs.onSurface),
           ),
@@ -457,7 +454,7 @@ class _RemapTestScreenState extends ConsumerState<RemapTestScreen> {
             text: 'เริ่มทดสอบก่อนรีแมพไว้เป็นจุดเทียบ แล้วทดสอบอีกครั้งหลังรีแมพ',
           )
         else ...[
-          Text('แตะค้างเพื่อเลือก 2 รอบมาเทียบ', style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant)),
+          Text('แตะค้างเพื่อเลือก 2\u00A0รอบมาเทียบ', style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant)),
           const SizedBox(height: 8),
           for (final r in runs)
             Padding(
@@ -510,9 +507,9 @@ class _RunTile extends StatelessWidget {
     final color = remapLevelColor(a.level);
     final t100 = a.accelFor(0, 100) ?? a.accelFor(60, 100);
     final facts = [
-      if (t100 != null) '${t100.label}: ${t100.seconds.toStringAsFixed(2)} วิ',
-      if (a.maxBoostGauge != null) 'บูสต์ ${a.maxBoostGauge!.round()} kPa',
-      if (a.max[RemapSignal.rail] != null) 'ราง ${a.max[RemapSignal.rail]!.round()} MPa',
+      if (t100 != null) '${t100.label}: ${t100.seconds.toStringAsFixed(2)}\u00A0วิ',
+      if (a.maxBoostGauge != null) 'บูสต์ ${a.maxBoostGauge!.round()}\u00A0kPa',
+      if (a.max[RemapSignal.rail] != null) 'ราง ${a.max[RemapSignal.rail]!.round()}\u00A0MPa',
       a.events.isEmpty ? 'ไม่พบสิ่งผิดปกติ' : 'ผิดปกติ ${a.events.length}',
     ];
     return GestureDetector(
@@ -542,11 +539,11 @@ class _RunTile extends StatelessWidget {
               ]),
               const SizedBox(height: 4),
               Text(
-                '${thaiDate(run.start)} · ${_durText(run.durationS)}${run.vehicleLabel.isEmpty ? '' : ' · ${run.vehicleLabel}'}',
+                '${thaiDate(run.start)}\u00A0· ${_durText(run.durationS)}${run.vehicleLabel.isEmpty ? '' : '\u00A0· ${run.vehicleLabel}'}',
                 style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
               ),
               const SizedBox(height: 2),
-              Text(facts.join(' · '), style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600)),
+              Text(facts.join('\u00A0· '), style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600)),
             ]),
           ),
           Icon(Icons.chevron_right_rounded, color: cs.onSurfaceVariant),
@@ -751,7 +748,7 @@ class _RemapLiveScreenState extends ConsumerState<RemapLiveScreen> {
         run.dtcAfter.addAll(r.$1);
         run.milAfter = r.$2;
       } catch (_) {
-        run.note = [if (run.note.isNotEmpty) run.note, 'อ่านรหัสปัญหาหลังทดสอบไม่ได้'].join(' · ');
+        run.note = [if (run.note.isNotEmpty) run.note, 'อ่านรหัสปัญหาหลังทดสอบไม่ได้'].join('\u00A0· ');
       }
     }
     if (!mounted) return;
@@ -883,8 +880,8 @@ class _RemapLiveScreenState extends ConsumerState<RemapLiveScreen> {
         Row(children: [
           Expanded(
             child: Text(
-              '${rate.toStringAsFixed(1)} คำสั่ง/วินาที · ${run.rows.length} แถว'
-              '${_sampler?.multiPid ?? false ? ' · หลาย PID ต่อคำสั่ง' : ''}',
+              '${rate.toStringAsFixed(1)}\u00A0คำสั่ง/วินาที\u00A0· ${run.rows.length}\u00A0แถว'
+              '${_sampler?.multiPid ?? false ? '\u00A0· หลาย PID ต่อคำสั่ง' : ''}',
               style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
             ),
           ),
@@ -894,29 +891,28 @@ class _RemapLiveScreenState extends ConsumerState<RemapLiveScreen> {
           Text(_error!, style: const TextStyle(fontSize: 12, color: StatusColors.warn)),
         ],
         const SizedBox(height: 12),
-        Row(children: [
-          Expanded(
-            child: FilledButton.icon(
-              icon: stopping
-                  ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white))
-                  : const Icon(Icons.stop_rounded),
-              label: const Text('หยุดและบันทึก'),
-              style: FilledButton.styleFrom(backgroundColor: StatusColors.bad, minimumSize: const Size(0, 52)),
-              onPressed: stopping ? null : _stop,
+        Builder(builder: (context) {
+          final stop = FilledButton.icon(
+            icon: stopping
+                ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2.4, color: Colors.white))
+                : const Icon(Icons.stop_rounded),
+            label: const FitText('หยุดและบันทึก'),
+            style: FilledButton.styleFrom(backgroundColor: StatusColors.bad, minimumSize: const Size(0, 52)),
+            onPressed: stopping ? null : _stop,
+          );
+          if (demo == null || stopping) return SizedBox(width: double.infinity, child: stop);
+          // จอแคบวางปุ่มซ้อนกันเต็มความกว้าง ชื่อปุ่มอ่านครบบรรทัดเดียว
+          return ButtonPair(
+            minWidth: 150,
+            first: stop,
+            second: FilledButton.tonalIcon(
+              icon: const Icon(Icons.rocket_launch_rounded),
+              label: const FitText('จำลองออกตัว'),
+              style: FilledButton.styleFrom(minimumSize: const Size(0, 52)),
+              onPressed: demo.startDrive,
             ),
-          ),
-          if (demo != null && !stopping) ...[
-            const SizedBox(width: 10),
-            Expanded(
-              child: FilledButton.tonalIcon(
-                icon: const Icon(Icons.rocket_launch_rounded),
-                label: const Text('จำลองออกตัว'),
-                style: FilledButton.styleFrom(minimumSize: const Size(0, 52)),
-                onPressed: demo.startDrive,
-              ),
-            ),
-          ],
-        ]),
+          );
+        }),
       ]),
     );
   }
@@ -954,7 +950,7 @@ class _RemapLiveScreenState extends ConsumerState<RemapLiveScreen> {
           label: 'บูสต์ (เกจ)',
           value: _fmt(boost),
           unit: 'kPa',
-          sub: boostCmd == null ? 'kPa' : 'ต้องการ ${boostCmd.round()} kPa',
+          sub: boostCmd == null ? 'kPa' : 'ต้องการ ${boostCmd.round()}\u00A0kPa',
           color: boost != null && boostCmd != null && boost - boostCmd > _limits.overboostKpa ? StatusColors.bad : null,
           big: true,
         ),
@@ -963,7 +959,7 @@ class _RemapLiveScreenState extends ConsumerState<RemapLiveScreen> {
             label: 'ความดันราง',
             value: _fmt(rail),
             unit: 'MPa',
-            sub: railCmd == null ? 'MPa' : 'ต้องการ ${railCmd.round()} MPa',
+            sub: railCmd == null ? 'MPa' : 'ต้องการ ${railCmd.round()}\u00A0MPa',
             big: true,
           ),
       ]),
@@ -1050,7 +1046,7 @@ class _RemapResultScreenState extends ConsumerState<RemapResultScreen> {
             ListTile(
               leading: _StagePill(r.stage),
               title: Text(r.name),
-              subtitle: Text('${thaiDate(r.start)}${r.vehicleLabel.isEmpty ? '' : ' · ${r.vehicleLabel}'}'),
+              subtitle: Text('${thaiDate(r.start)}${r.vehicleLabel.isEmpty ? '' : '\u00A0· ${r.vehicleLabel}'}'),
               onTap: () => Navigator.pop(ctx, r),
             ),
         ]),
@@ -1104,7 +1100,7 @@ class _RemapResultScreenState extends ConsumerState<RemapResultScreen> {
               _StagePill(run.stage),
               Pill(text: thaiDate(run.start), color: cs.onSurfaceVariant),
               Pill(text: _durText(run.durationS), color: cs.onSurfaceVariant),
-              Pill(text: '${run.hz.toStringAsFixed(1)} คำสั่ง/วิ', color: cs.onSurfaceVariant),
+              Pill(text: '${run.hz.toStringAsFixed(1)}\u00A0คำสั่ง/วิ', color: cs.onSurfaceVariant),
               if (a.limpSuspected) const Pill(text: 'สงสัยโหมดป้องกันตัวเอง', color: StatusColors.bad, icon: Icons.shield_rounded),
             ]),
             if (run.vehicleLabel.isNotEmpty) ...[
@@ -1135,18 +1131,18 @@ class _RemapResultScreenState extends ConsumerState<RemapResultScreen> {
         PremiumCard(
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
           child: Column(children: [
-            if (a.maxBoostGauge != null) KvRow('บูสต์สูงสุด (เกจ)', '${_fmt(a.maxBoostGauge)} kPa'),
-            if (a.maxBoostCmdGauge != null) KvRow('บูสต์ที่ต้องการสูงสุด (เกจ)', '${_fmt(a.maxBoostCmdGauge)} kPa'),
-            if (a.max[RemapSignal.rail] != null) KvRow('ความดันรางสูงสุด', '${_fmt(a.max[RemapSignal.rail], 1)} MPa'),
-            if (a.max[RemapSignal.railCmd] != null) KvRow('ความดันรางที่ต้องการสูงสุด', '${_fmt(a.max[RemapSignal.railCmd], 1)} MPa'),
-            if (a.max[RemapSignal.injQty] != null) KvRow('ปริมาณฉีดสูงสุด', '${_fmt(a.max[RemapSignal.injQty], 1)} mm³'),
-            if (a.max[RemapSignal.maf] != null) KvRow('มวลอากาศสูงสุด', '${_fmt(a.max[RemapSignal.maf], 1)} g/s'),
-            if (a.max[RemapSignal.rpm] != null) KvRow('รอบเครื่องสูงสุด', '${_fmt(a.max[RemapSignal.rpm])} รอบ/นาที'),
-            if (a.max[RemapSignal.speed] != null) KvRow('ความเร็วสูงสุด', '${_fmt(a.max[RemapSignal.speed])} กม./ชม.'),
-            if (a.max[RemapSignal.egt] != null) KvRow('อุณหภูมิไอเสียสูงสุด', '${_fmt(a.max[RemapSignal.egt])} °C'),
-            if (a.max[RemapSignal.coolant] != null) KvRow('น้ำหล่อเย็นสูงสุด', '${_fmt(a.max[RemapSignal.coolant])} °C'),
-            if (a.max[RemapSignal.iat] != null) KvRow('อากาศเข้าสูงสุด', '${_fmt(a.max[RemapSignal.iat])} °C'),
-            if (a.min[RemapSignal.voltage] != null) KvRow('แรงดันไฟต่ำสุด', '${_fmt(a.min[RemapSignal.voltage], 1)} V'),
+            if (a.maxBoostGauge != null) KvRow('บูสต์สูงสุด (เกจ)', '${_fmt(a.maxBoostGauge)}\u00A0kPa'),
+            if (a.maxBoostCmdGauge != null) KvRow('บูสต์ที่ต้องการสูงสุด (เกจ)', '${_fmt(a.maxBoostCmdGauge)}\u00A0kPa'),
+            if (a.max[RemapSignal.rail] != null) KvRow('ความดันรางสูงสุด', '${_fmt(a.max[RemapSignal.rail], 1)}\u00A0MPa'),
+            if (a.max[RemapSignal.railCmd] != null) KvRow('ความดันรางที่ต้องการสูงสุด', '${_fmt(a.max[RemapSignal.railCmd], 1)}\u00A0MPa'),
+            if (a.max[RemapSignal.injQty] != null) KvRow('ปริมาณฉีดสูงสุด', '${_fmt(a.max[RemapSignal.injQty], 1)}\u00A0mm³'),
+            if (a.max[RemapSignal.maf] != null) KvRow('มวลอากาศสูงสุด', '${_fmt(a.max[RemapSignal.maf], 1)}\u00A0g/s'),
+            if (a.max[RemapSignal.rpm] != null) KvRow('รอบเครื่องสูงสุด', '${_fmt(a.max[RemapSignal.rpm])}\u00A0รอบ/นาที'),
+            if (a.max[RemapSignal.speed] != null) KvRow('ความเร็วสูงสุด', '${_fmt(a.max[RemapSignal.speed])}\u00A0กม./ชม.'),
+            if (a.max[RemapSignal.egt] != null) KvRow('อุณหภูมิไอเสียสูงสุด', '${_fmt(a.max[RemapSignal.egt])}\u00A0°C'),
+            if (a.max[RemapSignal.coolant] != null) KvRow('น้ำหล่อเย็นสูงสุด', '${_fmt(a.max[RemapSignal.coolant])}\u00A0°C'),
+            if (a.max[RemapSignal.iat] != null) KvRow('อากาศเข้าสูงสุด', '${_fmt(a.max[RemapSignal.iat])}\u00A0°C'),
+            if (a.min[RemapSignal.voltage] != null) KvRow('แรงดันไฟต่ำสุด', '${_fmt(a.min[RemapSignal.voltage], 1)}\u00A0V'),
           ]),
         ),
         SectionLabel('สิ่งที่พบ (${a.events.length})'),
@@ -1342,7 +1338,7 @@ class _RemapCompareScreenState extends ConsumerState<RemapCompareScreen> {
                   const SizedBox(width: 8),
                   Text('$label: ', style: const TextStyle(fontWeight: FontWeight.w700)),
                   Expanded(
-                    child: Text('${r.name} · ${thaiDate(r.start, time: false)}', style: TextStyle(color: cs.onSurfaceVariant)),
+                    child: Text('${r.name}\u00A0· ${thaiDate(r.start, time: false)}', style: TextStyle(color: cs.onSurfaceVariant)),
                   ),
                 ]),
               ),
@@ -1382,13 +1378,13 @@ class _RemapCompareScreenState extends ConsumerState<RemapCompareScreen> {
               style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
         ),
         if (trace != null) ...[
-          SectionLabel('ความเร็วช่วง ${trace.$1.label} กม./ชม.'),
+          SectionLabel('ความเร็วช่วง\u00A0${trace.$1.label}\u00A0กม./ชม.'),
           PremiumCard(
             padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Wrap(spacing: 12, children: [
-                _Legend(color: _beforeColor, text: 'ก่อน ${trace.$1.seconds.toStringAsFixed(2)} วิ'),
-                _Legend(color: _afterColor, text: 'หลัง ${trace.$2.seconds.toStringAsFixed(2)} วิ'),
+                _Legend(color: _beforeColor, text: 'ก่อน ${trace.$1.seconds.toStringAsFixed(2)}\u00A0วิ'),
+                _Legend(color: _afterColor, text: 'หลัง ${trace.$2.seconds.toStringAsFixed(2)}\u00A0วิ'),
               ]),
               const SizedBox(height: 8),
               TimeChart(height: 220, series: [

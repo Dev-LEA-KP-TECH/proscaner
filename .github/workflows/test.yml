@@ -135,6 +135,46 @@ jobs:
           path: res/
           retention-days: 3
 
+  # ภาพหน้าจออย่างเดียว (เสร็จเร็วกว่า build Android) ไว้ดูผลระหว่างแก้: branch test-results-screens
+  publish_screens:
+    name: Save screenshots to branch test-results-screens
+    needs: [screens]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: art
+          pattern: screens-*
+      - name: Push screenshots
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SCREENS: ${{ needs.screens.result }}
+        run: |
+          rm -rf /tmp/res && mkdir -p /tmp/res/screens
+          for d in art/screens-*; do
+            [ -d "$d" ] || continue
+            t=${d#art/screens-}
+            mkdir -p "/tmp/res/screens/$t"
+            cp -R "$d"/. "/tmp/res/screens/$t/"
+          done
+          {
+            echo "run: ${GITHUB_RUN_ID}"
+            echo "commit: ${GITHUB_SHA}"
+            echo "screenshots (all sizes): ${SCREENS}"
+            for r in /tmp/res/screens/*/report.txt; do
+              [ -f "$r" ] || continue
+              echo "--- $(basename "$(dirname "$r")"): $(sed -n 2p "$r") · ข้อความถูกตัด $(grep -c 'ถูกตัด' "$r") หน้า · หักกลางคำ $(grep -c 'หักกลางคำ' "$r") หน้า · ตัดคำไทยผิด $(grep -c 'ตัดคำไทยผิด' "$r") หน้า"
+            done
+          } > /tmp/res/RESULT.txt
+          cd /tmp/res
+          git init -q -b test-results-screens
+          git config user.name "github-actions"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Screens ${GITHUB_RUN_ID} for ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" test-results-screens
+
   publish:
     name: Save results to branch test-results
     needs: [unit, screens, android]
@@ -170,7 +210,7 @@ jobs:
             tail -1 /tmp/res/unit_tests.log 2>/dev/null
             for r in /tmp/res/screens/*/report.txt; do
               [ -f "$r" ] || continue
-              echo "--- $(basename "$(dirname "$r")"): $(sed -n 2p "$r") · ข้อความถูกตัด $(grep -c 'ถูกตัด' "$r") หน้า · หักกลางคำ $(grep -c 'หักกลางคำ' "$r") หน้า"
+              echo "--- $(basename "$(dirname "$r")"): $(sed -n 2p "$r") · ข้อความถูกตัด $(grep -c 'ถูกตัด' "$r") หน้า · หักกลางคำ $(grep -c 'หักกลางคำ' "$r") หน้า · ตัดคำไทยผิด $(grep -c 'ตัดคำไทยผิด' "$r") หน้า"
             done
             echo "--- android"
             grep -E "Built |sha|\.apk" /tmp/res/android_build.log 2>/dev/null | tail -3

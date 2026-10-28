@@ -94,7 +94,7 @@ class HistoryList extends ConsumerWidget {
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(r.headlineTh, style: const TextStyle(fontWeight: FontWeight.w700)),
+                    Text(thaiKeep(r.headlineTh), style: const TextStyle(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 3),
                     Text(formatThaiDate(s.time), style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant)),
                     const SizedBox(height: 6),

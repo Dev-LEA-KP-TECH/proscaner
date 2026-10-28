@@ -38,20 +38,20 @@ class BatteryResult {
 
 BatteryResult judgeRest(double v) {
   final soc = batterySoc(v);
-  if (v >= 12.4) return BatteryResult(CheckLevel.ok, v, 'แบตเตอรี่ประจุเต็ม ($soc%)', 'แรงดันพักปกติ 12.4–12.8 V');
+  if (v >= 12.4) return BatteryResult(CheckLevel.ok, v, 'แบตเตอรี่ประจุเต็ม ($soc%)', 'แรงดันพักปกติ 12.4–12.8\u00A0V');
   if (v >= 12.2) {
-    return BatteryResult(CheckLevel.warn, v, 'ประจุต่ำ ($soc%)', 'ควรขับต่อเนื่อง 30 นาที หรือชาร์จ แล้ววัดใหม่');
+    return BatteryResult(CheckLevel.warn, v, 'ประจุต่ำ ($soc%)', 'ควรขับต่อเนื่อง 30\u00A0นาที หรือชาร์จ แล้ววัดใหม่');
   }
-  return BatteryResult(CheckLevel.bad, v, 'แบตเตอรี่อ่อน ($soc%)', 'ชาร์จเต็มแล้ววัดใหม่ ถ้ายังต่ำกว่า 12.2 V ควรเปลี่ยนแบตเตอรี่');
+  return BatteryResult(CheckLevel.bad, v, 'แบตเตอรี่อ่อน ($soc%)', 'ชาร์จเต็มแล้ววัดใหม่ ถ้ายังต่ำกว่า 12.2\u00A0V ควรเปลี่ยนแบตเตอรี่');
 }
 
 BatteryResult judgeCrank(double minV) {
-  if (minV >= 9.6) return BatteryResult(CheckLevel.ok, minV, 'สตาร์ทผ่าน', 'แรงดันต่ำสุด ${minV.toStringAsFixed(2)} V (ควรไม่ต่ำกว่า 9.6 V)');
+  if (minV >= 9.6) return BatteryResult(CheckLevel.ok, minV, 'สตาร์ทผ่าน', 'แรงดันต่ำสุด ${minV.toStringAsFixed(2)}\u00A0V (ควรไม่ต่ำกว่า 9.6\u00A0V)');
   if (minV >= 9.0) {
-    return BatteryResult(CheckLevel.warn, minV, 'แบตเริ่มเสื่อม', 'แรงดันตกถึง ${minV.toStringAsFixed(2)} V ตอนสตาร์ท ควรเตรียมเปลี่ยนแบต');
+    return BatteryResult(CheckLevel.warn, minV, 'แบตเริ่มเสื่อม', 'แรงดันตกถึง ${minV.toStringAsFixed(2)}\u00A0V ตอนสตาร์ท ควรเตรียมเปลี่ยนแบต');
   }
   return BatteryResult(CheckLevel.bad, minV, 'แบตเสื่อม / ไดสตาร์ทกินไฟ',
-      'แรงดันตกถึง ${minV.toStringAsFixed(2)} V อาจสตาร์ทไม่ติดในวันที่อากาศเย็นหรือจอดนาน');
+      'แรงดันตกถึง ${minV.toStringAsFixed(2)}\u00A0V อาจสตาร์ทไม่ติดในวันที่อากาศเย็นหรือจอดนาน');
 }
 
 BatteryResult judgeCharge(double v, {required bool loaded}) {
@@ -61,7 +61,7 @@ BatteryResult judgeCharge(double v, {required bool loaded}) {
   }
   if (v >= low) {
     return BatteryResult(CheckLevel.ok, v, loaded ? 'ชาร์จพอขณะมีโหลด' : 'ระบบชาร์จปกติ',
-        loaded ? 'ไดชาร์จจ่ายไฟพอเมื่อเปิดไฟหน้า แอร์ และพัดลม' : 'ปกติ 13.6–14.8 V');
+        loaded ? 'ไดชาร์จจ่ายไฟพอเมื่อเปิดไฟหน้า แอร์ และพัดลม' : 'ปกติ 13.6–14.8\u00A0V');
   }
   if (v >= 12.8) {
     return BatteryResult(CheckLevel.warn, v, 'ไฟชาร์จค่อนข้างต่ำ',
@@ -71,10 +71,10 @@ BatteryResult judgeCharge(double v, {required bool loaded}) {
 }
 
 enum _Test {
-  rest('1. แรงดันตอนดับเครื่อง', 'ดับเครื่อง เปิดกุญแจ ON (ไม่สตาร์ท) ปิดไฟทุกอย่าง รอ 1 นาทีแล้วกดวัด', Icons.battery_std_rounded),
-  crank('2. ทดสอบตอนสตาร์ท', 'กดเริ่ม แล้วสตาร์ทเครื่องภายใน 10 วินาที', Icons.power_settings_new_rounded),
+  rest('1. แรงดันตอนดับเครื่อง', 'ดับเครื่อง เปิดกุญแจ ON (ไม่สตาร์ท) ปิดไฟทุกอย่าง รอ 1\u00A0นาทีแล้วกดวัด', Icons.battery_std_rounded),
+  crank('2. ทดสอบตอนสตาร์ท', 'กดเริ่ม แล้วสตาร์ทเครื่องภายใน 10\u00A0วินาที', Icons.power_settings_new_rounded),
   idle('3. ระบบชาร์จ (เดินเบา)', 'ติดเครื่องเดินเบา ปิดแอร์และไฟทั้งหมด แล้วกดวัด', Icons.electric_bolt_rounded),
-  load('4. ชาร์จขณะมีโหลด', 'เปิดไฟหน้า แอร์ พัดลมแรงสุด ไล่ฝ้าหลัง เร่งรอบค้างราว 1,500 รอบ แล้วกดวัด', Icons.flash_on_rounded);
+  load('4. ชาร์จขณะมีโหลด', 'เปิดไฟหน้า แอร์ พัดลมแรงสุด ไล่ฝ้าหลัง เร่งรอบค้างราว 1,500\u00A0รอบ แล้วกดวัด', Icons.flash_on_rounded);
 
   const _Test(this.title, this.howTo, this.icon);
   final String title;
@@ -226,7 +226,7 @@ class _BatteryScreenState extends ConsumerState<BatteryScreen> {
             _note = 'ไม่พบการสตาร์ท ลองใหม่และสตาร์ทหลังกดเริ่มทันที';
           } else {
             _results[t] = judgeCrank(minV);
-            if (!started) _note = 'แรงดันไม่กลับขึ้นเกิน 13 V หลังสตาร์ท ตรวจระบบชาร์จในขั้นถัดไป';
+            if (!started) _note = 'แรงดันไม่กลับขึ้นเกิน 13\u00A0V หลังสตาร์ท ตรวจระบบชาร์จในขั้นถัดไป';
           }
         case _Test.idle:
           demo?.setLoads(false);
@@ -325,7 +325,7 @@ class _BatteryScreenState extends ConsumerState<BatteryScreen> {
             if (_results.length == _Test.values.length) _Summary(results: _results.values.toList()),
             const SizedBox(height: 10),
             Text(
-              'วัดผ่านขา 16 ของช่อง OBD ค่าอาจต่ำกว่าวัดที่ขั้วแบตจริง 0.1–0.3 V เกณฑ์นี้ใช้กับแบตตะกั่วกรด 12 V',
+              'วัดผ่านขา 16 ของช่อง OBD ค่าอาจต่ำกว่าวัดที่ขั้วแบตจริง 0.1–0.3\u00A0V เกณฑ์นี้ใช้กับแบตตะกั่วกรด 12\u00A0V',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant, height: 1.45),
             ),
@@ -358,7 +358,7 @@ class _TestCard extends StatelessWidget {
           Icon(test.icon, color: r?.level.color ?? cs.primary),
           const SizedBox(width: 10),
           Expanded(child: Text(test.title, style: const TextStyle(fontWeight: FontWeight.w700))),
-          if (r != null) Text('${r.value.toStringAsFixed(2)} V', style: TextStyle(fontWeight: FontWeight.w800, color: r.level.color)),
+          if (r != null) Text('${r.value.toStringAsFixed(2)}\u00A0V', style: TextStyle(fontWeight: FontWeight.w800, color: r.level.color)),
         ]),
         const SizedBox(height: 6),
         Text(test.howTo, style: TextStyle(fontSize: 12.5, color: cs.onSurfaceVariant, height: 1.4)),
