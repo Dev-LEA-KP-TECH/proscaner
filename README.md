@@ -1,7 +1,10 @@
 # ProScaner v0.6.5 — แอปวินิจฉัยรถยนต์ผ่าน OBD-II
 
-แอป Flutter ตัวเดียวสำหรับ Android และ iOS ใช้ตัวสแกน ELM327 (Bluetooth LE / Wi-Fi) หรือโหมดทดลอง (รถจำลอง)
+แอป Flutter ตัวเดียวสำหรับ Android และ iOS ใช้ตัวสแกน PRO SCANNER (ชิป ELM327/STN แบบ Bluetooth LE / Wi-Fi) หรือโหมดทดลอง (รถจำลอง)
 มี 2 โหมด: **เจ้าของรถ** (สรุปง่าย) และ **ช่าง** (ข้อมูลดิบ เครื่องมือเพิ่ม)
+
+ผู้พัฒนาและเจ้าของลิขสิทธิ์: **KP Tech Innovation Drive Progress Co., Ltd.** — Copyright © 2026 ROGER · ALL RIGHTS RESERVED
+(ข้อความหน้า "เกี่ยวกับแอปพลิเคชัน" ในแอปอยู่ที่ `lib/core/app_info.dart`)
 
 ## ทดสอบและสร้าง APK บน Windows (เครื่องนี้)
 

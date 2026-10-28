@@ -110,8 +110,35 @@ jobs:
             done
           ) &
           LOOP=$!
+          # เฝ้าดู: บางครั้งเครื่อง Mac ของ GitHub ช้า/ติดขัด แอปทดสอบเปิดแล้วค้างที่จอดำ (เครื่องมือต่อ VM service ไม่ได้)
+          # ถ้าผ่านไป 10 นาทีแล้วยังไม่มีขั้นแรกของทัวร์ (DEVICE_TEST:) ให้หยุด รีสตาร์ทเครื่องจำลอง แล้วลองใหม่ 1 ครั้ง
+          run_tour() {
+            : > device_tour.log
+            flutter test integration_test/device_tour_test.dart -d "$SIM" > device_tour.log 2>&1 &
+            local pid=$! t0=$(date +%s)
+            while kill -0 "$pid" 2>/dev/null; do
+              sleep 10
+              if ! grep -q "DEVICE_TEST:" device_tour.log && [ $(( $(date +%s) - t0 )) -gt 600 ]; then
+                echo "WATCHDOG: ทัวร์ไม่เริ่มใน 10 นาที (แอปค้างตอนเปิด)" >> device_tour.log
+                pkill -P "$pid" 2>/dev/null || true
+                kill "$pid" 2>/dev/null || true
+                wait "$pid" 2>/dev/null || true
+                return 99
+              fi
+            done
+            wait "$pid"
+          }
           STATUS=0
-          flutter test integration_test/device_tour_test.dart -d "$SIM" 2>&1 | tee device_tour.log || STATUS=$?
+          run_tour || STATUS=$?
+          if [ "$STATUS" = "99" ]; then
+            mv device_tour.log device_tour_try1.log
+            xcrun simctl shutdown "$SIM" || true
+            xcrun simctl boot "$SIM" || true
+            xcrun simctl bootstatus "$SIM" -b
+            STATUS=0
+            run_tour || STATUS=$?
+          fi
+          cat device_tour.log
           kill "$LOOP" 2>/dev/null || true
           xcrun simctl io "$SIM" screenshot shots/zz_last.png >/dev/null 2>&1 || true
           exit $STATUS
