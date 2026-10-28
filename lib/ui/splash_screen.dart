@@ -80,6 +80,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     await _run(3, () async => '${(await ref.read(historyProvider.future)).length} ครั้ง');
     await _run(4, () async {
       if (!(Platform.isAndroid || Platform.isIOS)) return 'ไม่มี';
+      // iOS: แค่ถามสถานะ Bluetooth ระบบก็ขึ้นหน้าต่างขอสิทธิ์ทันที จึงไม่ถามตอนเปิดแอป
+      // ให้ขอสิทธิ์ตอนเข้าหน้าเชื่อมต่อแทน ผู้ใช้จะเข้าใจว่าขอไปใช้ทำอะไร (ตามแนวทางของ Apple)
+      if (Platform.isIOS) return 'ตอนเชื่อมต่อ';
       if (!await FlutterBluePlus.isSupported) return 'ไม่รองรับ';
       final s = await FlutterBluePlus.adapterState
           .where((s) => s != BluetoothAdapterState.unknown)

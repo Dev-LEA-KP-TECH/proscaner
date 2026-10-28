@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,14 +24,40 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   static const _pollKey = 'dashboard';
   late final LivePoller _poller;
 
+  /// นับครั้งที่เปิดแดชบอร์ด (กันคำสั่งหมุนจอที่ตั้งเวลาไว้ไปทับหน้าที่เปิดใหม่)
+  static int _opened = 0;
+  late final int _openId;
+  bool _phone = true;
+
   @override
   void initState() {
     super.initState();
+    _openId = ++_opened;
     _poller = ref.read(livePollerProvider);
     _subscribe();
     WakelockPlus.enable().catchError((Object _) {});
     SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _phone = MediaQuery.sizeOf(context).shortestSide < 600;
+  }
+
+  /// ออกจากแดชบอร์ด: Android หมุนจอตามเครื่องเองทันที แต่ iPhone จะค้างแนวนอนจนกว่าจะเอียงเครื่อง
+  /// จึงสั่งกลับแนวตั้งก่อน (เฉพาะ iPhone) แล้วค่อยปล่อยให้หมุนตามเครื่องได้เหมือนเดิม
+  void _restoreOrientation() {
+    if (defaultTargetPlatform == TargetPlatform.iOS && _phone) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+      final id = _openId;
+      Future<void>.delayed(const Duration(milliseconds: 800), () {
+        if (_opened == id) SystemChrome.setPreferredOrientations(const []);
+      });
+    } else {
+      SystemChrome.setPreferredOrientations(const []);
+    }
   }
 
   void _subscribe() {
@@ -42,7 +69,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   void dispose() {
     _poller.unsubscribe(_pollKey);
     WakelockPlus.disable().catchError((Object _) {});
-    SystemChrome.setPreferredOrientations(const []);
+    _restoreOrientation();
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }

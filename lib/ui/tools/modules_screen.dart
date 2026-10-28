@@ -130,7 +130,11 @@ class _ModulesScreenState extends ConsumerState<ModulesScreen> {
                   Expanded(
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.travel_explore_rounded),
-                      label: const Text('ละเอียด (~2 นาที)'),
+                      // จอแคบ (มือถือ) ให้ย่อตัวอักษรลงแทนการตัดขึ้นบรรทัดใหม่กลางวงเล็บ
+                      label: const FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text('ละเอียด (~2 นาที)', maxLines: 1, softWrap: false),
+                      ),
                       onPressed: _busy ? null : () => _discover(true),
                     ),
                   ),

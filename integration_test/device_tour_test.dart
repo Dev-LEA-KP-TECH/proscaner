@@ -22,14 +22,20 @@ import 'package:obd_doctor/core/obd/ext_library.dart';
 import 'package:obd_doctor/core/obd/ext_pid.dart';
 import 'package:obd_doctor/core/transport/demo_transport.dart';
 import 'package:obd_doctor/core/transport/wifi_transport.dart';
+import 'package:obd_doctor/data/backup.dart';
 import 'package:obd_doctor/data/garage_store.dart';
 import 'package:obd_doctor/data/history_store.dart';
 import 'package:obd_doctor/data/log_store.dart';
+import 'package:obd_doctor/data/remap_store.dart';
 import 'package:obd_doctor/main.dart';
 import 'package:obd_doctor/report/pdf_report.dart';
+import 'package:obd_doctor/state/backup_providers.dart';
 import 'package:obd_doctor/state/ext_packs.dart';
 import 'package:obd_doctor/state/live_poller.dart';
 import 'package:obd_doctor/state/providers.dart';
+import 'package:obd_doctor/state/remap_providers.dart';
+import 'package:obd_doctor/ui/backup_screen.dart';
+import 'package:obd_doctor/ui/comm_log_screen.dart';
 import 'package:obd_doctor/ui/garage_tab.dart';
 import 'package:obd_doctor/ui/home_screen.dart';
 import 'package:obd_doctor/ui/pid_chart_screen.dart';
@@ -45,6 +51,7 @@ import 'package:obd_doctor/ui/tools/mode06_screen.dart';
 import 'package:obd_doctor/ui/tools/modules_screen.dart';
 import 'package:obd_doctor/ui/tools/odometer_screen.dart';
 import 'package:obd_doctor/ui/tools/performance_screen.dart';
+import 'package:obd_doctor/ui/tools/remap_test_screen.dart';
 import 'package:obd_doctor/ui/tools/used_car_screen.dart';
 import 'package:obd_doctor/ui/vehicle_screen.dart';
 import 'package:path_provider/path_provider.dart';
@@ -77,6 +84,7 @@ void main() {
       historyStoreProvider.overrideWithValue(HistoryStore(directory: dir)),
       garageStoreProvider.overrideWithValue(GarageStore(directory: dir)),
       logStoreProvider.overrideWithValue(LogStore(directory: dir)),
+      remapStoreProvider.overrideWithValue(RemapStore(directory: dir)),
     ]);
     addTearDown(container.dispose);
 
@@ -352,6 +360,13 @@ void main() {
     await stage('14 แดชบอร์ดขับรถ', () async {
       await open(const DashboardScreen(), ms: 5000);
       await back();
+      // iPhone: ปิดแดชบอร์ด (ที่บังคับจอนอน) แล้วต้องกลับเป็นแนวตั้งเอง ไม่ค้างแนวนอน
+      final view = tester.view;
+      if (Platform.isIOS && view.physicalSize.shortestSide / view.devicePixelRatio < 600) {
+        await until('จอกลับเป็นแนวตั้งหลังปิดแดชบอร์ด', () => view.physicalSize.height > view.physicalSize.width,
+            seconds: 10);
+        await pause(1000);
+      }
     });
 
     await stage('15 บันทึกการขับ', () async {
@@ -361,6 +376,23 @@ void main() {
       await pause(800);
       await open(const LogsScreen(), ms: 2000);
       await press('บันทึกที่เพิ่งทำ', find.text('ทดสอบบนเครื่อง'), ms: 2500);
+      await back();
+      await back();
+    });
+
+    await stage('15b ทดสอบก่อน/หลังรีแมพ (ขับจำลอง แล้วบันทึกผล)', () async {
+      await open(const RemapTestScreen(), ms: 2000);
+      await press('ปุ่มเริ่มทดสอบก่อนรีแมพ', find.text('เริ่มทดสอบ ก่อนรีแมพ'), ms: 1500);
+      // หน้าทดสอบอ่านรหัสปัญหาและตรวจว่ารถรองรับค่าอะไรก่อน แล้วจึงเริ่มบันทึก
+      await until('เริ่มบันทึกการทดสอบรีแมพ', () => shows(find.text('จำลองออกตัว')), seconds: 60);
+      await press('ปุ่มจำลองออกตัว', find.text('จำลองออกตัว'), ms: 12000);
+      await press('ปุ่มหยุดและบันทึก', find.text('หยุดและบันทึก'));
+      await until('ผลทดสอบรีแมพ', () => shows(find.byType(RemapResultScreen)), seconds: 60);
+      await pause(1500);
+      await scrollBy(900);
+      final runs = await container.read(remapStoreProvider).list();
+      expect(runs, hasLength(1), reason: 'บันทึกผลทดสอบรีแมพลงเครื่องแล้ว');
+      log('ผลรีแมพ ${runs.first.rows.length} แถว');
       await back();
       await back();
     });
@@ -515,6 +547,32 @@ void main() {
       await tab('หน้าหลัก');
       await container.read(sessionProvider.notifier).disconnect();
       await pause(800);
+    });
+
+    await stage('26b บันทึกการสื่อสารและไฟล์สำรอง (เขียน/อ่านไฟล์ในเครื่อง)', () async {
+      // การเชื่อมต่อ Wi-Fi ในขั้นก่อนต้องถูกบันทึกลงไฟล์ในโฟลเดอร์เอกสารของแอป
+      final comm = container.read(commLogProvider);
+      await comm.flush();
+      final sessions = await comm.sessions();
+      expect(sessions.any((s) => s.title.startsWith('Wi-Fi 127.0.0.1')), isTrue,
+          reason: 'บันทึกการสื่อสารของการเชื่อมต่อ Wi-Fi ต้องถูกเขียนลงไฟล์');
+      await open(const CommLogScreen(), ms: 2000);
+      await press('บันทึกการเชื่อมต่อ Wi-Fi', find.textContaining('Wi-Fi 127.0.0.1'), ms: 2500);
+      expect(find.byType(CommLogViewer), findsOneWidget, reason: 'เปิดอ่านบันทึกได้');
+      await back();
+      await back();
+      // ไฟล์สำรอง: รวบรวมข้อมูลทั้งเครื่องแล้วอ่านกลับได้ครบ
+      final data = await container.read(backupServiceProvider).collect(appVersion: 'tour');
+      final bytes = data.encode();
+      final copy = BackupData.parse(bytes);
+      expect(copy.vehicles.length, data.vehicles.length);
+      expect(copy.history.length, data.history.length);
+      expect(copy.remapRuns.length, data.remapRuns.length);
+      log('ไฟล์สำรอง ${bytes.length} ไบต์ · รถ ${data.vehicles.length} · ประวัติ ${data.history.length} · '
+          'บันทึกขับ ${data.driveLogs.length} · รีแมพ ${data.remapRuns.length}');
+      await open(const BackupScreen(), ms: 2500);
+      await scrollBy(700);
+      await back();
     });
 
     await stage('27 เสียงพูดภาษาไทยของเครื่อง (ไม่พูดออกเสียง แค่ตรวจว่ามี)', () async {

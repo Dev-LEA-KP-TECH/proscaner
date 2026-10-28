@@ -527,6 +527,17 @@ class _WifiPanel extends StatelessWidget {
         'ถ้าไม่รู้ IP ให้ใช้ค่าเดิมไว้ แอปจะลองที่อยู่ที่ตัวสแกนส่วนใหญ่ใช้ให้อัตโนมัติ',
         style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.5),
       ),
+      if (Theme.of(context).platform == TargetPlatform.iOS) ...[
+        const SizedBox(height: 8),
+        Text(
+          'iPhone: ครั้งแรกที่เชื่อมต่อจะมีหน้าต่างถามว่าให้ ProScaner ค้นหาและเชื่อมต่ออุปกรณ์ในเครือข่ายเฉพาะที่หรือไม่ '
+          'ให้กดอนุญาต แล้วกดเชื่อมต่ออีกครั้ง (ถ้าเคยกดไม่อนุญาต เปิดได้ที่ การตั้งค่า > ProScaner > เครือข่ายเฉพาะที่)',
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall
+              ?.copyWith(height: 1.5, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+      ],
       const SizedBox(height: 16),
       TextField(controller: host, decoration: const InputDecoration(labelText: 'IP ของตัวสแกน', border: OutlineInputBorder())),
       const SizedBox(height: 12),

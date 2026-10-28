@@ -115,7 +115,9 @@ class WifiTransport implements ObdTransport {
     final tried = targets.map((t) => '${t.$1}:${t.$2}').join(', ');
     throw TransportException('เชื่อมต่อตัวสแกน Wi-Fi ไม่ได้ (ลอง $tried) '
         'ตรวจว่ามือถือต่อ Wi-Fi ของตัวสแกนอยู่ (มักชื่อ WiFi_OBDII, V-LINK หรือ OBDII) '
-        'และตัวสแกนเสียบอยู่กับรถ ($lastError)');
+        'และตัวสแกนเสียบอยู่กับรถ'
+        '${Platform.isIOS ? ' และอนุญาตให้ ProScaner ใช้เครือข่ายเฉพาะที่แล้ว (การตั้งค่า > ProScaner)' : ''} '
+        '($lastError)');
   }
 
   @override

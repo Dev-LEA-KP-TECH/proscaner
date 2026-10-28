@@ -23,7 +23,7 @@ on:
       - 'tool/**'
 
 concurrency:
-  group: ios-${{ github.ref }}
+  group: ios-${{ github.ref }}-${{ inputs.device || 'iPhone' }}
   cancel-in-progress: true
 
 permissions:
