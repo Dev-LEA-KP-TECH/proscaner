@@ -1,6 +1,6 @@
 # ตรวจแอป iOS บนเครื่อง Mac ของ GitHub (ไม่เซ็น ยังลงเครื่องจริงไม่ได้)
 # 1) build แอปสำหรับ iPhone แบบ release (no codesign) เพื่อดูว่าคอมไพล์ผ่าน
-# 2) เปิด iPhone จำลอง แล้วรัน integration_test/device_tour_test.dart (เปิดทุกหน้าด้วยรถจำลอง)
+# 2) เปิด iPhone จำลอง (หรือ iPad เมื่อสั่งรันเองแล้วเลือก iPad) แล้วรัน integration_test/device_tour_test.dart (เปิดทุกหน้าด้วยรถจำลอง)
 #    พร้อมถ่ายภาพหน้าจอทุก 3 วินาที
 # ผลอยู่ใน Artifacts ชื่อ ios-check (ภาพ + log) เก็บ 7 วัน และ push เข้า branch ios-results ด้วย
 # (ทุกครั้งเขียนทับ branch นี้ เปิดดูภาพและ log ได้จากหน้า repo โดยไม่ต้องดาวน์โหลด)
@@ -10,6 +10,12 @@ name: iOS build check
 
 on:
   workflow_dispatch:
+    inputs:
+      device:
+        description: 'เครื่องจำลองที่ใช้ทดสอบ'
+        type: choice
+        default: iPhone
+        options: [iPhone, iPad]
   push:
     branches: [main]
     paths-ignore:
@@ -58,22 +64,25 @@ jobs:
           set -o pipefail
           flutter build ios --release --no-codesign 2>&1 | tee build_ios_release.log
 
-      - name: Start an iPhone simulator
+      - name: Start a simulator (iPhone, or iPad when chosen)
+        env:
+          KIND: ${{ inputs.device || 'iPhone' }}
         run: |
           SIM=$(xcrun simctl list devices available -j | python3 -c '
-          import json, sys
+          import json, os, sys
+          kind = os.environ["KIND"]
           devices = json.load(sys.stdin)["devices"]
           pick = None
           for runtime in sorted(devices):
               if "iOS" not in runtime:
                   continue
               for d in devices[runtime]:
-                  if d.get("isAvailable", True) and d["name"].startswith("iPhone"):
+                  if d.get("isAvailable", True) and d["name"].startswith(kind):
                       pick = d["udid"]
           print(pick or "")
           ')
           if [ -z "$SIM" ]; then
-            echo "no iPhone simulator found"
+            echo "no $KIND simulator found"
             xcrun simctl list devices available
             exit 1
           fi
@@ -123,6 +132,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           DEVICE: ${{ steps.device.outcome }}
           TOUR: ${{ steps.tour.outcome }}
+          KIND: ${{ inputs.device || 'iPhone' }}
         run: |
           rm -rf /tmp/res && mkdir -p /tmp/res
           cp -R shots /tmp/res/ 2>/dev/null || true
@@ -131,6 +141,7 @@ jobs:
             echo "run: ${GITHUB_RUN_ID}"
             echo "commit: ${GITHUB_SHA}"
             echo "iPhone build (release, not signed): ${DEVICE}"
+            echo "simulator: ${KIND}"
             echo "simulator tour: ${TOUR}"
           } > /tmp/res/RESULT.txt
           cd /tmp/res

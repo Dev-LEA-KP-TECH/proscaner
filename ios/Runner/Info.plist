@@ -74,5 +74,7 @@
 	<string>แอปใช้รูปภาพเพื่อเลือกโลโก้อู่สำหรับรายงาน PDF</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>แอปใช้เครือข่ายในเครื่องเพื่อเชื่อมต่อตัวสแกน OBD-II แบบ Wi-Fi</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>
