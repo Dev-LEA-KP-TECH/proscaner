@@ -33,7 +33,7 @@ jobs:
   ios:
     name: iOS build + simulator tour
     runs-on: macos-latest
-    timeout-minutes: 75
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 
@@ -94,7 +94,7 @@ jobs:
       - name: Device tour on the simulator (screenshot every 3 s)
         id: tour
         continue-on-error: true
-        timeout-minutes: 40
+        timeout-minutes: 55
         run: |
           set -o pipefail
           mkdir -p shots
@@ -110,12 +110,24 @@ jobs:
             done
           ) &
           LOOP=$!
-          # เฝ้าดู: บางครั้งเครื่อง Mac ของ GitHub ช้า/ติดขัด แอปทดสอบเปิดแล้วค้างที่จอดำ (เครื่องมือต่อ VM service ไม่ได้)
-          # ใช้ --reporter expanded ให้ข้อความ DEVICE_TEST: ออกทันทีทีละขั้น (ค่าเริ่มต้นบน GitHub คือ reporter แบบ github
-          # ที่เก็บข้อความไว้พิมพ์ตอนเทสต์จบ ตัวเฝ้าจึงเคยหยุดทัวร์ที่กำลังรันปกติเมื่อ build ช้า)
-          # ถ้าผ่านไป 10 นาทีหลัง build เสร็จแล้วยังไม่มีขั้นแรกของทัวร์ ให้หยุด รีสตาร์ทเครื่องจำลอง แล้วลองใหม่ 1 ครั้ง
-          # และลองใหม่ 1 ครั้งเช่นกันถ้าทัวร์ล้มก่อนเริ่มขั้นแรก (เช่น "Error waiting for a debug connection")
-          # ถ้าทัวร์เริ่มแล้วล้ม = ผิดจริง ไม่ลองใหม่
+          # เฝ้าดู: บางครั้งเครื่อง Mac ของ GitHub ช้า/ติดขัด แอปทดสอบเปิดแล้วค้างที่จอดำ (เครื่องมือหา VM service ของแอปไม่เจอ
+          # จึงไม่สั่งให้แอปเริ่ม เกิดกับ iPad บ่อยกว่า) ปกติขั้นแรกของทัวร์ขึ้นภายในไม่กี่วินาทีหลัง build เสร็จ
+          # - ใช้ --reporter expanded ให้ข้อความ DEVICE_TEST: ออกทันทีทีละขั้น (reporter แบบ github ที่เป็นค่าเริ่มต้น
+          #   เก็บข้อความไว้พิมพ์ตอนเทสต์จบ ตัวเฝ้าจึงเคยหยุดทัวร์ที่กำลังรันปกติ)
+          # - 4 นาทีหลัง build เสร็จยังไม่มีขั้นแรก = ค้างตอนเปิด: เก็บข้อมูลวินิจฉัย (watchdog_diag_N.log + ภาพ) แล้วหยุด
+          # - ทัวร์ที่ยังไม่เริ่มขั้นแรก (ค้างตอนเปิด หรือต่อแอปไม่ได้) ล้างเครื่องจำลองแล้วลองใหม่ได้อีก 2 ครั้ง
+          # - ทัวร์ที่เริ่มแล้วล้ม = ผิดจริง ไม่ลองใหม่
+          diag() {
+            {
+              echo "==== $(date -u +%H:%M:%S) booted"
+              xcrun simctl list devices booted
+              echo "==== processes"
+              xcrun simctl spawn "$SIM" launchctl list 2>&1 | grep -i -E 'runner|proscaner|obd' || true
+              echo "==== log of Runner (last 5 min)"
+              xcrun simctl spawn "$SIM" log show --last 5m --style compact --predicate 'process == "Runner"' 2>&1 | tail -200
+            } > "watchdog_diag_$1.log" 2>&1
+            xcrun simctl io "$SIM" screenshot "shots/watchdog_$1.png" >/dev/null 2>&1 || true
+          }
           run_tour() {
             : > device_tour.log
             flutter test integration_test/device_tour_test.dart -d "$SIM" --reporter expanded > device_tour.log 2>&1 &
@@ -123,8 +135,9 @@ jobs:
             while kill -0 "$pid" 2>/dev/null; do
               sleep 10
               if [ -z "$tb" ] && grep -q "Xcode build done" device_tour.log; then tb=$(date +%s); fi
-              if [ -n "$tb" ] && ! grep -q "DEVICE_TEST:" device_tour.log && [ $(( $(date +%s) - tb )) -gt 600 ]; then
-                echo "WATCHDOG $(date -u +%H:%M:%S): ทัวร์ไม่เริ่มใน 10 นาทีหลัง build เสร็จ (แอปค้างตอนเปิด)" | tee -a watchdog.log
+              if [ -n "$tb" ] && ! grep -q "DEVICE_TEST:" device_tour.log && [ $(( $(date +%s) - tb )) -gt 240 ]; then
+                echo "WATCHDOG $(date -u +%H:%M:%S): รอบ $1 ทัวร์ไม่เริ่มใน 4 นาทีหลัง build เสร็จ (แอปค้างตอนเปิด)" | tee -a watchdog.log
+                diag "$1"
                 pkill -P "$pid" 2>/dev/null || true
                 kill "$pid" 2>/dev/null || true
                 wait "$pid" 2>/dev/null || true
@@ -134,16 +147,19 @@ jobs:
             wait "$pid"
           }
           STATUS=0
-          run_tour || STATUS=$?
-          if [ "$STATUS" != "0" ] && ! grep -q "DEVICE_TEST:" device_tour.log; then
-            echo "RETRY $(date -u +%H:%M:%S): รอบแรกจบด้วย $STATUS ก่อนทัวร์เริ่ม รีสตาร์ทเครื่องจำลองแล้วลองใหม่" | tee -a watchdog.log
-            mv device_tour.log device_tour_try1.log
+          for attempt in 1 2 3; do
+            STATUS=0
+            run_tour "$attempt" || STATUS=$?
+            if [ "$STATUS" = "0" ] || grep -q "DEVICE_TEST:" device_tour.log || [ "$attempt" = "3" ]; then
+              break
+            fi
+            echo "RETRY $(date -u +%H:%M:%S): รอบ $attempt จบด้วย $STATUS ก่อนทัวร์เริ่ม ล้างเครื่องจำลองแล้วลองใหม่" | tee -a watchdog.log
+            mv device_tour.log "device_tour_try$attempt.log"
             xcrun simctl shutdown "$SIM" || true
+            xcrun simctl erase "$SIM" || true
             xcrun simctl boot "$SIM" || true
             xcrun simctl bootstatus "$SIM" -b
-            STATUS=0
-            run_tour || STATUS=$?
-          fi
+          done
           cat device_tour.log
           kill "$LOOP" 2>/dev/null || true
           xcrun simctl io "$SIM" screenshot shots/zz_last.png >/dev/null 2>&1 || true
