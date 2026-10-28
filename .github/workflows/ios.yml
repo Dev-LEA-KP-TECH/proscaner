@@ -1,7 +1,7 @@
 # ตรวจแอป iOS บนเครื่อง Mac ของ GitHub (ไม่เซ็น ยังลงเครื่องจริงไม่ได้)
 # 1) build แอปสำหรับ iPhone แบบ release (no codesign) เพื่อดูว่าคอมไพล์ผ่าน
 # 2) เปิด iPhone จำลอง แล้วรัน integration_test/device_tour_test.dart (เปิดทุกหน้าด้วยรถจำลอง)
-#    พร้อมถ่ายภาพหน้าจอทุก 6 วินาที
+#    พร้อมถ่ายภาพหน้าจอทุก 3 วินาที
 # ผลอยู่ใน Artifacts ชื่อ ios-check (ภาพ + log) เก็บ 7 วัน และ push เข้า branch ios-results ด้วย
 # (ทุกครั้งเขียนทับ branch นี้ เปิดดูภาพและ log ได้จากหน้า repo โดยไม่ต้องดาวน์โหลด)
 #
@@ -12,6 +12,9 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'tool/**'
 
 concurrency:
   group: ios-${{ github.ref }}
@@ -77,7 +80,7 @@ jobs:
           xcrun simctl bootstatus "$SIM" -b
           xcrun simctl list devices booted
 
-      - name: Device tour on the simulator (screenshot every 6 s)
+      - name: Device tour on the simulator (screenshot every 3 s)
         id: tour
         continue-on-error: true
         timeout-minutes: 40
@@ -92,7 +95,7 @@ jobs:
               if xcrun simctl io "$SIM" screenshot "$f.png" >/dev/null 2>&1; then
                 sips -s format jpeg -s formatOptions 60 --resampleWidth 590 "$f.png" --out "$f.jpg" >/dev/null 2>&1 && rm -f "$f.png"
               fi
-              sleep 6
+              sleep 3
             done
           ) &
           LOOP=$!

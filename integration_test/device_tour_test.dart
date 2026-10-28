@@ -21,6 +21,8 @@ import 'package:obd_doctor/state/ext_packs.dart';
 import 'package:obd_doctor/state/live_poller.dart';
 import 'package:obd_doctor/state/providers.dart';
 import 'package:obd_doctor/ui/garage_tab.dart';
+import 'package:obd_doctor/ui/home_screen.dart';
+import 'package:obd_doctor/ui/pid_chart_screen.dart';
 import 'package:obd_doctor/ui/settings_screens.dart';
 import 'package:obd_doctor/ui/tools/battery_screen.dart';
 import 'package:obd_doctor/ui/tools/brand_data_screen.dart';
@@ -77,19 +79,44 @@ void main() {
     }
 
     bool shows(Finder f) => f.evaluate().isNotEmpty;
-    NavigatorState nav() => tester.state<NavigatorState>(find.byType(Navigator).first);
+
+    // ใช้ Navigator ที่ถือหน้าหลักอยู่จริง (หน้าหลักอาจถูกหน้าอื่นบังอยู่ จึงไม่ข้ามหน้าที่มองไม่เห็น)
+    // ใช้ได้ทั้ง Android และ iOS (iOS เปลี่ยนหน้าแบบเลื่อนข้าง ใช้เวลานานกว่า)
+    NavigatorState nav() => Navigator.of(tester.element(find.byType(HomeScreen, skipOffstage: false)));
+
+    // บอกสถานะทุกขั้น: ยังเชื่อมต่อรถอยู่ไหม และหน้าบนสุดชื่ออะไร (ใช้ดูว่าพังตรงไหนเวลาเทสต์บนเครื่องอื่น)
+    void step(String s) {
+      final connected = container.read(sessionProvider).isConnected;
+      final titles = find
+          .descendant(of: find.byType(AppBar), matching: find.byType(Text))
+          .evaluate()
+          .map((e) => (e.widget as Text).data ?? '')
+          .where((t) => t.isNotEmpty)
+          .take(3)
+          .join(' / ');
+      log('$s · เชื่อมต่อ=$connected · หัวหน้า=${titles.isEmpty ? '-' : titles}');
+    }
 
     Future<void> open(Widget w, {int ms = 1500}) async {
       nav().push(MaterialPageRoute<void>(builder: (_) => w));
       await pause(ms);
     }
 
-    Future<void> back([int ms = 700]) async {
-      nav().pop();
+    // ปิดหน้าบนสุด: กดปุ่มย้อนกลับของหน้านั้นถ้ามี ไม่มีจึงสั่ง pop
+    Future<void> back([int ms = 900]) async {
+      final button = find.byType(BackButton);
+      if (shows(button)) {
+        await tester.tap(button.last);
+      } else {
+        nav().pop();
+      }
       await pause(ms);
     }
 
+    // แถบแท็บอยู่ในหน้าหลักเท่านั้น: ปิดหน้าที่เปิดซ้อนทั้งหมดก่อนกดแท็บ
     Future<void> tab(String label) async {
+      nav().popUntil((r) => r.isFirst);
+      await pause(900);
       await tester.tap(find.descendant(of: find.byType(NavigationBar), matching: find.text(label)));
       await pause(900);
     }
@@ -99,18 +126,18 @@ void main() {
       await pause(600);
     }
 
-    log('1 เปิดแอป');
+    step('1 เปิดแอป');
     await tester.pumpWidget(UncontrolledProviderScope(container: container, child: const ObdDoctorApp()));
     await until('หน้าหลัก', () => shows(find.text('เชื่อมต่อตัวสแกน')));
 
-    log('2 เชื่อมต่อรถจำลอง');
+    step('2 เชื่อมต่อรถจำลอง');
     await container.read(sessionProvider.notifier).connect(DemoTransport());
     await until('เชื่อมต่อรถจำลอง', () => container.read(sessionProvider).isConnected && shows(find.text('สแกนด่วน')),
         seconds: 60);
     await pause(1500);
     expect(container.read(sessionProvider).vehicleId, isNotNull, reason: 'ต้องระบุรถอัตโนมัติจาก VIN');
 
-    log('3 สแกนทั้งคัน');
+    step('3 สแกนทั้งคัน');
     await tab('วินิจฉัย');
     await container.read(scanProvider.notifier).run(allModules: true);
     await pause(1500);
@@ -120,23 +147,26 @@ void main() {
     await pause(900);
     await scrollBy(700);
 
-    log('4 หน้าหลักโหมดช่าง');
+    step('4 หน้าหลักโหมดช่าง');
     await tab('หน้าหลัก');
     await scrollBy(700);
 
-    log('5 ค่าสด');
+    step('5 ค่าสด');
     container.read(appModeProvider.notifier).set(AppMode.owner);
     await tab('ค่าสด');
     await pause(4000);
     container.read(appModeProvider.notifier).set(AppMode.mechanic);
     await pause(4000);
     await tester.tap(find.text('รอบเครื่องยนต์').first);
+    await until('กราฟรอบเครื่อง', () => shows(find.byType(PidChartScreen)), seconds: 20);
     await pause(3000);
     await back();
+    await until('ปิดกราฟ', () => !shows(find.byType(PidChartScreen)), seconds: 20);
     await tab('หน้าหลัก');
 
-    log('6 เช็คเลขไมล์');
+    step('6 เช็คเลขไมล์');
     await open(const OdometerScreen());
+    await until('ช่องเลขไมล์', () => shows(find.byType(TextField)), seconds: 20);
     await tester.enterText(find.byType(TextField).first, '186,500');
     await tester.tap(find.text('อ่านข้อมูลและตรวจ'));
     await until('ผลเช็คเลขไมล์', () => shows(find.text('ข้อมูลที่อ่านได้')), seconds: 90);
@@ -144,15 +174,16 @@ void main() {
     await scrollBy(800);
     await back();
 
-    log('7 ตรวจรถมือสอง');
+    step('7 ตรวจรถมือสอง');
     await open(const UsedCarScreen());
+    await until('ช่องเลขไมล์รถมือสอง', () => shows(find.byType(TextField)), seconds: 20);
     await tester.enterText(find.byType(TextField).first, '98,000');
     await tester.tap(find.textContaining('เริ่มตรวจ'));
     await until('ผลตรวจรถมือสอง', () => shows(find.text('ส่งรายงาน PDF')), seconds: 180);
     await pause(1000);
     await scrollBy(700);
 
-    log('8 สร้างรายงาน PDF');
+    step('8 สร้างรายงาน PDF');
     final report = container.read(scanProvider).report!;
     final bytes = await buildReportPdf(ReportInput(
       report: report,
@@ -164,18 +195,18 @@ void main() {
     log('PDF ${pdf.lengthSync()} ไบต์');
     await back();
 
-    log('9 ข้อมูลกล่อง ECU');
+    step('9 ข้อมูลกล่อง ECU');
     await open(const EcuInfoScreen(), ms: 4000);
     await back();
 
-    log('10 Mode 06');
+    step('10 Mode 06');
     await open(const Mode06Screen());
     await tester.tap(find.text('อ่านผลทดสอบ'));
     await until('ผล Mode 06', () => shows(find.textContaining('ทดสอบทั้งหมด')), seconds: 90);
     await pause(800);
     await back();
 
-    log('11 กล่องอื่น (ABS)');
+    step('11 กล่องอื่น (ABS)');
     await open(const ModulesScreen(), ms: 2500);
     final abs = container.read(modulesProvider).firstWhere((m) => m.tx == '7B0');
     await open(ModuleDetailScreen(module: abs));
@@ -185,14 +216,14 @@ void main() {
     await back();
     await back();
 
-    log('12 เช็คแบตเตอรี่');
+    step('12 เช็คแบตเตอรี่');
     await open(const BatteryScreen(), ms: 2500);
     await tester.tap(find.text('เริ่ม').first);
     await until('ผลเช็คแบต', () => shows(find.text('วัดใหม่')), seconds: 90);
     await pause(800);
     await back();
 
-    log('13 จับเวลาอัตราเร่ง');
+    step('13 จับเวลาอัตราเร่ง');
     await open(const PerformanceScreen(), ms: 2000);
     await tester.tap(find.text('เตรียมพร้อม'));
     await pause(500);
@@ -201,11 +232,11 @@ void main() {
     await pause(800);
     await back();
 
-    log('14 แดชบอร์ดขับรถ');
+    step('14 แดชบอร์ดขับรถ');
     await open(const DashboardScreen(), ms: 5000);
     await back();
 
-    log('15 บันทึกการขับ');
+    step('15 บันทึกการขับ');
     container.read(recorderProvider.notifier).start(recordPresets.first.$2);
     await pause(5000);
     await container.read(recorderProvider.notifier).stop(name: 'ทดสอบบนเครื่อง');
@@ -216,7 +247,7 @@ void main() {
     await back();
     await back();
 
-    log('16 โรงรถ');
+    step('16 โรงรถ');
     await tab('โรงรถ');
     expect(find.byType(GarageTab), findsOneWidget);
     final v = container.read(garageProvider).value!.first;
@@ -224,18 +255,18 @@ void main() {
     await scrollBy(800);
     await back();
 
-    log('17 ตั้งค่า');
+    step('17 ตั้งค่า');
     await tab('ตั้งค่า');
     await scrollBy(800);
     await open(const ShopProfileScreen());
     await back();
 
-    log('18 ค้นหารหัสปัญหา');
+    step('18 ค้นหารหัสปัญหา');
     await tester.tap(find.byTooltip('ค้นหารหัสปัญหา'));
     await pause(2000);
     await back();
 
-    log('19 ธีมสว่าง/สีทอง และมืด/สีฟ้า');
+    step('19 ธีมสว่าง/สีทอง และมืด/สีฟ้า');
     container.read(settingsProvider.notifier)
       ..setThemeMode(ThemeMode.light)
       ..setAccent(AccentPreset.royalGold);
@@ -249,7 +280,7 @@ void main() {
     await pause(3000);
     await tab('หน้าหลัก');
 
-    log('20 เชื่อมต่อผ่านหน้าจอเชื่อมต่อ (เรียก Bluetooth จริงของเครื่อง แล้วเลือกโหมดทดลอง)');
+    step('20 เชื่อมต่อผ่านหน้าจอเชื่อมต่อ (เรียก Bluetooth จริงของเครื่อง แล้วเลือกโหมดทดลอง)');
     await container.read(sessionProvider.notifier).disconnect();
     await until('ปุ่มเชื่อมต่อ', () => shows(find.text('เชื่อมต่อตัวสแกน')));
     await tester.tap(find.text('เชื่อมต่อตัวสแกน'));
@@ -262,7 +293,7 @@ void main() {
         seconds: 60);
     await pause(1500);
 
-    log('21 ค่าเฉพาะยี่ห้อ: โหลดคลังชุดข้อมูลจากไฟล์ในแอป');
+    step('21 ค่าเฉพาะยี่ห้อ: โหลดคลังชุดข้อมูลจากไฟล์ในแอป');
     final lib = container.read(extLibraryProvider);
     final libIndex = await lib.index();
     expect(libIndex.length, greaterThanOrEqualTo(30), reason: 'คลังต้องโหลดจาก assets ในแอปได้');
@@ -271,7 +302,7 @@ void main() {
     expect(hilux.pids.length, hiluxEntry.count);
     log('คลัง ${libIndex.length} ชุด, Hilux ${hilux.pids.length} ค่า');
 
-    log('22 หาชุดที่ตรงกับรถคันนี้ (ทดสอบทุกชุดของยี่ห้อ)');
+    step('22 หาชุดที่ตรงกับรถคันนี้ (ทดสอบทุกชุดของยี่ห้อ)');
     await open(ExtMatchScreen(onUse: (_) {}), ms: 1500);
     await tester.tap(find.textContaining('เริ่มทดสอบ'));
     await pause(1500);
@@ -280,14 +311,14 @@ void main() {
     await pause(800);
     await back();
 
-    log('23 ใช้ชุด Hilux แล้วอ่านค่า');
+    step('23 ใช้ชุด Hilux แล้วอ่านค่า');
     container.read(extPacksProvider.notifier).adopt(hilux);
     await open(const BrandDataScreen(), ms: 2500);
     await tester.tap(find.text('อ่านครั้งเดียว'));
     await until('ค่าหัวฉีดจากรถจำลอง', () => shows(find.textContaining('22112B →')), seconds: 90);
     await pause(1000);
 
-    log('24 รายละเอียดค่า: ดูไบต์สด');
+    step('24 รายละเอียดค่า: ดูไบต์สด');
     final row = find.text('ค่าชดเชยหัวฉีด (Feedback) สูบ 1').first;
     await tester.ensureVisible(row);
     await pause(500);
@@ -301,7 +332,7 @@ void main() {
     await back();
     await back();
 
-    log('25 ค้นหาค่าที่กล่องตอบ (ช่วงตามชุดของรถคันนี้)');
+    step('25 ค้นหาค่าที่กล่องตอบ (ช่วงตามชุดของรถคันนี้)');
     await open(const DidScannerScreen(), ms: 2000);
     final start = find.text('เริ่มค้นหา');
     await tester.ensureVisible(start);
@@ -314,7 +345,7 @@ void main() {
     await pause(800);
     await back();
 
-    log('26 เสียงพูดภาษาไทยของเครื่อง (ไม่พูดออกเสียง แค่ตรวจว่ามี)');
+    step('26 เสียงพูดภาษาไทยของเครื่อง (ไม่พูดออกเสียง แค่ตรวจว่ามี)');
     try {
       final th = await FlutterTts().isLanguageAvailable('th-TH');
       log('มีเสียงภาษาไทยในเครื่อง: $th');
@@ -322,7 +353,7 @@ void main() {
       log('ตรวจเสียงภาษาไทยไม่ได้: $e');
     }
 
-    log('27 ปิดการเชื่อมต่อ');
+    step('27 ปิดการเชื่อมต่อ');
     await container.read(sessionProvider.notifier).disconnect();
     await pause(1000);
     await tester.pumpWidget(const SizedBox());
