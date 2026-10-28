@@ -2,7 +2,7 @@
 # 1) build แอปสำหรับ iPhone แบบ release (no codesign) เพื่อดูว่าคอมไพล์ผ่าน
 # 2) เปิด iPhone จำลอง (หรือ iPad เมื่อสั่งรันเองแล้วเลือก iPad) แล้วรัน integration_test/device_tour_test.dart (เปิดทุกหน้าด้วยรถจำลอง)
 #    พร้อมถ่ายภาพหน้าจอทุก 3 วินาที
-# ผลอยู่ใน Artifacts ชื่อ ios-check (ภาพ + log) เก็บ 7 วัน และ push เข้า branch ios-results ด้วย
+# ผลอยู่ใน Artifacts ชื่อ ios-check (ภาพ + log) เก็บ 7 วัน และ push เข้า branch ios-results (iPad: ios-results-ipad) ด้วย
 # (ทุกครั้งเขียนทับ branch นี้ เปิดดูภาพและ log ได้จากหน้า repo โดยไม่ต้องดาวน์โหลด)
 #
 # เครื่อง Mac ของ GitHub กินโควตานาทีของบัญชีมากกว่าเครื่อง Linux จึงรันเมื่อสั่งเองหรือเมื่อ push เข้า main เท่านั้น
@@ -144,13 +144,16 @@ jobs:
             echo "simulator: ${KIND}"
             echo "simulator tour: ${TOUR}"
           } > /tmp/res/RESULT.txt
+          # iPhone -> ios-results, iPad -> ios-results-ipad (รันพร้อมกันได้ ไม่ทับกัน)
+          BRANCH=ios-results
+          if [ "$KIND" = "iPad" ]; then BRANCH=ios-results-ipad; fi
           cd /tmp/res
-          git init -q -b ios-results
+          git init -q -b "$BRANCH"
           git config user.name "github-actions"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -q -m "iOS check ${GITHUB_RUN_ID} for ${GITHUB_SHA}"
-          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ios-results
+          git commit -q -m "iOS check ${GITHUB_RUN_ID} for ${GITHUB_SHA} on ${KIND}"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "$BRANCH"
 
       - name: Result
         if: always()
