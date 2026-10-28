@@ -262,7 +262,13 @@ class _BrandDataScreenState extends ConsumerState<BrandDataScreen> {
         final name = await askText(context, 'เปลี่ยนชื่อชุด', initial: pack.name);
         if (name != null && name.trim().isNotEmpty) n.put(pack..name = name.trim());
       case 'share':
-        await SharePlus.instance.share(ShareParams(text: pack.export(), subject: 'ชุดค่า ${pack.name}'));
+        // iPad แสดงหน้าต่างแชร์แบบลอย ต้องบอกตำแหน่งอ้างอิง (ไม่ใส่จะแชร์ไม่ได้บน iPad)
+        final box = context.findRenderObject() as RenderBox?;
+        await SharePlus.instance.share(ShareParams(
+          text: pack.export(),
+          subject: 'ชุดค่า ${pack.name}',
+          sharePositionOrigin: box == null ? null : box.localToGlobal(Offset.zero) & box.size,
+        ));
       case 'copy':
         await Clipboard.setData(ClipboardData(text: pack.export()));
         if (mounted) _snack('คัดลอกแล้ว ส่งให้ช่างคนอื่นนำเข้าได้');

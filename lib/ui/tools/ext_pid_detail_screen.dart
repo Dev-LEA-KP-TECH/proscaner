@@ -305,7 +305,13 @@ class _ExtPidDetailScreenState extends ConsumerState<ExtPidDetailScreen> {
     for (final pt in _p.points) {
       b.writeln('${bytesToHex(pt.raw, sep: ' ')},${pt.ref},${_calc(pt.raw)?.toStringAsFixed(3) ?? '-'},${pt.at.toIso8601String()}');
     }
-    await SharePlus.instance.share(ShareParams(text: b.toString(), subject: 'จุดเทียบค่า ${_p.name}'));
+    // iPad แสดงหน้าต่างแชร์แบบลอย ต้องบอกตำแหน่งอ้างอิง (ไม่ใส่จะแชร์ไม่ได้บน iPad)
+    final box = context.findRenderObject() as RenderBox?;
+    await SharePlus.instance.share(ShareParams(
+      text: b.toString(),
+      subject: 'จุดเทียบค่า ${_p.name}',
+      sharePositionOrigin: box == null ? null : box.localToGlobal(Offset.zero) & box.size,
+    ));
   }
 
   // ---------------- หน้าจอ ----------------

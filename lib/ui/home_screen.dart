@@ -48,7 +48,9 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         final spec = vehicleSpecLine(v);
         final practice = next.isPractice;
         messenger.showSnackBar(SnackBar(
-          duration: const Duration(seconds: 5),
+          duration: const Duration(seconds: 6),
+          // Flutter รุ่นใหม่ให้แถบที่มีปุ่มค้างจนกว่าจะกด ซึ่งจะบังล่างจอทุกหน้า: ให้หายเองตามเวลา
+          persist: false,
           content: Row(children: [
             BrandBadge(make: v.make, size: 30),
             const SizedBox(width: 12),
@@ -64,6 +66,8 @@ class HomeScreenState extends ConsumerState<HomeScreen> {
         ));
       } else if (prev?.isConnected != true && next.isConnected && next.vin == null) {
         messenger.showSnackBar(SnackBar(
+          duration: const Duration(seconds: 8),
+          persist: false,
           content: const Text('รถคันนี้ไม่ส่ง VIN แตะ "เลือกรถ" ที่หน้าหลักเพื่อบันทึกผลเข้ารถในโรงรถ'),
           action: SnackBarAction(label: 'เลือกรถ', onPressed: () => chooseVehicleSheet(context, ref)),
         ));

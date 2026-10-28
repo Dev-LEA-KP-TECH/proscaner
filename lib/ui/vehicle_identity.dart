@@ -12,11 +12,19 @@ import 'widgets/common.dart';
 /// ไฟล์โลโก้ยี่ห้อที่มีอยู่ในแอป (โหลดรายชื่อครั้งเดียว)
 Future<Set<String>>? _logoAssets;
 
+/// รายชื่อที่โหลดเสร็จแล้ว: ตราที่สร้างใหม่ใช้ได้ทันทีตั้งแต่เฟรมแรก
+/// (ไม่ขึ้นเป็นตัวอักษรย่อแวบหนึ่งก่อนเปลี่ยนเป็นโลโก้ เช่นตอนเลื่อนรายการหรือเปิดหน้าใหม่)
+Set<String>? _logoAssetsReady;
+
 Future<Set<String>> _loadLogoAssets() async {
   try {
     final manifest = await AssetManifest.loadFromAssetBundle(rootBundle);
-    return manifest.listAssets().where((a) => a.startsWith('assets/brand_logos/') && a.endsWith('.png')).toSet();
+    final found = manifest.listAssets().where((a) => a.startsWith('assets/brand_logos/') && a.endsWith('.png')).toSet();
+    _logoAssetsReady = found;
+    return found;
   } catch (_) {
+    // อ่านรายชื่อไม่ได้: ใช้ตัวอักษรย่อไปก่อน และไม่จำผลที่ล้มเหลว ครั้งหน้าจะลองอ่านใหม่
+    _logoAssets = null;
     return const {};
   }
 }
@@ -36,6 +44,7 @@ class BrandBadge extends StatelessWidget {
     final path = brandLogoAsset(name);
     return FutureBuilder<Set<String>>(
       future: _logoAssets ??= _loadLogoAssets(),
+      initialData: _logoAssetsReady,
       builder: (context, snap) {
         if (!(snap.data?.contains(path) ?? false)) return _initials(context);
         return Container(

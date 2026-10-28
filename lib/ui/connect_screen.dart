@@ -319,6 +319,29 @@ class _BluetoothPanelState extends State<_BluetoothPanel> {
         _startDiscovery();
       }
       if (mounted && await FlutterBluePlus.isSupported) {
+        if (!_android) {
+          // iOS: สถานะ Bluetooth เป็น "ไม่ทราบ" จนกว่าระบบพร้อม (และจนกว่าผู้ใช้ตอบหน้าต่างขอสิทธิ์ครั้งแรก)
+          // ถ้าสั่งค้นหาก่อนพร้อมจะได้ข้อผิดพลาดภาษาอังกฤษ จึงรอให้รู้สถานะก่อน แล้วบอกวิธีแก้เป็นภาษาไทย
+          final state = await FlutterBluePlus.adapterState
+              .where((s) => s != BluetoothAdapterState.unknown && s != BluetoothAdapterState.turningOn)
+              .first
+              .timeout(const Duration(seconds: 30), onTimeout: () => BluetoothAdapterState.unknown);
+          if (!mounted) return;
+          switch (state) {
+            case BluetoothAdapterState.on:
+              break;
+            case BluetoothAdapterState.unauthorized:
+              _fail('ยังไม่ได้อนุญาตให้ ProScaner ใช้ Bluetooth: เปิดแอป "การตั้งค่า" > ProScaner > เปิด Bluetooth '
+                  'แล้วกลับมากด "ค้นหาอีกครั้ง"');
+              return;
+            case BluetoothAdapterState.off:
+              _fail('Bluetooth ปิดอยู่ เปิด Bluetooth (ศูนย์ควบคุม หรือ การตั้งค่า > Bluetooth) แล้วกด "ค้นหาอีกครั้ง"');
+              return;
+            default:
+              _fail('ยังใช้ Bluetooth ไม่ได้ในขณะนี้ รอสักครู่แล้วกด "ค้นหาอีกครั้ง"');
+              return;
+          }
+        }
         await BleTransport.startScan();
       }
     } on PlatformException catch (e) {
